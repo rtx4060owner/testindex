@@ -396,17 +396,14 @@
       return Object.entries(r.locations).map(([days, loc]) => ({ loc: loc.replace(/\s*\(.*\)/, ''), days }));
     }
     const loc = (r.location || '').replace(/\s*\(.*\)/, '');
-    let days = Array.isArray(r.days) ? r.days.join(', ') : '';
-    if (!days) {
-      const m = /Floor\),\s*([^.]+)\./.exec(p.content || '');
-      if (m) days = m[1].trim().replace(/^\w/, (c) => c.toUpperCase());
-    }
+    const days = Array.isArray(r.days) ? r.days.join(', ') : '';
     return [{ loc, days }];
   }
 
   function providerFacts(r = {}) {
     const f = [];
     if (r.new_patient_max_age != null) f.push(`New patients only up to about age ${r.new_patient_max_age}`);
+    if (r.duration_min_under_65 && r.duration_min_65_plus) f.push(`${r.duration_min_under_65} min under 65, ${r.duration_min_65_plus} min 65+`);
     if (r.pe_and_np_duration_min) f.push(`PE & new patient visits: ${r.pe_and_np_duration_min} min, any age`);
     if (r.tuesday_specialty_only) f.push(`Tuesdays: ${r.tuesday_specialty_only} only`);
     if (r.cdl_exam_allowed === true) f.push(`CDL exams${r.cdl_daily_limit ? ` (max ${r.cdl_daily_limit}/day)` : ''}`);
@@ -454,15 +451,9 @@
     const r = item.rules || {};
     const min = r.duration_min ?? r.default_duration_min;
     if (min != null) return `<span class="num">${esc(min)} min</span>${r.default_duration_min != null ? ' <span class="muted">default</span>' : ''}`;
+    if (r.duration_text) return esc(r.duration_text);
     if (r.slot_type) return esc(r.slot_type);
-    const at = (item.content || '').search(/Duration:/);
-    if (at < 0) return '<span class="muted">—</span>';
-    // Look only at the Duration clause (up to the next "Label:" lead-in).
-    const clause = item.content.slice(at + 9).split(/\.\s+[A-Z][A-Za-z ]{2,30}:/)[0];
-    const nums = [...new Set((clause.match(/\d+(?:-\d+)?(?= minutes)/g) || []))]
-      .sort((a, b) => parseInt(a) - parseInt(b));
-    if (!nums.length) return '<span class="muted">Varies</span>';
-    return `<span class="num">${esc(nums.join(' or '))} min</span>${nums.length > 1 ? ' <span class="muted">varies</span>' : ''}`;
+    return '<span class="muted">—</span>';
   }
 
   function bookable(r = {}) {
@@ -473,6 +464,8 @@
 
   function visitFacts(r = {}) {
     const f = [];
+    if (r.short_duration_min) f.push(`${r.short_duration_min} min only if: ${r.short_duration_condition}`);
+    if (r.covid_pcr_duration_min) f.push(`Asymptomatic COVID PCR: ${r.covid_pcr_duration_min}-min nurse visit`);
     if (r.provider) f.push(`${r.provider} only`);
     if (r.max_age != null) f.push(`Age ${r.max_age} and under`);
     if (r.age_range) f.push(`Ages ${r.age_range}`);
