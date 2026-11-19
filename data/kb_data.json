@@ -102,9 +102,6 @@
     "rules": {
       "specialty": "Cardiology",
       "location": "Forest Rd (2nd Floor)",
-      "days": ["Wed", "Occasional Sun"],
-      "duration_min_under_65": 15,
-      "duration_min_65_plus": 30,
       "accepts_mvp": false,
       "self_pay_fee": 100,
       "internal_referral_required": false
@@ -149,7 +146,6 @@
       "location": "Forest Rd (2nd Floor)",
       "referral_mandatory": true,
       "chaperone_required_for_males": true,
-      "days": ["By appointment"],
       "contact_method": "Microsoft Teams"
     }
   },
@@ -161,9 +157,6 @@
     "content": "Pre-Bookable: Yes. Purpose: Comprehensive preventative health check-up. Duration: 30 minutes for all patients over 27 years old, or any patient seeing Dr. Shinder regardless of age; 15 minutes acceptable only for patients 26 and younger NOT seeing Dr. Shinder. ECW Documentation: For Medicare patients, set appointment reason strictly to 'Medicare PE' to trigger appropriate clinical/nursing protocols.",
     "rules": {
       "pre_bookable": true,
-      "duration_min": 30,
-      "short_duration_min": 15,
-      "short_duration_condition": "Age 26 or under and not seeing Dr. Shinder",
       "medicare_reason_code": "Medicare PE"
     }
   },
@@ -175,7 +168,6 @@
     "content": "Pre-Bookable: Yes. Duration: Follows standard PE duration rules (scheduled until 8:00 PM on certain weekdays). Providers: Offered by Adam Tilson, Naftali Minzer, and Myer Gurkov. Age Limit: Available strictly for patients 40 years old and younger only. No CDL exams are permitted during evening hours.",
     "rules": {
       "pre_bookable": true,
-      "duration_text": "Same as Annual PE",
       "max_age": 40,
       "cdl_permitted": false
     }
@@ -270,7 +262,6 @@
     "content": "Pre-Bookable: Only with Provider Approval. Duration: Per provider schedule rules. Requires explicit provider authorization before booking; do not schedule a Tele-Visit without confirmation.",
     "rules": {
       "pre_bookable": "With Approval",
-      "duration_text": "Per provider schedule",
       "requires_provider_approval": true
     }
   },
@@ -317,8 +308,6 @@
     "rules": {
       "flu_shot_hours": "Mon-Thu 1:00 PM - 4:00 PM",
       "flu_shot_provider": "Adam Tilson, PA",
-      "duration_text": "5–15 min",
-      "covid_pcr_duration_min": 15,
       "routine_5min_double_bookable": true
     }
   },
