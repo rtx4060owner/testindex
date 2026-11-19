@@ -12,7 +12,7 @@ export default {
 
     const url = new URL(request.url);
 
-    // 1. Endpoint to ingest/sync kb_data.json into D1 & Vectorize
+    // 1. Ingest/Sync Endpoint
     if (url.pathname === "/ingest" && request.method === "POST") {
       const authHeader = request.headers.get("Authorization");
       if (authHeader !== `Bearer ${env.INGEST_SECRET}`) {
@@ -24,7 +24,21 @@ export default {
       return Response.json({ status: "success", indexed: chunks.length }, { headers: corsHeaders });
     }
 
-    // 2. Hybrid Search Endpoint
+    // 2. Fetch all structured KB items for UI Navigation Tabs
+    if (url.pathname === "/kb" && request.method === "GET") {
+      const { results } = await env.DB.prepare("SELECT * FROM kb_chunks").all();
+      const formatted = results.map((r) => ({
+        id: r.id,
+        category: r.category,
+        entity: r.entity,
+        keywords: r.keywords,
+        content: r.content,
+        rules: JSON.parse(r.rules),
+      }));
+      return Response.json({ items: formatted }, { headers: corsHeaders });
+    }
+
+    // 3. Hybrid Search Endpoint (D1 FTS5 + Vectorize + RRF)
     if (url.pathname === "/search" && request.method === "POST") {
       const { query, topK = 5 } = await request.json();
       if (!query || !query.trim()) {
@@ -32,18 +46,19 @@ export default {
       }
 
       const results = await hybridSearch(query.trim(), topK, env);
-      return Response.json({ query, results }, { headers: corsHeaders });
+      return Response.json({ query: query.trim(), results }, { headers: corsHeaders });
     }
 
-    return new Response("Aizer Health KB Hybrid Search Engine Active", { headers: corsHeaders });
+    // 4. Serve Frontend UI from ./public
+    if (env.ASSETS) {
+      return env.ASSETS.fetch(request);
+    }
+
+    return new Response("Aizer Health KB Engine Active", { headers: corsHeaders });
   },
 };
 
-/**
- * Ingests chunks into D1 (SQLite + FTS5) and Cloudflare Vectorize
- */
 async function ingestData(chunks, env) {
-  // Clear existing records
   await env.DB.batch([
     env.DB.prepare("DELETE FROM kb_chunks"),
     env.DB.prepare("DELETE FROM kb_fts"),
@@ -55,7 +70,6 @@ async function ingestData(chunks, env) {
     const keywordsStr = item.keywords.join(", ");
     const rulesStr = JSON.stringify(item.rules);
 
-    // Insert into D1 relational & FTS5 tables
     await env.DB.batch([
       env.DB.prepare(
         "INSERT INTO kb_chunks (id, category, entity, keywords, content, rules) VALUES (?, ?, ?, ?, ?, ?)"
@@ -65,7 +79,6 @@ async function ingestData(chunks, env) {
       ).bind(item.id, item.category, item.entity, keywordsStr, item.content),
     ]);
 
-    // Generate embedding using Workers AI (384 dimensions)
     const textToEmbed = `${item.category} - ${item.entity}. Keywords: ${keywordsStr}. ${item.content}`;
     const embeddingResponse = await env.AI.run("@cf/baai/bge-small-en-v1.5", {
       text: [textToEmbed],
@@ -81,15 +94,10 @@ async function ingestData(chunks, env) {
     });
   }
 
-  // Upsert vectors into Cloudflare Vectorize
   await env.VECTORIZE.upsert(vectors);
 }
 
-/**
- * Executes Vector Search + D1 BM25 Keyword Search in parallel and merges via RRF
- */
 async function hybridSearch(query, topK, env) {
-  // Sanitize query for FTS5 MATCH syntax
   const ftsQuery = query
     .replace(/[^\w\s]/g, " ")
     .trim()
@@ -98,13 +106,11 @@ async function hybridSearch(query, topK, env) {
     .map((w) => `"${w}"*`)
     .join(" OR ");
 
-  // Run Vector Search and Keyword Search concurrently
   const [vectorResults, keywordResults] = await Promise.all([
     runVectorSearch(query, topK * 2, env),
     ftsQuery ? runKeywordSearch(ftsQuery, topK * 2, env) : Promise.resolve([]),
   ]);
 
-  // Reciprocal Rank Fusion (RRF)
   const k = 60;
   const scores = new Map();
 
@@ -115,11 +121,9 @@ async function hybridSearch(query, topK, env) {
 
   keywordResults.forEach((item, index) => {
     const rrfScore = 1 / (k + index + 1);
-    // Boost keyword exact matches slightly (1.2x) for medical/insurance codes
     scores.set(item.id, (scores.get(item.id) || 0) + rrfScore * 1.2);
   });
 
-  // Sort IDs by combined RRF score descending
   const rankedIds = Array.from(scores.entries())
     .sort((a, b) => b[1] - a[1])
     .slice(0, topK)
@@ -127,7 +131,6 @@ async function hybridSearch(query, topK, env) {
 
   if (rankedIds.length === 0) return [];
 
-  // Fetch full chunk data from D1
   const placeholders = rankedIds.map(() => "?").join(",");
   const { results: rows } = await env.DB.prepare(
     `SELECT * FROM kb_chunks WHERE id IN (${placeholders})`
