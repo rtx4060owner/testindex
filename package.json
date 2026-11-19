@@ -1,0 +1,13 @@
+{
+  "name": "aizer-health-kb",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "ingest": "node scripts/ingest.js"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

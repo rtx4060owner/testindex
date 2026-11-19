@@ -1,0 +1,15 @@
+name = "aizer-health-kb"
+main = "src/worker.js"
+compatibility_date = "2026-01-01"
+
+[ai]
+binding = "AI"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "aizer-kb-index"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "aizer-kb-db"
+database_id = "707d2fbf-b2cc-47fb-82cf-c2c8d60dfd15"

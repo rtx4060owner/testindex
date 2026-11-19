@@ -1,0 +1,351 @@
+[
+  {
+    "id": "dir_contact_locations",
+    "category": "Directory & Locations",
+    "entity": "Aizer Health Adult & Internal Medicine",
+    "keywords": ["phone", "fax", "medical records", "proof of address", "Arwa", "Amy", "Adel", "Ext 2100", "Forest Rd", "Bakertown"],
+    "content": "Aizer Health Adult & Internal Medicine Department Contact Directory & Locations: Department Phone: 845-782-3242. Department Fax: 855-592-1423. Medical Records & Proof of Address Letters: medicalrecords@aizerhealth.org (Contact: Arwa 'Amy' Adel at Ext. 2100). Locations: 1) Forest Rd (49 Forest Rd, 2nd Floor): Dr. Neil Shinder (Tue-Fri) and all Specialty Providers (Cardiology, Dermatology, Pain Management, Sleep, Nutrition). 2) Bakertown (48 Bakertown Rd, 3rd Floor): Adam Tilson PA, Naftali Minzer PA, Myer Gurkov PA, and Dr. Neil Shinder (Sundays only).",
+    "rules": {
+      "phone": "845-782-3242",
+      "fax": "855-592-1423",
+      "medical_records_email": "medicalrecords@aizerhealth.org",
+      "medical_records_contact": "Arwa 'Amy' Adel (Ext. 2100)"
+    }
+  },
+  {
+    "id": "core_scheduling_duration",
+    "category": "Core Scheduling Rules",
+    "entity": "Standard Visit Duration",
+    "keywords": ["duration", "15 minutes", "30 minutes", "65+", "chronic", "billing alert", "problem list"],
+    "content": "CORE SCHEDULING RULE: Standard adult medicine visit duration is 15 minutes. However, for patients aged 65+, chronic patients flagged on billing alert, or patients with a long problem list, the standard visit duration is a mandatory 30 minutes.",
+    "rules": {
+      "default_duration_min": 15,
+      "extended_duration_min": 30,
+      "extended_triggers": ["age >= 65", "chronic flagged on billing alert", "long problem list"]
+    }
+  },
+  {
+    "id": "pcp_adam_tilson",
+    "category": "Primary Care Provider",
+    "entity": "Adam Tilson, PA",
+    "keywords": ["Adam Tilson", "PA", "Bakertown", "age restriction", "60", "65", "new patient", "flu shots"],
+    "content": "Primary Care Provider: Adam Tilson, PA (Physician Assistant). Location & Schedule: Bakertown (48 Bakertown Rd, 3rd Floor), Monday - Thursday (Fridays: Admin only). Strict Scheduling Rules & Limitations: Most popular provider; booked several months in advance. AGE RESTRICTION: Does NOT see new patients over 60-65 years old (due to panel capacity and follow-up constraints); this applies even if the patient is established with the clinic but new to him. Default provider on nurse schedule for Flu Shots (Mon-Thu 1:00 PM - 4:00 PM).",
+    "rules": {
+      "location": "Bakertown (3rd Floor)",
+      "days": ["Mon", "Tue", "Wed", "Thu"],
+      "new_patient_max_age": 60,
+      "sees_new_patients_over_65": false,
+      "flu_shot_default": true
+    }
+  },
+  {
+    "id": "pcp_naftali_minzer",
+    "category": "Primary Care Provider",
+    "entity": "Naftali Minzer, PA",
+    "keywords": ["Naftali Minzer", "PA", "Bakertown", "CDL", "Commercial Driver's License", "Lap Band", "bariatric"],
+    "content": "Primary Care Provider: Naftali Minzer, PA (Physician Assistant). Location & Schedule: Bakertown (48 Bakertown Rd, 3rd Floor), Monday - Thursday, and Alternating Sundays & Fridays. Strict Scheduling Rules & Limitations: Commercial Driver's License (CDL) Exams: Limited to two per day (1 morning, 1 afternoon), always 30 minutes. Lap Band Adjustments: Authorized for bariatric patients (maximum 2 per day).",
+    "rules": {
+      "location": "Bakertown (3rd Floor)",
+      "days": ["Mon", "Tue", "Wed", "Thu", "Alt Sun", "Alt Fri"],
+      "cdl_exam_allowed": true,
+      "cdl_max_per_day": 2,
+      "lap_band_allowed": true,
+      "lap_band_max_per_day": 2
+    }
+  },
+  {
+    "id": "pcp_myer_gurkov",
+    "category": "Primary Care Provider",
+    "entity": "Myer Gurkov, PA",
+    "keywords": ["Myer Gurkov", "PA", "Bakertown", "chronic", "Hamaspik", "RAYIM", "Saturday night", "urgent care", "no CDL", "no lap band"],
+    "content": "Primary Care Provider: Myer Gurkov, PA (Physician Assistant). Location & Schedule: Bakertown (48 Bakertown Rd, 3rd Floor), Monday - Thursday, and Alternating Sundays & Fridays. Strict Scheduling Rules & Limitations: Handles high volume of chronic patients (including Hamaspik and RAYIM). Saturday night shifts are for urgent care only (NOT pre-booked). NO CDL / NO LAP BAND: Does NOT perform CDL exams or lap band adjustments.",
+    "rules": {
+      "location": "Bakertown (3rd Floor)",
+      "days": ["Mon", "Tue", "Wed", "Thu", "Alt Sun", "Alt Fri"],
+      "cdl_exam_allowed": false,
+      "lap_band_allowed": false,
+      "saturday_night_prebookable": false
+    }
+  },
+  {
+    "id": "pcp_neil_shinder",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Neil Shinder, MD",
+    "keywords": ["Neil Shinder", "MD", "Internal Medicine", "Forest Rd", "Bakertown", "Sunday", "Tuesday", "Sleep Medicine", "30 minutes"],
+    "content": "Primary Care Provider: Dr. Neil Shinder, MD (Sole Primary Medical Doctor). Location & Schedule: Forest Rd (2nd Floor) Tuesday - Friday; Bakertown (3rd Floor) Sunday only. Strict Scheduling Rules & Limitations: PCP for all Internal Medicine patients. All Annual Physical (PE) & New Patient appointments must be 30 minutes regardless of patient age. Tuesdays are dedicated exclusively to his Sleep Medicine specialty practice (requires referral).",
+    "rules": {
+      "locations": {
+        "Forest Rd (2nd Floor)": ["Tue", "Wed", "Thu", "Fri"],
+        "Bakertown (3rd Floor)": ["Sun"]
+      },
+      "pe_and_np_duration_min": 30,
+      "tuesday_specialty_only": "Sleep Medicine"
+    }
+  },
+  {
+    "id": "spec_francis_murphy",
+    "category": "Specialist Provider",
+    "entity": "Dr. Francis Murphy (Dermatology)",
+    "keywords": ["Francis Murphy", "Dermatology", "Forest Rd", "Thursday", "Monday", "UHC", "United Healthcare", "1:40 PM", "2:30 PM", "grace period", "TE"],
+    "content": "Specialist Provider: Dr. Francis Murphy (Dermatology). Schedule & Location: Forest Rd (2nd Floor), Every Thursday & Alternate Mondays. Duration: Office Visit 10 min; Procedures 30-40 min. Insurance & Scheduling Mandates: UHC Referral Mandate: Online referral required for United Healthcare patients before scheduling. Procedure Days Booking: Only book 1:40 PM and 2:30 PM slots; first post-lunch slot is 1:40 PM (not 1:30 PM). Strict 10-minute grace period for late arrivals. Route TEs directly to Dr. Murphy.",
+    "rules": {
+      "specialty": "Dermatology",
+      "location": "Forest Rd (2nd Floor)",
+      "days": ["Thu", "Alt Mon"],
+      "office_visit_min": 10,
+      "procedure_min": "30-40",
+      "procedure_slots": ["1:40 PM", "2:30 PM"],
+      "first_post_lunch_slot": "1:40 PM",
+      "late_grace_period_min": 10,
+      "te_routing": "Direct to Dr. Murphy"
+    }
+  },
+  {
+    "id": "spec_david_coven",
+    "category": "Specialist Provider",
+    "entity": "Dr. David Coven (Cardiology)",
+    "keywords": ["David Coven", "Cardiology", "Forest Rd", "Wednesday", "Sunday", "MVP", "self-pay", "$100", "no referral"],
+    "content": "Specialist Provider: Dr. David Coven (Cardiology). Schedule & Location: Forest Rd (2nd Floor), Every Wednesday & Occasional Sundays. Duration: Age <65 is 15 min; Age 65+ is 30 min. Insurance & Scheduling Mandates: NO MVP INSURANCE: Does not accept MVP; patient must be informed of $100 self-pay fee at booking. No referral required for internal cardiology booking.",
+    "rules": {
+      "specialty": "Cardiology",
+      "location": "Forest Rd (2nd Floor)",
+      "days": ["Wed", "Occasional Sun"],
+      "duration_under_65_min": 15,
+      "duration_65_plus_min": 30,
+      "accepts_mvp": false,
+      "mvp_self_pay_fee": "$100",
+      "internal_referral_required": false
+    }
+  },
+  {
+    "id": "spec_samuel_rosenberg",
+    "category": "Specialist Provider",
+    "entity": "Dr. Samuel Rosenberg (Pain Management)",
+    "keywords": ["Samuel Rosenberg", "Pain Management", "Forest Rd", "Tuesday", "referral mandatory", "imaging", "TE"],
+    "content": "Specialist Provider: Dr. Samuel Rosenberg (Pain Management). Schedule & Location: Forest Rd (2nd Floor), Every Tuesday. Duration: Evaluation 30 min; Follow-up 15-30 min. Insurance & Scheduling Mandates: Referral Mandatory for all patients. Outside referrals: Office notes, referral, and relevant imaging must be in chart prior to booking. Route TEs directly to Dr. Rosenberg.",
+    "rules": {
+      "specialty": "Pain Management",
+      "location": "Forest Rd (2nd Floor)",
+      "days": ["Tue"],
+      "eval_min": 30,
+      "followup_min": "15-30",
+      "referral_mandatory": true,
+      "te_routing": "Direct to Dr. Rosenberg"
+    }
+  },
+  {
+    "id": "spec_sleep_shinder",
+    "category": "Specialist Provider",
+    "entity": "Dr. Neil Shinder (Sleep Medicine)",
+    "keywords": ["Neil Shinder", "Sleep Medicine", "Forest Rd", "Tuesday", "referral mandatory", "CPAP"],
+    "content": "Specialist Provider: Dr. Neil Shinder (Sleep Medicine). Schedule & Location: Forest Rd (2nd Floor), Every Tuesday. Duration: Evaluation 30 min; Follow-up 15 min. Insurance & Scheduling Mandates: Referral Mandatory for all initial evaluations. MANDATORY PATIENT REMINDER: All follow-up patients must be instructed to bring their CPAP machine to the visit.",
+    "rules": {
+      "specialty": "Sleep Medicine",
+      "location": "Forest Rd (2nd Floor)",
+      "days": ["Tue"],
+      "eval_min": 30,
+      "followup_min": 15,
+      "referral_mandatory_initial": true,
+      "followup_reminder": "Bring CPAP machine"
+    }
+  },
+  {
+    "id": "spec_esther_taub",
+    "category": "Specialist Provider",
+    "entity": "Esther Taub (Nutritionist)",
+    "keywords": ["Esther Taub", "Nutritionist", "Forest Rd", "chaperone", "female companion", "male", "Teams", "tele-visit"],
+    "content": "Specialist Provider: Esther Taub (Nutritionist). Schedule & Location: Forest Rd (2nd Floor), By Appointment. Duration: Initial Consult 30-60 min; Follow-up 30 min. Insurance & Scheduling Mandates: Referral Mandatory for all patients. Chaperone Policy: A female companion must accompany all male patients or male minors under 18. Contact Esther directly via Teams for scheduling/tele-visits (TEs rarely sent).",
+    "rules": {
+      "specialty": "Nutritionist",
+      "location": "Forest Rd (2nd Floor)",
+      "initial_min": "30-60",
+      "followup_min": 30,
+      "referral_mandatory": true,
+      "chaperone_required_for_males": true,
+      "booking_method": "Contact directly via Teams"
+    }
+  },
+  {
+    "id": "visit_annual_pe",
+    "category": "Visit Types",
+    "entity": "Annual Physical (PE)",
+    "keywords": ["Annual Physical", "PE", "Medicare PE", "27", "26", "Shinder"],
+    "content": "Visit Type: Annual Physical (PE). Pre-Bookable: Yes. Duration: 30 min (Age >27 or Dr. Shinder); 15 min (Age <=26 non-Shinder). Operational Rules & ECW Documentation: For Medicare patients, set appointment reason strictly to 'Medicare PE' to trigger appropriate clinical/nursing protocols.",
+    "rules": {
+      "pre_bookable": true,
+      "duration_rules": "30 min if Age >27 or Dr. Shinder; 15 min if Age <=26 non-Shinder",
+      "ecw_medicare_reason": "Medicare PE"
+    }
+  },
+  {
+    "id": "visit_evening_pe",
+    "category": "Visit Types",
+    "entity": "Evening Physicals",
+    "keywords": ["Evening Physical", "8:00 PM", "40", "Adam Tilson", "Naftali Minzer", "Myer Gurkov", "no CDL"],
+    "content": "Visit Type: Evening Physicals. Pre-Bookable: Yes. Duration: Follows PE rules (until 8:00 PM). Operational Rules & ECW Documentation: Offered by Adam Tilson, Naftali Minzer, and Myer Gurkov. Available strictly for patients 40 years old and younger. No CDL exams permitted.",
+    "rules": {
+      "pre_bookable": true,
+      "max_age": 40,
+      "providers": ["Adam Tilson", "Naftali Minzer", "Myer Gurkov"],
+      "cdl_permitted": false
+    }
+  },
+  {
+    "id": "visit_new_patient",
+    "category": "Visit Types",
+    "entity": "New Patient (NP)",
+    "keywords": ["New Patient", "NP", "30 minutes", "3 years", "Adam Tilson", "60-65"],
+    "content": "Visit Type: New Patient (NP). Pre-Bookable: Yes. Duration: 30 minutes. Operational Rules & ECW Documentation: Defined as not seen in Adult Medicine within the past 3 years. Adam Tilson does NOT see new patients over 60-65.",
+    "rules": {
+      "pre_bookable": true,
+      "duration_min": 30,
+      "definition": "Not seen in Adult Medicine within past 3 years"
+    }
+  },
+  {
+    "id": "visit_same_day_sick",
+    "category": "Visit Types",
+    "entity": "Same-Day Sick Visit",
+    "keywords": ["Same-Day Sick", "acute", "18-65", "not pre-bookable", "15 minutes"],
+    "content": "Visit Type: Same-Day Sick Visit. Pre-Bookable: NO (Same-Day Only). Duration: 15 minutes. Operational Rules & ECW Documentation: For acute symptoms. Age range: 18-65. Cannot be pre-booked in advance.",
+    "rules": {
+      "pre_bookable": false,
+      "duration_min": 15,
+      "age_range": "18-65"
+    }
+  },
+  {
+    "id": "visit_routine_ov",
+    "category": "Visit Types",
+    "entity": "Routine Office Visit (OV)",
+    "keywords": ["Routine Office Visit", "OV", "15 minutes", "30 min", "65+", "chronic", "referral request"],
+    "content": "Visit Type: Routine Office Visit (OV). Pre-Bookable: Yes. Duration: 15 minutes (30 min for 65+ / chronic). Operational Rules & ECW Documentation: For non-acute follow-ups, minor complaints, or in-person referral requests.",
+    "rules": {
+      "pre_bookable": true,
+      "duration_min": 15,
+      "extended_duration_min": 30
+    }
+  },
+  {
+    "id": "visit_er_followup",
+    "category": "Visit Types",
+    "entity": "ER Follow-Up (ER F/U)",
+    "keywords": ["ER Follow-Up", "ER F/U", "hospital records", "PSS Queue", "30 minutes"],
+    "content": "Visit Type: ER Follow-Up (ER F/U). Pre-Bookable: Yes. Duration: 30 minutes. Operational Rules & ECW Documentation: Hospital records mandatory prior to booking. Send TE to PSS Queue with hospital details to obtain records before scheduling.",
+    "rules": {
+      "pre_bookable": true,
+      "duration_min": 30,
+      "prerequisite": "Hospital records mandatory prior to booking via PSS Queue TE"
+    }
+  },
+  {
+    "id": "visit_pre_op",
+    "category": "Visit Types",
+    "entity": "Pre-Operative Clearance",
+    "keywords": ["Pre-Operative Clearance", "pre-op", "30 days", "labs", "5-7 days", "Physical UTD"],
+    "content": "Visit Type: Pre-Operative Clearance. Pre-Bookable: Yes. Duration: 30 minutes. Operational Rules & ECW Documentation: Advise booking 30 days prior to surgery. Advise labs take 5-7 days. Verify PE is up to date and document 'Physical UTD' in appointment reason.",
+    "rules": {
+      "pre_bookable": true,
+      "duration_min": 30,
+      "lead_time_days": 30,
+      "lab_turnaround_days": "5-7",
+      "ecw_reason_note": "Physical UTD"
+    }
+  },
+  {
+    "id": "visit_cdl_exam",
+    "category": "Visit Types",
+    "entity": "CDL Exam",
+    "keywords": ["CDL Exam", "Naftali Minzer", "max 2/day", "Physical UTD", "Dr. Derman", "$100"],
+    "content": "Visit Type: CDL Exam. Pre-Bookable: Yes. Duration: 30 minutes. Operational Rules & ECW Documentation: Naftali Minzer only (max 2/day). If PE is UTD (<1 yr): book 30-min OV. If PE overdue: book PE and note 'CDL' in reason. Dr. Derman patients pay $100 self-pay fee.",
+    "rules": {
+      "pre_bookable": true,
+      "duration_min": 30,
+      "provider": "Naftali Minzer only",
+      "derman_patient_fee": "$100"
+    }
+  },
+  {
+    "id": "visit_suture_televisit",
+    "category": "Visit Types",
+    "entity": "Suture Removal & Tele-Visit",
+    "keywords": ["Suture Removal", "15 minutes", "Tele-Visit", "authorization", "approval"],
+    "content": "Visit Types: 1) Suture Removal: Pre-Bookable: Yes. Duration: 15 minutes. Adult/Internal Medicine routinely performs suture removal; advise callers not to delay removal and book promptly. 2) Tele-Visit: Pre-Bookable: With Approval. Duration: Per Provider. Requires provider authorization before booking; do not schedule without confirmation.",
+    "rules": {
+      "suture_removal_min": 15,
+      "televisit_requires_approval": true
+    }
+  },
+  {
+    "id": "nurse_labs",
+    "category": "Nurse & Lab Services",
+    "entity": "Blood Work / Labs",
+    "keywords": ["Blood Work", "Labs", "20 minutes", "Forest Rd", "Bakertown", "Behavioral Health", "order"],
+    "content": "Service: Blood Work / Labs. Slot Duration: 20 minutes. Prerequisites: Active orders from internal provider on chart. Key Workflow & Booking Guidelines: Location Mandate: Book at Forest Rd (Bakertown lab is not fully staffed). Must have existing lab order (includes Behavioral Health); if no order exists, book PCP Office Visit first. Set ordering provider as appointment provider so results route back properly.",
+    "rules": {
+      "duration_min": 20,
+      "location": "Forest Rd only",
+      "active_order_required": true
+    }
+  },
+  {
+    "id": "nurse_injections_ppd_covid",
+    "category": "Nurse & Lab Services",
+    "entity": "Injections, PPD & COVID-19 Testing",
+    "keywords": ["Ozempic", "Mounjaro", "PPD", "48 and 72 hours", "COVID-19", "PCR", "Rapid", "Flu", "B12", "Shingrix", "Adam Tilson"],
+    "content": "Nurse Services: 1) Diabetic Injections (Ozempic, Mounjaro): Nurse Visit; requires medication ordered by clinic provider; patient must bring their own medication to the clinic. 2) PPD Plant & Read (TB Screening): 15 min Nurse schedule; PE must be up to date; Follow-up 'Read' appointment must be booked strictly between 48 and 72 hours after initial 'Plant'. 3) COVID-19 Testing: Asymptomatic (Travel/Pre-op) -> 15-min Nurse visit for PCR (results in 48-72 hrs); Symptomatic -> Must be evaluated by a provider, book standard Office Visit (NOT nurse visit). 4) Flu & Routine Injections (B12, Shingrix): 5-15 min Nurse schedule; order on file required; Flu shots Mon-Thu 1:00 PM-4:00 PM with Adam Tilson, PA listed as appointment provider; routine 5-min injection slots can be double-booked.",
+    "rules": {
+      "ppd_read_window_hours": "48-72",
+      "covid_symptomatic_visit_type": "Standard Office Visit (NOT Nurse)",
+      "flu_shot_window": "Mon-Thu 1:00 PM - 4:00 PM",
+      "flu_shot_provider": "Adam Tilson, PA"
+    }
+  },
+  {
+    "id": "workflow_referrals",
+    "category": "Referrals & Prior Authorizations",
+    "entity": "Online Insurance Referrals Workflow",
+    "keywords": ["Anisa Azeez", "UHC", "United Healthcare", "eCW Outgoing Referrals", "PSS Queue", "Jubilee Aviles", "Viviana Molano"],
+    "content": "Referrals, Insurance & Prior Authorizations Workflow: Referral Specialist: Anisa Azeez handles general Adult Medicine referral routing. Online Insurance Referrals (e.g., United Healthcare - UHC): 1) Identify Specialty. 2) Check eCW Outgoing Referrals to verify if Adult Medicine provider previously placed referral in chart. 3) If Referral Exists in Chart: Create TE to Adult Med PSS Queue with Specialist Full Name, Appointment Address, Appointment Date. 4) If NO Referral Exists in Chart: If PE Up to Date & Seen Recently -> Check if nurse approves referral, send TE to nurse with details and add note: 'If added in eCW, please forward TE to Jubilee for online submission.' If PE Up to Date BUT Not Seen in a Few Months -> Advise patient an Office Visit (OV) is required. If PE Overdue -> Patient must schedule an Annual Physical (PE) before referral can be generated. 5) Urgent Requests: Contact Jubilee Aviles (Primary) or Viviana Molano (Secondary).",
+    "rules": {
+      "referral_specialist": "Anisa Azeez",
+      "urgent_primary": "Jubilee Aviles",
+      "urgent_secondary": "Viviana Molano"
+    }
+  },
+  {
+    "id": "workflow_te_routing",
+    "category": "Telephone Encounter (TE) Routing",
+    "entity": "TE Queue Routing Directory",
+    "keywords": ["TE", "AMED_Nursing Queue", "AMED_PSS Queue", "Prior Authorization", "2020 Forms", "RX refill - all out", "Black Lock", "Viviana"],
+    "content": "CRITICAL ROUTING RULE: Medication Prior Authorizations and 2020 Transportation Forms must be sent to the PSS Queue, NOT the Nursing Queue. 1) AMED_Nursing Queue: Medication refill requests (PE must be UTD; High Priority if completely out -> Subject line: 'RX refill - all out'; Standard Priority if 2-3 days left; include exact drug name, dosage, prescribing doctor, pharmacy info), Clinical questions & triage, Requests to speak with a provider, Referral requests (internal clinical review), Lab results inquiries (Black Lock). 2) AMED_PSS Queue: Medication Prior Authorizations (handled by PSS team / Viviana), Medicaid Transportation (2020 Forms), Requests to mail/email labs, records, or forms, Online insurance referrals (UHC submission), ER records requests before booking ER follow-ups. 3) Direct Provider TEs: Send directly to provider ID in eCW for Dr. Francis Murphy (Dermatology clinical questions) and Dr. Samuel Rosenberg (Pain Management clinical questions).",
+    "rules": {
+      "med_prior_auth_queue": "AMED_PSS Queue",
+      "medicaid_2020_queue": "AMED_PSS Queue",
+      "refill_out_subject": "RX refill - all out",
+      "direct_te_providers": ["Dr. Francis Murphy", "Dr. Samuel Rosenberg"]
+    }
+  },
+  {
+    "id": "policy_derman_refills",
+    "category": "Special Operational Policies",
+    "entity": "Former Patients of Dr. Derman Medication Refills",
+    "keywords": ["Dr. Derman", "bridge refill", "controlled substances", "Emely Espinosa"],
+    "content": "Medication Refills for Former Patients of Dr. Derman: 1) Establish Care Required: Former patients must schedule an appointment with a new Aizer PCP. 2) Bridge Refills (Non-Controlled): If scheduled with an Aizer provider, request a bridge refill to cover medication until the appointment date. 3) Controlled Substances: Strictly require an in-person visit; no bridge refills permitted. 4) TE Workflow: Once visit is booked, route TE to Emely Espinosa, who queues the exact days required and routes to provider for sign-off.",
+    "rules": {
+      "controlled_bridge_refill_allowed": false,
+      "te_recipient": "Emely Espinosa"
+    }
+  },
+  {
+    "id": "policy_medicaid_2020_hipaa",
+    "category": "Special Operational Policies",
+    "entity": "Medicaid Transportation (2020 Forms) & HIPAA Consents",
+    "keywords": ["Medicaid Transportation", "2020 Form", "Viviana Molano", "HIPAA", "NPP", "AM MRC", "AF COMP"],
+    "content": "1) Medicaid Transportation (2020 Forms): Managed by Viviana Molano via the PSS Queue. Prerequisites: Verify patient has an active Annual PE and an existing referral on file for the destination specialist. Collect specialist full name, specialty, address, and appointment date before submitting. 2) HIPAA & Consent Verification Protocol: NPP (New Patient Packet): Signed once upon clinic entry. HIPAA Privacy Consent: Signed annually. AM MRC (Adult Medicine Medical Release Consent): Signed annually to authorize record retrieval. ECW Documentation: In Appointment General Notes, list any missing forms due; if all forms are current, type: 'AF COMP [Your Initials]'.",
+    "rules": {
+      "2020_form_manager": "Viviana Molano",
+      "ecw_all_forms_current_code": "AF COMP [Your Initials]"
+    }
+  }
+]
