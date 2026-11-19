@@ -1,581 +1,691 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aizer Health — Adult & Internal Medicine</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
-    .brand-bg { background-color: #0f766e; }
-    .brand-bg-hover:hover { background-color: #115e59; }
-    .brand-text { color: #0f766e; }
-    .brand-soft { background-color: #f0fdfa; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aizer Health — Adult & Internal Medicine</title>
+<style>
+  :root {
+    --bg: #f6f5f2;
+    --surface: #ffffff;
+    --surface-2: #f1f0ec;
+    --line: #e4e2dc;
+    --line-strong: #d3d0c8;
+    --text: #1c1b19;
+    --text-2: #57544e;
+    --text-3: #8a867e;
+    --accent: #0f766e;
+    --accent-ink: #ffffff;
+    --accent-soft: #e3f1ef;
+    --yes: #166534; --yes-bg: #e9f5ec; --yes-line: #b9dcc3;
+    --no: #9f1d1d;  --no-bg: #fbecea;  --no-line: #ebc2bd;
+    --cond: #8a4b07; --cond-bg: #fbf2e2; --cond-line: #ecd2a4;
+    --radius: 8px;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #151514; --surface: #1d1d1b; --surface-2: #262624;
+      --line: #2f2f2c; --line-strong: #3d3d39;
+      --text: #ecebe7; --text-2: #b3b0a9; --text-3: #85827b;
+      --accent: #3fb3a6; --accent-ink: #0b1f1d; --accent-soft: #17302d;
+      --yes: #86d39c; --yes-bg: #16281c; --yes-line: #2b4a34;
+      --no: #f0a39a;  --no-bg: #2e1a18;  --no-line: #55302b;
+      --cond: #eec27a; --cond-bg: #2c2414; --cond-line: #524221;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #151514; --surface: #1d1d1b; --surface-2: #262624;
+    --line: #2f2f2c; --line-strong: #3d3d39;
+    --text: #ecebe7; --text-2: #b3b0a9; --text-3: #85827b;
+    --accent: #3fb3a6; --accent-ink: #0b1f1d; --accent-soft: #17302d;
+    --yes: #86d39c; --yes-bg: #16281c; --yes-line: #2b4a34;
+    --no: #f0a39a;  --no-bg: #2e1a18;  --no-line: #55302b;
+    --cond: #eec27a; --cond-bg: #2c2414; --cond-line: #524221;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .hidden { display: none !important; }
+
+  /* ---------- Header ---------- */
+  .top {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--surface); border-bottom: 1px solid var(--line);
+  }
+  .top-inner {
+    max-width: 1120px; margin: 0 auto; padding: 10px 24px;
+    display: flex; align-items: center; gap: 20px;
+  }
+  .brand { display: flex; flex-direction: column; line-height: 1.2; white-space: nowrap; }
+  .brand b { font-size: 14px; }
+  .brand span { font-size: 12px; color: var(--text-3); }
+  .search { flex: 1; position: relative; display: flex; }
+  .search input {
+    width: 100%; height: 36px; padding: 0 64px 0 12px;
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius);
+  }
+  .search input:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+  .search kbd {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    font: 11px var(--mono); color: var(--text-3);
+    border: 1px solid var(--line-strong); border-radius: 4px; padding: 1px 5px;
+  }
+  .contact { display: flex; gap: 16px; font-size: 12px; color: var(--text-3); white-space: nowrap; }
+  .contact b { font: 500 13px var(--mono); color: var(--text); margin-left: 4px; }
+
+  .tabs {
+    max-width: 1120px; margin: 0 auto; padding: 0 24px;
+    display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+  }
+  .tab {
+    background: none; border: 0; padding: 10px 10px 9px; white-space: nowrap;
+    color: var(--text-2); border-bottom: 2px solid transparent; font-weight: 500;
+  }
+  .tab:hover { color: var(--text); }
+  .tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+
+  /* ---------- Layout ---------- */
+  main { max-width: 1120px; margin: 0 auto; padding: 28px 24px 64px; }
+  .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+  h1 { font-size: 20px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  h2 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin: 32px 0 10px; }
+  h2:first-child { margin-top: 0; }
+  .muted { color: var(--text-3); }
+  .status { color: var(--text-3); padding: 24px 0; }
+
+  .seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+  .seg button {
+    border: 1px solid var(--line); background: var(--surface); color: var(--text-2);
+    padding: 5px 11px; border-radius: 999px; font-size: 13px;
+  }
+  .seg button:hover { border-color: var(--line-strong); color: var(--text); }
+  .seg button[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
+  .seg .n { opacity: .6; margin-left: 4px; }
+
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+
+  /* ---------- Expandable table rows ---------- */
+  .table .thead, .table summary {
+    display: grid; gap: 16px; align-items: start; padding: 11px 16px;
+  }
+  .table .thead {
+    font-size: 12px; color: var(--text-3); font-weight: 500;
+    border-bottom: 1px solid var(--line); padding-top: 9px; padding-bottom: 9px;
+  }
+  .table details + details { border-top: 1px solid var(--line); }
+  .table summary { list-style: none; cursor: pointer; }
+  .table summary::-webkit-details-marker { display: none; }
+  .table summary:hover { background: var(--surface-2); }
+  .table details[open] summary { background: var(--surface-2); }
+  .table .name { font-weight: 600; display: flex; gap: 8px; align-items: baseline; }
+  .table .name::before {
+    content: "›"; color: var(--text-3); font-weight: 400; display: inline-block;
+    transition: transform .12s; width: 8px;
+  }
+  .table details[open] .name::before { transform: rotate(90deg); }
+  .table .sub { display: block; font-weight: 400; color: var(--text-3); font-size: 12px; }
+  .table .detail { padding: 4px 16px 16px 32px; background: var(--surface-2); color: var(--text-2); }
+  .cols-prov { grid-template-columns: minmax(170px, 1.1fr) minmax(170px, 1.2fr) 2fr; }
+  .cols-visit { grid-template-columns: minmax(180px, 1.3fr) 110px 120px 2fr; }
+  .cell-label { display: none; }
+
+  .facts { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px; color: var(--text-2); }
+  .facts li::before { content: "–"; color: var(--text-3); margin-right: 6px; }
+  .num { font-family: var(--mono); font-size: 13px; }
+
+  /* ---------- Prose / articles ---------- */
+  .prose { margin: 0; max-width: 72ch; }
+  .prose strong { color: var(--text); font-weight: 600; }
+  .article { padding: 16px 18px; }
+  .article + .article { border-top: 1px solid var(--line); }
+  .article h3 { font-size: 15px; font-weight: 600; margin: 0 0 6px; }
+  .article .meta { font-size: 12px; color: var(--text-3); margin-bottom: 6px; }
+  .article .prose { color: var(--text-2); }
+
+  .copies { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .copy {
+    display: inline-flex; align-items: center; gap: 8px; font-size: 12px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    padding: 3px 4px 3px 8px; color: var(--text-3);
+  }
+  .copy code { font: 500 12px var(--mono); color: var(--text); }
+  .copy button {
+    border: 0; background: var(--surface-2); color: var(--text-2);
+    border-radius: 4px; padding: 1px 7px; font-size: 11px;
+  }
+  .copy button:hover { color: var(--text); }
+
+  .locs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 8px; }
+  .loc { padding: 12px 16px; }
+  .loc b { display: block; }
+  .loc span { color: var(--text-3); font-size: 13px; }
+
+  /* ---------- Decision assistant ---------- */
+  .ask { padding: 16px; }
+  .ask-row { display: flex; gap: 8px; }
+  .ask-row input {
+    flex: 1; min-width: 0; height: 40px; padding: 0 12px;
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius);
+  }
+  .ask-row input:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+  .btn {
+    height: 40px; padding: 0 18px; border: 0; border-radius: var(--radius);
+    background: var(--accent); color: var(--accent-ink); font-weight: 600; white-space: nowrap;
+  }
+  .btn:hover { filter: brightness(1.08); }
+  .examples { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 12px; font-size: 12px; }
+  .examples button {
+    border: 1px solid var(--line); background: none; color: var(--text-2);
+    border-radius: 999px; padding: 3px 10px;
+  }
+  .examples button:hover { color: var(--text); border-color: var(--line-strong); }
+
+  .answer { margin-top: 16px; padding: 16px 18px; border-left: 4px solid var(--line-strong); }
+  .answer .head { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; color: var(--text-3); margin-bottom: 6px; }
+  .answer .conf { font-family: var(--mono); }
+  .answer .verdict { font-size: 18px; font-weight: 650; margin: 0; }
+  .answer p { margin: 6px 0 0; color: var(--text-2); max-width: 72ch; }
+  .answer.yes  { border-left-color: var(--yes);  background: var(--yes-bg); }
+  .answer.no   { border-left-color: var(--no);   background: var(--no-bg); }
+  .answer.cond { border-left-color: var(--cond); background: var(--cond-bg); }
+  .answer.yes .verdict { color: var(--yes); }
+  .answer.no .verdict { color: var(--no); }
+  .answer.cond .verdict { color: var(--cond); }
+  .fact { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .fact .verdict { font-family: var(--mono); font-size: 20px; }
+  .source-label { margin: 20px 0 8px; font-size: 12px; color: var(--text-3); }
+  .notice { margin-top: 16px; padding: 12px 16px; border-left: 4px solid var(--cond); background: var(--cond-bg); color: var(--text); }
+
+  .back { background: none; border: 0; color: var(--text-2); padding: 0; font-size: 13px; }
+  .back:hover { color: var(--text); }
+
+  /* ---------- Small screens ---------- */
+  @media (max-width: 860px) {
+    .contact { display: none; }
+  }
+  @media (max-width: 720px) {
+    .top-inner { flex-wrap: wrap; padding: 10px 16px; gap: 10px; }
+    .search { flex-basis: 100%; }
+    .search kbd { display: none; }
+    .search input { padding-right: 12px; }
+    .tabs { padding: 0 12px; }
+    main { padding: 20px 16px 48px; }
+    .table .thead { display: none; }
+    .table summary { grid-template-columns: 1fr; gap: 6px; }
+    .cell-label { display: inline; color: var(--text-3); margin-right: 6px; }
+    .table .detail { padding-left: 16px; }
+    .ask-row { flex-direction: column; }
+  }
+</style>
 </head>
-<body class="min-h-screen flex">
+<body>
 
-  <!-- Left Fixed Sidebar -->
-  <aside class="w-60 bg-white border-r border-slate-200 flex flex-col justify-between fixed inset-y-0 left-0 z-30">
-    <div>
-      <div class="px-5 py-5 border-b border-slate-100 flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg brand-bg flex items-center justify-center text-white shrink-0">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h4l3-7 4 14 3-7h4" />
-          </svg>
-        </div>
-        <div>
-          <div class="font-bold text-slate-900 text-sm leading-tight">Aizer Health</div>
-          <div class="text-xs text-slate-500">Adult & Internal Med</div>
-        </div>
-      </div>
-
-      <nav class="p-3 space-y-1 mt-2">
-        <button id="nav-kb" onclick="switchSection('kb')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition brand-soft brand-text">
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
-          <span>Knowledge Base</span>
-        </button>
-
-        <button id="nav-providers" onclick="switchSection('providers')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span>Providers & Specialists</span>
-        </button>
-
-        <button id="nav-visits" onclick="switchSection('visits')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <span>Types of Visits</span>
-        </button>
-
-        <div class="pt-3 mt-3 border-t border-slate-100">
-          <button id="nav-assistant" onclick="switchSection('assistant')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>Decision Assistant</span>
-          </button>
-        </div>
-      </nav>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand"><b>Aizer Health</b><span>Adult & Internal Medicine</span></div>
+    <form class="search" id="searchForm" role="search">
+      <input id="searchInput" type="search" autocomplete="off"
+             placeholder="Search guidelines, providers, insurance, visit types…" aria-label="Search" />
+      <kbd>/</kbd>
+    </form>
+    <div class="contact">
+      <span>Phone<b id="hdrPhone">845-782-3242</b></span>
+      <span>Fax<b id="hdrFax">855-592-1423</b></span>
     </div>
-
-    <div class="p-4 border-t border-slate-100 text-xs text-slate-500 space-y-1.5">
-      <div class="font-semibold text-slate-700">Department Contact</div>
-      <div class="flex justify-between">
-        <span>Phone:</span>
-        <span class="font-mono text-slate-800">845-782-3242</span>
-      </div>
-      <div class="flex justify-between">
-        <span>Fax:</span>
-        <span class="font-mono text-slate-800">855-592-1423</span>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Main Content Area -->
-  <div class="flex-1 ml-60 flex flex-col min-h-screen">
-
-    <!-- Top Search Bar -->
-    <header class="bg-white border-b border-slate-200 px-8 py-3.5 sticky top-0 z-20">
-      <div class="max-w-5xl flex items-center gap-3">
-        <div class="relative flex-1">
-          <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
-          </svg>
-          <input
-            id="searchInput"
-            type="text"
-            placeholder="Search guidelines, providers, insurance, or visit types..."
-            class="w-full pl-10 pr-16 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent transition"
-          />
-          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 hover:text-slate-800 font-medium">
-            Clear
-          </button>
-        </div>
-        <button onclick="executeSearch()" class="brand-bg brand-bg-hover text-white text-sm font-medium px-5 py-2 rounded-lg transition shrink-0">
-          Search
-        </button>
-      </div>
-    </header>
-
-    <main class="p-8 max-w-5xl w-full flex-1">
-      <div id="loadingIndicator" class="text-sm text-slate-500 py-10">Loading guidelines...</div>
-
-      <!-- SEARCH RESULTS VIEW -->
-      <section id="searchSection" class="hidden space-y-5">
-        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-          <h1 class="text-xl font-bold text-slate-900">Search Results</h1>
-          <button onclick="clearSearch()" class="text-xs font-medium text-slate-600 hover:text-slate-900">
-            &larr; Back
-          </button>
-        </div>
-        <div id="searchResultsContainer" class="space-y-4"></div>
-      </section>
-
-      <!-- SECTION 1: KNOWLEDGE BASE -->
-      <section id="section-kb" class="content-section hidden space-y-5">
-        <h1 class="text-2xl font-bold text-slate-900">Knowledge Base</h1>
-
-        <!-- Single-Row Filter Pills Matching Actual Categories -->
-        <div id="kbPills" class="flex items-center gap-2 overflow-x-auto pb-1">
-          <button onclick="filterKB('ALL', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white whitespace-nowrap transition">All</button>
-          <button onclick="filterKB('Core Scheduling Rules', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 whitespace-nowrap transition">Core Scheduling Rules</button>
-          <button onclick="filterKB('Directory & Locations', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 whitespace-nowrap transition">Directory & Locations</button>
-          <button onclick="filterKB('Nurse & Lab Services', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 whitespace-nowrap transition">Nurse & Lab Services</button>
-          <button onclick="filterKB('Telephone Encounter (TE) Routing', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 whitespace-nowrap transition">TE Routing</button>
-          <button onclick="filterKB('Referrals & Prior Authorizations', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 whitespace-nowrap transition">Referrals & Auth</button>
-          <button onclick="filterKB('Special Operational Policies', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 whitespace-nowrap transition">Special Policies</button>
-        </div>
-
-        <div id="kbCardsContainer" class="space-y-4"></div>
-      </section>
-
-      <!-- SECTION 2: PROVIDERS & SPECIALISTS (Open Scannable Cards) -->
-      <section id="section-providers" class="content-section hidden space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h1 class="text-2xl font-bold text-slate-900">Providers & Specialists</h1>
-          <div class="flex gap-2">
-            <button onclick="filterProviders('ALL', this)" class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white">All Locations</button>
-            <button onclick="filterProviders('Bakertown', this)" class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">Bakertown (3rd Fl)</button>
-            <button onclick="filterProviders('Forest Rd', this)" class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">Forest Rd (2nd Fl)</button>
-          </div>
-        </div>
-
-        <div class="space-y-3">
-          <h2 class="text-sm font-semibold text-slate-500">Primary Care Providers</h2>
-          <div id="pcpCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        </div>
-
-        <div class="space-y-3 pt-2">
-          <h2 class="text-sm font-semibold text-slate-500">Specialty Providers</h2>
-          <div id="specCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        </div>
-      </section>
-
-      <!-- SECTION 3: TYPES OF VISITS -->
-      <section id="section-visits" class="content-section hidden space-y-5">
-        <h1 class="text-2xl font-bold text-slate-900">Types of Visits</h1>
-        <div id="visitsGridContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-      </section>
-
-      <!-- SECTION 4: DECISION ASSISTANT -->
-      <section id="section-assistant" class="content-section hidden space-y-5">
-        <h1 class="text-2xl font-bold text-slate-900">Decision Assistant</h1>
-
-        <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3.5">
-          <div class="flex flex-col sm:flex-row gap-3">
-            <input
-              id="askInput"
-              type="text"
-              placeholder="Ask a booking eligibility, routing, or policy question..."
-              class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent transition"
-            />
-            <button onclick="executeDecision()" class="brand-bg brand-bg-hover text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition shrink-0">
-              Check Rule
-            </button>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="text-xs text-slate-400">Examples:</span>
-            <button onclick="runQuickAsk('Can I book a 66-year-old new patient with Adam Tilson?')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md transition">
-              66yo NP with Adam Tilson
-            </button>
-            <button onclick="runQuickAsk('Where do I route a Medicaid 2020 transportation form request?')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md transition">
-              2020 Form Routing
-            </button>
-            <button onclick="runQuickAsk('Does Dr. David Coven accept MVP insurance?')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md transition">
-              Dr. Coven + MVP
-            </button>
-            <button onclick="runQuickAsk('What is the department fax number?')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md transition">
-              Dept Fax Number
-            </button>
-          </div>
-        </div>
-
-        <div id="decisionOutputContainer"></div>
-      </section>
-
-    </main>
   </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" data-section="providers">Providers</button>
+    <button class="tab" role="tab" data-section="visits">Visits & nurse services</button>
+    <button class="tab" role="tab" data-section="kb">Policies & routing</button>
+    <button class="tab" role="tab" data-section="assistant">Decision Assistant</button>
+  </nav>
+</header>
 
-  <script>
-    let kbRecords = [];
-    let activeSection = 'kb';
+<main>
+  <div id="loading" class="status">Loading guidelines…</div>
 
-    // Abbreviation-safe sentence splitter (fixes "Dr.", "Ext.", "a.m.", "p.m.", etc.)
-    function extractBulletLines(content) {
-      if (!content) return [];
-      const protectedText = content.replace(
-        /\b(Dr|Mr|Mrs|Ms|Ext|St|Rd|Ave|vs|e\.g|i\.e|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\./gi,
-        '$1__DOT__'
-      );
-      return protectedText
-        .split(/\.\s+/)
-        .map(s => s.replace(/__DOT__/g, '.').trim())
-        .filter(s => s.length > 2)
-        .map(s => (s.endsWith('.') || s.endsWith(':') ? s : s + '.'));
+  <!-- Search results -->
+  <section id="section-search" class="hidden">
+    <div class="page-head">
+      <h1 id="searchTitle">Search results</h1>
+      <button class="back" id="searchBack">← Back</button>
+    </div>
+    <div id="searchResults"></div>
+  </section>
+
+  <!-- Providers -->
+  <section id="section-providers" class="page hidden">
+    <div class="page-head">
+      <h1>Providers</h1>
+      <div class="seg" id="locFilter">
+        <button data-loc="ALL" aria-pressed="true">All locations</button>
+        <button data-loc="Bakertown">Bakertown</button>
+        <button data-loc="Forest Rd">Forest Rd</button>
+      </div>
+    </div>
+    <div class="locs">
+      <div class="panel loc"><b>Bakertown</b><span>48 Bakertown Rd, 3rd Floor</span></div>
+      <div class="panel loc"><b>Forest Rd</b><span>49 Forest Rd, 2nd Floor · all specialists, lab</span></div>
+    </div>
+    <h2>Primary care</h2>
+    <div id="pcpTable"></div>
+    <h2>Specialists</h2>
+    <div id="specTable"></div>
+  </section>
+
+  <!-- Visits -->
+  <section id="section-visits" class="page hidden">
+    <div class="page-head"><h1>Visits & nurse services</h1></div>
+    <h2>Visit types</h2>
+    <div id="visitTable"></div>
+    <h2>Nurse & lab</h2>
+    <div id="nurseTable"></div>
+  </section>
+
+  <!-- Policies -->
+  <section id="section-kb" class="page hidden">
+    <div class="page-head">
+      <h1>Policies & routing</h1>
+      <div class="seg" id="kbFilter"></div>
+    </div>
+    <div id="kbList"></div>
+  </section>
+
+  <!-- Decision assistant -->
+  <section id="section-assistant" class="page hidden">
+    <div class="page-head"><h1>Decision Assistant</h1></div>
+    <div class="panel ask">
+      <form class="ask-row" id="askForm">
+        <input id="askInput" type="text" autocomplete="off"
+               placeholder="Ask a booking eligibility, routing, or policy question…" aria-label="Question" />
+        <button class="btn" type="submit">Check rule</button>
+      </form>
+      <div class="examples">
+        <span class="muted">Try:</span>
+        <button data-ask="Can I book a 66-year-old new patient with Adam Tilson?">66yo new patient with Adam Tilson</button>
+        <button data-ask="Where do I route a Medicaid 2020 transportation form request?">2020 form routing</button>
+        <button data-ask="Does Dr. David Coven accept MVP insurance?">Dr. Coven + MVP</button>
+        <button data-ask="What is the department fax number?">Department fax</button>
+      </div>
+    </div>
+    <div id="decisionOut"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  let records = [];
+  let activeSection = 'providers';
+
+  /* ---------- Helpers ---------- */
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  // Render source prose once, readable: bold the "Label:" lead-ins and put numbered steps on their own line.
+  function prose(text) {
+    let html = esc(text);
+    html = html.replace(/(^|[.;]\s+|\)\s+)([A-Z][A-Za-z0-9 &;#'()\/+-]{1,48}?):(?=\s)/g,
+      (_, pre, label) => `${pre}<strong>${label}:</strong>`);
+    html = html.replace(/\s([2-9])\)\s/g, '<br>$1) ');
+    return `<p class="prose">${html}</p>`;
+  }
+
+  // Values staff actually paste into eCW / TEs. Shown as copy buttons, not repeated facts.
+  const COPY_KEYS = {
+    medicare_reason_code: 'Appointment reason',
+    ecw_reason_code: 'Appointment reason',
+    ecw_all_current_code: 'General notes',
+    high_priority_subject: 'TE subject (all out)',
+    queue: 'Queue',
+    medical_records_email: 'Records email',
+  };
+  function copies(rules) {
+    if (!rules) return '';
+    const items = Object.entries(COPY_KEYS)
+      .filter(([k]) => rules[k] != null)
+      .map(([k, label]) => `<span class="copy">${esc(label)} <code>${esc(rules[k])}</code>
+        <button type="button" data-copy="${esc(rules[k])}">Copy</button></span>`);
+    return items.length ? `<div class="copies">${items.join('')}</div>` : '';
+  }
+
+  const facts = (list) => list.length
+    ? `<ul class="facts">${list.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>`
+    : '<span class="muted">—</span>';
+
+  function article(item, showMeta = false) {
+    return `<article class="article">
+      ${showMeta ? `<div class="meta">${esc(item.category)}</div>` : ''}
+      <h3>${esc(item.entity)}</h3>
+      ${prose(item.content)}
+      ${copies(item.rules)}
+    </article>`;
+  }
+
+  function table(cls, headers, rows) {
+    if (!rows.length) return '<div class="panel status" style="padding:14px 16px">Nothing at this location.</div>';
+    return `<div class="panel table">
+      <div class="thead ${cls}">${headers.map((h) => `<div>${esc(h)}</div>`).join('')}</div>
+      ${rows.map((r) => `<details>
+        <summary class="${cls}">${r.cells.map((c, i) =>
+          i === 0 ? `<div>${c}</div>` : `<div><span class="cell-label">${esc(headers[i])}:</span>${c}</div>`).join('')}</summary>
+        <div class="detail">${prose(r.item.content)}${copies(r.item.rules)}</div>
+      </details>`).join('')}
+    </div>`;
+  }
+
+  /* ---------- Providers ---------- */
+  function providerRole(p) {
+    if (p.rules?.specialty) return p.rules.specialty;
+    const m = /Role:\s*([^.(;]+)/.exec(p.content || '');
+    return m ? m[1].replace(/^Sole Primary /, '').trim() : '';
+  }
+
+  function providerLocations(p) {
+    const r = p.rules || {};
+    if (r.locations && typeof r.locations === 'object') {
+      return Object.entries(r.locations).map(([days, loc]) => ({ loc: loc.replace(/\s*\(.*\)/, ''), days }));
     }
-
-    // Format structured JSON `rules` into clean, scannable key-value badges
-    function renderStructuredChips(rules) {
-      if (!rules || typeof rules !== 'object') return '';
-      const entries = Object.entries(rules);
-      if (!entries.length) return '';
-
-      return `
-        <div class="flex flex-wrap gap-1.5 mb-3.5">
-          ${entries.map(([key, val]) => {
-            const cleanKey = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-            let cleanVal = '';
-            if (Array.isArray(val)) cleanVal = val.join(', ');
-            else if (typeof val === 'object' && val !== null) {
-              cleanVal = Object.entries(val).map(([k, v]) => `${k}: ${v}`).join(' | ');
-            } else if (typeof val === 'boolean') {
-              cleanVal = val ? 'Yes' : 'No';
-            } else {
-              cleanVal = String(val);
-            }
-
-            // Semantic highlight for restrictions/warnings
-            let chipStyle = 'bg-slate-100 text-slate-700 border-slate-200';
-            if (val === false || String(val).toLowerCase().includes('only')) {
-              chipStyle = 'bg-rose-50 text-rose-800 border-rose-200';
-            } else if (key.includes('fee') || key.includes('code') || key.includes('queue')) {
-              chipStyle = 'bg-amber-50 text-amber-900 border-amber-200';
-            }
-
-            return `<span class="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-md border ${chipStyle}">
-              <span class="font-medium opacity-75">${cleanKey}:</span>
-              <span class="font-semibold">${cleanVal}</span>
-            </span>`;
-          }).join('')}
-        </div>
-      `;
+    const loc = (r.location || '').replace(/\s*\(.*\)/, '');
+    let days = Array.isArray(r.days) ? r.days.join(', ') : '';
+    if (!days) {
+      const m = /Floor\),\s*([^.]+)\./.exec(p.content || '');
+      if (m) days = m[1].trim().replace(/^\w/, (c) => c.toUpperCase());
     }
+    return [{ loc, days }];
+  }
 
-    function formatPct(val) {
-      return `${(Number(val || 0) * 100).toFixed(0)}%`;
-    }
+  function providerFacts(r = {}) {
+    const f = [];
+    if (r.new_patient_max_age != null) f.push(`New patients only up to about age ${r.new_patient_max_age}`);
+    if (r.pe_and_np_duration_min) f.push(`PE & new patient visits: ${r.pe_and_np_duration_min} min, any age`);
+    if (r.tuesday_specialty_only) f.push(`Tuesdays: ${r.tuesday_specialty_only} only`);
+    if (r.cdl_exam_allowed === true) f.push(`CDL exams${r.cdl_daily_limit ? ` (max ${r.cdl_daily_limit}/day)` : ''}`);
+    if (r.cdl_exam_allowed === false) f.push('No CDL exams');
+    if (r.lap_band_allowed === true) f.push(`Lap band adjustments${r.lap_band_daily_limit ? ` (max ${r.lap_band_daily_limit}/day)` : ''}`);
+    if (r.lap_band_allowed === false) f.push('No lap band adjustments');
+    if (r.saturday_night) f.push(`Saturday night: ${r.saturday_night}`);
+    if (r.flu_shot_default) f.push('Default provider on flu-shot schedule');
+    if (r.referral_mandatory) f.push('Referral required');
+    if (r.internal_referral_required === false) f.push('No referral needed (internal)');
+    if (r.accepts_mvp === false) f.push(`Does not take MVP${r.self_pay_fee ? ` — $${r.self_pay_fee} self-pay` : ''}`);
+    if (r.procedure_slots) f.push(`Procedures: ${r.procedure_slots.join(', ')} slots only`);
+    if (r.grace_period_min) f.push(`${r.grace_period_min}-min late grace period`);
+    if (r.te_routing) f.push(`TEs: ${r.te_routing}`);
+    if (r.contact_method) f.push(`Schedule via ${r.contact_method}`);
+    if (r.chaperone_required_for_males) f.push('Male patients need a female chaperone');
+    if (r.patient_reminder) f.push(r.patient_reminder);
+    return f;
+  }
 
-    function copyText(text, btnEl) {
-      navigator.clipboard.writeText(text);
-      const original = btnEl.innerText;
-      btnEl.innerText = 'Copied';
-      setTimeout(() => { btnEl.innerText = original; }, 1400);
-    }
+  function providerRows(list, loc) {
+    return list
+      .map((p) => ({ p, locs: providerLocations(p) }))
+      .filter(({ locs }) => loc === 'ALL' || locs.some((l) => l.loc.startsWith(loc)))
+      .map(({ p, locs }) => ({
+        item: p,
+        cells: [
+          `<span class="name"><span>${esc(p.entity)}<span class="sub">${esc(providerRole(p))}</span></span></span>`,
+          locs.map((l) => `<div>${esc(l.loc)}${l.days ? ` <span class="muted">· ${esc(l.days)}</span>` : ''}</div>`).join(''),
+          facts(providerFacts(p.rules)),
+        ],
+      }));
+  }
 
-    async function loadKB() {
-      try {
-        const res = await fetch('/kb');
-        const data = await res.json();
-        kbRecords = data.items || [];
-        document.getElementById('loadingIndicator').classList.add('hidden');
-        renderKB('ALL');
-        renderProviders('ALL');
-        renderVisits();
-        switchSection('kb');
-      } catch (e) {
-        document.getElementById('loadingIndicator').innerText = 'Unable to load guidelines right now.';
-      }
-    }
+  function renderProviders(loc = 'ALL') {
+    const H = ['Provider', 'Where & when', 'Booking rules'];
+    $('pcpTable').innerHTML = table('cols-prov', H,
+      providerRows(records.filter((r) => r.category === 'Primary Care Provider'), loc));
+    $('specTable').innerHTML = table('cols-prov', H,
+      providerRows(records.filter((r) => r.category === 'Specialist Provider'), loc));
+  }
 
-    function switchSection(section) {
-      activeSection = section;
-      clearSearch(false);
-      document.querySelectorAll('.nav-item').forEach(el => {
-        el.classList.remove('brand-soft', 'brand-text');
-        el.classList.add('text-slate-600', 'hover:bg-slate-50');
-      });
-      const currentNav = document.getElementById(`nav-${section}`);
-      currentNav.classList.add('brand-soft', 'brand-text');
-      currentNav.classList.remove('text-slate-600', 'hover:bg-slate-50');
+  /* ---------- Visits & nurse services ---------- */
+  function duration(item) {
+    const r = item.rules || {};
+    const min = r.duration_min ?? r.default_duration_min;
+    if (min != null) return `<span class="num">${esc(min)} min</span>${r.default_duration_min != null ? ' <span class="muted">default</span>' : ''}`;
+    if (r.slot_type) return esc(r.slot_type);
+    const at = (item.content || '').search(/Duration:/);
+    if (at < 0) return '<span class="muted">—</span>';
+    // Look only at the Duration clause (up to the next "Label:" lead-in).
+    const clause = item.content.slice(at + 9).split(/\.\s+[A-Z][A-Za-z ]{2,30}:/)[0];
+    const nums = [...new Set((clause.match(/\d+(?:-\d+)?(?= minutes)/g) || []))]
+      .sort((a, b) => parseInt(a) - parseInt(b));
+    if (!nums.length) return '<span class="muted">Varies</span>';
+    return `<span class="num">${esc(nums.join(' or '))} min</span>${nums.length > 1 ? ' <span class="muted">varies</span>' : ''}`;
+  }
 
-      document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
-      document.getElementById(`section-${section}`).classList.remove('hidden');
-    }
+  function bookable(r = {}) {
+    if (r.pre_bookable === true) return 'Yes';
+    if (r.pre_bookable === false) return 'Same day only';
+    return r.pre_bookable ? esc(r.pre_bookable) : '<span class="muted">—</span>';
+  }
 
-    // 1. Render Knowledge Base
-    function renderKB(category) {
-      const kbCategories = [
-        'Core Scheduling Rules', 'Directory & Locations', 'Nurse & Lab Services',
-        'Telephone Encounter (TE) Routing', 'Referrals & Prior Authorizations', 'Special Operational Policies'
-      ];
-      let list = kbRecords.filter(r => kbCategories.includes(r.category));
-      if (category !== 'ALL') list = list.filter(r => r.category === category);
+  function visitFacts(r = {}) {
+    const f = [];
+    if (r.provider) f.push(`${r.provider} only`);
+    if (r.max_age != null) f.push(`Age ${r.max_age} and under`);
+    if (r.age_range) f.push(`Ages ${r.age_range}`);
+    if (r.cdl_permitted === false) f.push('No CDL exams');
+    if (r.mandatory_30_min_conditions) f.push(`30 min if: ${r.mandatory_30_min_conditions.join(', ')}`);
+    if (r.prerequisite) f.push(r.prerequisite);
+    if (r.requires_provider_approval) f.push('Provider must approve first');
+    if (r.order_required) f.push('Active lab order required');
+    if (r.allowed_location) f.push(r.allowed_location);
+    if (r.patient_must_bring_med) f.push('Patient brings own medication');
+    if (r.read_window_hours) f.push(`Read ${r.read_window_hours} after plant`);
+    if (r.flu_shot_hours) f.push(`Flu shots ${r.flu_shot_hours}`);
+    if (r.routine_5min_double_bookable) f.push('5-min injection slots can be double-booked');
+    if (r.derman_self_pay_fee) f.push(`Former Dr. Derman patients: $${r.derman_self_pay_fee} self-pay`);
+    return f;
+  }
 
-      document.getElementById('kbCardsContainer').innerHTML = list.map(item => {
-        const bullets = extractBulletLines(item.content);
-        const chips = renderStructuredChips(item.rules);
-        return `
-          <div class="bg-white border border-slate-200 rounded-xl p-5">
-            <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-              <h3 class="text-base font-bold text-slate-900">${item.entity}</h3>
-              <span class="text-xs text-slate-400">${item.category}</span>
-            </div>
-            ${chips}
-            <ul class="space-y-2 text-sm text-slate-700">
-              ${bullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-slate-400 select-none">&bull;</span><span>${b}</span></li>`).join('')}
-            </ul>
-          </div>`;
-      }).join('');
-    }
+  function renderVisits() {
+    const rows = (cat) => records.filter((r) => r.category === cat).map((v) => ({
+      item: v,
+      cells: [
+        `<span class="name"><span>${esc(v.entity)}</span></span>`,
+        duration(v),
+        bookable(v.rules),
+        facts(visitFacts(v.rules)),
+      ],
+    }));
+    $('visitTable').innerHTML = table('cols-visit', ['Visit', 'Length', 'Pre-book', 'Requirements'], rows('Visit Types'));
+    $('nurseTable').innerHTML = table('cols-visit', ['Service', 'Length', 'Pre-book', 'Requirements'], rows('Nurse & Lab Services'));
+  }
 
-    function filterKB(category, btnEl) {
-      document.querySelectorAll('.kb-pill').forEach(btn => {
-        btn.classList.remove('bg-slate-900', 'text-white', 'font-semibold');
-        btn.classList.add('bg-white', 'border', 'border-slate-200', 'text-slate-700', 'font-medium');
-      });
-      btnEl.classList.add('bg-slate-900', 'text-white', 'font-semibold');
-      btnEl.classList.remove('bg-white', 'border', 'border-slate-200', 'text-slate-700', 'font-medium');
-      renderKB(category);
-    }
+  /* ---------- Policies & routing ---------- */
+  const KB_CATS = [
+    ['Core Scheduling Rules', 'Scheduling'],
+    ['Telephone Encounter (TE) Routing', 'TE routing'],
+    ['Referrals & Prior Authorizations', 'Referrals'],
+    ['Special Operational Policies', 'Special policies'],
+    ['Directory & Locations', 'Directory'],
+  ];
 
-    // 2. Render Providers & Specialists (Open Scannable Cards)
-    function renderProviderCard(prov) {
-      const isPCP = prov.category === 'Primary Care Provider';
-      let roleLabel = isPCP ? 'Physician Assistant' : (prov.rules?.specialty || 'Specialist');
-      if (prov.entity.includes('MD') && isPCP) roleLabel = 'Medical Doctor';
+  function renderKBFilter() {
+    const counts = Object.fromEntries(KB_CATS.map(([c]) => [c, records.filter((r) => r.category === c).length]));
+    const total = Object.values(counts).reduce((a, b) => a + b, 0);
+    $('kbFilter').innerHTML =
+      `<button data-cat="ALL" aria-pressed="true">All<span class="n">${total}</span></button>` +
+      KB_CATS.filter(([c]) => counts[c]).map(([c, short]) =>
+        `<button data-cat="${esc(c)}">${esc(short)}<span class="n">${counts[c]}</span></button>`).join('');
+  }
 
-      const bullets = extractBulletLines(prov.content);
-      const chips = renderStructuredChips(prov.rules);
+  function renderKB(cat = 'ALL') {
+    const groups = KB_CATS.filter(([c]) => cat === 'ALL' || c === cat)
+      .map(([c]) => [c, records.filter((r) => r.category === c)])
+      .filter(([, list]) => list.length);
+    $('kbList').innerHTML = groups.map(([c, list]) =>
+      `<h2>${esc(c)}</h2><div class="panel">${list.map((i) => article(i)).join('')}</div>`).join('');
+  }
 
-      return `
-        <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <h3 class="text-base font-bold text-slate-900">${prov.entity}</h3>
-              <span class="text-xs font-medium px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700">${roleLabel}</span>
-            </div>
-            ${chips}
-            <ul class="space-y-2 text-sm text-slate-700">
-              ${bullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-slate-400 select-none">&bull;</span><span>${b}</span></li>`).join('')}
-            </ul>
-          </div>
-        </div>
-      `;
-    }
+  /* ---------- Navigation ---------- */
+  function show(section) {
+    document.querySelectorAll('main > section').forEach((s) => s.classList.add('hidden'));
+    $(`section-${section}`).classList.remove('hidden');
+  }
 
-    function renderProviders(locationFilter) {
-      let pcps = kbRecords.filter(r => r.category === 'Primary Care Provider');
-      let specs = kbRecords.filter(r => r.category === 'Specialist Provider');
+  function switchSection(section) {
+    activeSection = section;
+    $('searchInput').value = '';
+    document.querySelectorAll('.tab').forEach((t) =>
+      t.setAttribute('aria-selected', String(t.dataset.section === section)));
+    show(section);
+  }
 
-      if (locationFilter !== 'ALL') {
-        pcps = pcps.filter(p => p.content.toLowerCase().includes(locationFilter.toLowerCase()));
-        specs = specs.filter(p => p.content.toLowerCase().includes(locationFilter.toLowerCase()));
-      }
+  function setPressed(container, btn) {
+    container.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+  }
 
-      document.getElementById('pcpCardsContainer').innerHTML = pcps.length
-        ? pcps.map(renderProviderCard).join('')
-        : '<p class="text-sm text-slate-500">No Primary Care Providers at this location.</p>';
-
-      document.getElementById('specCardsContainer').innerHTML = specs.length
-        ? specs.map(renderProviderCard).join('')
-        : '<p class="text-sm text-slate-500">No Specialty Providers at this location.</p>';
-    }
-
-    function filterProviders(loc, btnEl) {
-      document.querySelectorAll('.prov-pill').forEach(btn => {
-        btn.classList.remove('bg-slate-900', 'text-white', 'font-semibold');
-        btn.classList.add('bg-white', 'border', 'border-slate-200', 'text-slate-700', 'font-medium');
-      });
-      btnEl.classList.add('bg-slate-900', 'text-white', 'font-semibold');
-      btnEl.classList.remove('bg-white', 'border', 'border-slate-200', 'text-slate-700', 'font-medium');
-      renderProviders(loc);
-    }
-
-    // 3. Render Types of Visits
-    function renderVisits() {
-      const visits = kbRecords.filter(r => r.category === 'Visit Types');
-      document.getElementById('visitsGridContainer').innerHTML = visits.map(v => {
-        const bullets = extractBulletLines(v.content);
-        const chips = renderStructuredChips(v.rules);
-        return `
-          <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between">
-            <div>
-              <h3 class="text-base font-bold text-slate-900 mb-3">${v.entity}</h3>
-              ${chips}
-              <ul class="space-y-2 text-sm text-slate-700">
-                ${bullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-slate-400 select-none">&bull;</span><span>${b}</span></li>`).join('')}
-              </ul>
-            </div>
-          </div>`;
-      }).join('');
-    }
-
-    // 4. Clean Search Results (No technical jargon or RRF scores)
-    async function executeSearch() {
-      const query = document.getElementById('searchInput').value.trim();
-      if (!query) return;
-
-      document.getElementById('clearSearchBtn').classList.remove('hidden');
-      document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
-      const searchSec = document.getElementById('searchSection');
-      const container = document.getElementById('searchResultsContainer');
-
-      searchSec.classList.remove('hidden');
-      container.innerHTML = '<div class="text-sm text-slate-500">Searching...</div>';
-
+  /* ---------- Search ---------- */
+  async function executeSearch() {
+    const query = $('searchInput').value.trim();
+    if (!query) return;
+    document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', 'false'));
+    show('search');
+    $('searchTitle').textContent = `Results for “${query}”`;
+    const out = $('searchResults');
+    out.innerHTML = '<div class="status">Searching…</div>';
+    try {
       const res = await fetch('/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, topK: 5 })
+        body: JSON.stringify({ query, topK: 5 }),
       });
-      const data = await res.json();
-      const results = data.results || [];
+      if (!res.ok) throw new Error();
+      const results = (await res.json()).results || [];
+      out.innerHTML = results.length
+        ? `<div class="panel">${results.map((r) => article(r, true)).join('')}</div>`
+        : '<div class="status">No matching guidelines found.</div>';
+    } catch {
+      out.innerHTML = '<div class="notice">Search is unavailable right now. Try again in a moment.</div>';
+    }
+  }
 
-      if (!results.length) {
-        container.innerHTML = '<div class="text-sm text-slate-500">No matching guidelines found.</div>';
+  /* ---------- Decision assistant ---------- */
+  const pct = (v) => `${(Number(v || 0) * 100).toFixed(0)}%`;
+
+  async function executeDecision() {
+    const query = $('askInput').value.trim();
+    if (!query) return;
+    const out = $('decisionOut');
+    out.innerHTML = '<div class="status">Checking clinic rules…</div>';
+
+    try {
+      const res = await fetch('/decide', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      if (!data.matched_source) {
+        out.innerHTML = `<div class="notice">${esc(data.error || 'No matching rule found.')}</div>`;
         return;
       }
 
-      container.innerHTML = results.map(item => {
-        const bullets = extractBulletLines(item.content);
-        const chips = renderStructuredChips(item.rules);
-        return `
-          <div class="bg-white border border-slate-200 rounded-xl p-5">
-            <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-              <h3 class="text-base font-bold text-slate-900">${item.entity}</h3>
-              <span class="text-xs text-slate-400">${item.category}</span>
-            </div>
-            ${chips}
-            <ul class="space-y-2 text-sm text-slate-700">
-              ${bullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-slate-400 select-none">&bull;</span><span>${b}</span></li>`).join('')}
-            </ul>
-          </div>`;
-      }).join('');
-    }
-
-    function clearSearch(restore = true) {
-      document.getElementById('searchInput').value = '';
-      document.getElementById('clearSearchBtn').classList.add('hidden');
-      document.getElementById('searchSection').classList.add('hidden');
-      if (restore) document.getElementById(`section-${activeSection}`).classList.remove('hidden');
-    }
-
-    // 5. Decision Assistant (Single Clean Confidence Badge + Staff-Friendly Error)
-    function runQuickAsk(question) {
-      document.getElementById('askInput').value = question;
-      executeDecision();
-    }
-
-    async function executeDecision() {
-      const query = document.getElementById('askInput').value.trim();
-      if (!query) return;
-
-      const out = document.getElementById('decisionOutputContainer');
-      out.innerHTML = '<div class="text-sm text-slate-500">Checking clinic rules...</div>';
-
-      try {
-        const res = await fetch('/decide', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query })
-        });
-        if (!res.ok) throw new Error('Service unavailable');
-        const data = await res.json();
-
-        let primaryCardHtml = '';
-
-        if (data.mode === 'fact_lookup' && data.direct_fact) {
-          const safeAns = data.direct_fact.answer.replace(/'/g, "\\'");
-          const conf = formatPct(data.direct_fact.confidence);
-          primaryCardHtml = `
-            <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-slate-500">Answer</span>
-                <span class="text-xs font-mono text-slate-500">Confidence: ${conf}</span>
-              </div>
-              <div class="flex items-center justify-between gap-4 bg-slate-50 border border-slate-200 rounded-lg px-4 py-3.5">
-                <div class="text-lg font-bold text-slate-900 font-mono">${data.direct_fact.answer}</div>
-                <button onclick="copyText('${safeAns}', this)" class="brand-bg brand-bg-hover text-white text-xs font-medium px-3.5 py-1.5 rounded-md transition shrink-0">
-                  Copy
-                </button>
-              </div>
-            </div>
-          `;
-        } else if (data.mode === 'yes_no_gate' && data.yes_no_gate) {
-          const yn = data.yes_no_gate.decision || '';
-          const conf = formatPct(data.yes_no_gate.confidence);
-          let boxStyle = 'bg-emerald-50 text-emerald-950 border-emerald-200';
-          let badgeStyle = 'bg-emerald-100 text-emerald-800';
-
-          if (yn.startsWith('NO')) {
-            boxStyle = 'bg-rose-50 text-rose-950 border-rose-200';
-            badgeStyle = 'bg-rose-100 text-rose-800';
-          } else if (yn.startsWith('CONDITIONAL')) {
-            boxStyle = 'bg-amber-50 text-amber-950 border-amber-200';
-            badgeStyle = 'bg-amber-100 text-amber-900';
-          }
-
-          primaryCardHtml = `
-            <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-slate-500">Eligibility Check</span>
-                <span class="text-xs font-mono font-medium px-2 py-0.5 rounded ${badgeStyle}">Confidence: ${conf}</span>
-              </div>
-              <div class="p-4 rounded-lg border ${boxStyle}">
-                <div class="text-base font-bold">${yn}</div>
-                <p class="text-sm mt-1.5 leading-relaxed">${data.yes_no_gate.explanation}</p>
-              </div>
-            </div>
-          `;
-        } else if (data.mode === 'queue_routing' && data.routing_classification) {
-          const rc = data.routing_classification;
-          const conf = formatPct(rc.confidence);
-          primaryCardHtml = `
-            <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-slate-500">Recommended Routing</span>
-                <span class="text-xs font-mono text-slate-500">Confidence: ${conf}</span>
-              </div>
-              <div class="p-4 rounded-lg bg-slate-50 border border-slate-200">
-                <div class="text-base font-bold text-slate-900">${rc.action}</div>
-              </div>
-            </div>
-          `;
-        }
-
-        const srcBullets = extractBulletLines(data.matched_source.content);
-        const srcChips = renderStructuredChips(data.matched_source.rules);
-
-        out.innerHTML = `
-          <div class="space-y-4">
-            ${primaryCardHtml}
-
-            <div class="bg-white border border-slate-200 rounded-xl p-5">
-              <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-                <h3 class="text-base font-bold text-slate-900">${data.matched_source.entity}</h3>
-                <span class="text-xs text-slate-400">${data.matched_source.category}</span>
-              </div>
-              ${srcChips}
-              <ul class="space-y-2 text-sm text-slate-700">
-                ${srcBullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-slate-400 select-none">&bull;</span><span>${b}</span></li>`).join('')}
-              </ul>
-            </div>
-          </div>
-        `;
-      } catch (err) {
-        out.innerHTML = `
-          <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-4 text-sm">
-            Decision Assistant is currently unavailable. Please use the top Search bar or contact IT support.
-          </div>
-        `;
+      let card = '';
+      if (data.mode === 'fact_lookup' && data.direct_fact) {
+        const f = data.direct_fact;
+        card = `<div class="panel answer">
+          <div class="head"><span>Answer</span><span class="conf">Confidence: ${pct(f.confidence)}</span></div>
+          <div class="fact"><p class="verdict">${esc(f.answer)}</p>
+            <button class="btn" type="button" data-copy="${esc(f.answer)}">Copy</button></div>
+        </div>`;
+      } else if (data.mode === 'yes_no_gate' && data.yes_no_gate) {
+        const g = data.yes_no_gate;
+        const d = g.decision || '';
+        const tone = d.startsWith('NO') ? 'no' : d.startsWith('CONDITIONAL') ? 'cond' : 'yes';
+        card = `<div class="panel answer ${tone}">
+          <div class="head"><span>Eligibility check</span><span class="conf">Confidence: ${pct(g.confidence)}</span></div>
+          <p class="verdict">${esc(d)}</p>
+          <p>${esc(g.explanation)}</p>
+        </div>`;
+      } else if (data.mode === 'queue_routing' && data.routing_classification) {
+        const rc = data.routing_classification;
+        card = `<div class="panel answer">
+          <div class="head"><span>Recommended routing</span><span class="conf">Confidence: ${pct(rc.confidence)}</span></div>
+          <p class="verdict">${esc(rc.action)}</p>
+        </div>`;
       }
+
+      out.innerHTML = `${card}
+        <div class="source-label">Source rule</div>
+        <div class="panel">${article(data.matched_source, true)}</div>`;
+    } catch {
+      out.innerHTML = '<div class="notice">Decision Assistant is currently unavailable. Please use the Search bar or contact IT support.</div>';
     }
+  }
 
-    document.getElementById('searchInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') executeSearch();
-    });
-    document.getElementById('askInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') executeDecision();
-    });
+  /* ---------- Events ---------- */
+  document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => switchSection(t.dataset.section)));
+  $('searchForm').addEventListener('submit', (e) => { e.preventDefault(); executeSearch(); });
+  $('searchBack').addEventListener('click', () => switchSection(activeSection));
+  $('askForm').addEventListener('submit', (e) => { e.preventDefault(); executeDecision(); });
 
-    loadKB();
-  </script>
+  $('locFilter').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    setPressed($('locFilter'), b); renderProviders(b.dataset.loc);
+  });
+  $('kbFilter').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    setPressed($('kbFilter'), b); renderKB(b.dataset.cat);
+  });
+
+  document.addEventListener('click', (e) => {
+    const ask = e.target.closest('[data-ask]');
+    if (ask) { $('askInput').value = ask.dataset.ask; executeDecision(); return; }
+    const cp = e.target.closest('[data-copy]');
+    if (cp) {
+      e.preventDefault();
+      navigator.clipboard?.writeText(cp.dataset.copy);
+      const label = cp.textContent;
+      cp.textContent = 'Copied';
+      setTimeout(() => { cp.textContent = label; }, 1200);
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName);
+    if (e.key === '/' && !typing) { e.preventDefault(); $('searchInput').focus(); }
+    if (e.key === 'Escape' && document.activeElement === $('searchInput')) {
+      $('searchInput').blur();
+      if (!$('section-search').classList.contains('hidden')) switchSection(activeSection);
+    }
+  });
+
+  /* ---------- Load ---------- */
+  async function load() {
+    try {
+      const res = await fetch('/kb');
+      if (!res.ok) throw new Error();
+      records = (await res.json()).items || [];
+      const dir = records.find((r) => r.category === 'Directory & Locations')?.rules;
+      if (dir?.phone) $('hdrPhone').textContent = dir.phone;
+      if (dir?.fax) $('hdrFax').textContent = dir.fax;
+      $('loading').remove();
+      renderProviders();
+      renderVisits();
+      renderKBFilter();
+      renderKB();
+      switchSection('providers');
+    } catch {
+      $('loading').textContent = 'Unable to load guidelines right now.';
+    }
+  }
+  load();
+})();
+</script>
 </body>
 </html>
