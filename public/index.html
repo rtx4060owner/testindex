@@ -19,10 +19,8 @@
   <!-- Left Fixed Sidebar -->
   <aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between fixed inset-y-0 left-0 z-30">
     <div>
-      <!-- Brand Header -->
       <div class="px-5 py-5 border-b border-slate-100 flex items-center gap-3">
         <div class="w-9 h-9 rounded-lg teal-primary flex items-center justify-center text-white shadow-sm shrink-0">
-          <!-- Pulse / Heartbeat Icon -->
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h4l3-7 4 14 3-7h4" />
           </svg>
@@ -33,35 +31,22 @@
         </div>
       </div>
 
-      <!-- Navigation Links (3 Core Sections) -->
       <nav class="p-3 space-y-1 mt-2">
-        <button
-          id="nav-kb"
-          onclick="switchSection('kb')"
-          class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition teal-soft-bg teal-text"
-        >
+        <button id="nav-kb" onclick="switchSection('kb')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition teal-soft-bg teal-text">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
           <span>Knowledge Base</span>
         </button>
 
-        <button
-          id="nav-providers"
-          onclick="switchSection('providers')"
-          class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
-        >
+        <button id="nav-providers" onclick="switchSection('providers')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 6.75A2.25 2.25 0 016.75 4.5h1.5a2.25 2.25 0 012.25 2.25v3a3.75 3.75 0 01-7.5 0v-3zM6.75 13.5v2.25a4.5 4.5 0 009 0V12m0 0a2.25 2.25 0 104.5 0 2.25 2.25 0 00-4.5 0z" />
           </svg>
           <span>Providers & Specialists</span>
         </button>
 
-        <button
-          id="nav-visits"
-          onclick="switchSection('visits')"
-          class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
-        >
+        <button id="nav-visits" onclick="switchSection('visits')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
@@ -70,7 +55,6 @@
       </nav>
     </div>
 
-    <!-- Bottom Quick Contact Info -->
     <div class="p-4 border-t border-slate-100 text-xs text-slate-500 space-y-1">
       <div class="font-semibold text-slate-700">Adult & Internal Medicine</div>
       <div>Phone: <span class="font-mono text-slate-700">845-782-3242</span></div>
@@ -81,7 +65,7 @@
   <!-- Main Content Area -->
   <div class="flex-1 ml-64 flex flex-col min-h-screen">
 
-    <!-- Top Hybrid Search Bar -->
+    <!-- Top Search & Decision Bar -->
     <header class="bg-white border-b border-slate-200 px-8 py-3.5 sticky top-0 z-20">
       <div class="max-w-5xl flex items-center gap-3">
         <div class="relative flex-1">
@@ -91,46 +75,42 @@
           <input
             id="searchInput"
             type="text"
-            placeholder="Hybrid Search SOP (e.g., 66 year old new patient Adam Tilson, MVP insurance, 2020 form, CDL)..."
+            placeholder="Ask a decision question or search SOP (e.g., Can I book a 66-year-old new patient with Adam Tilson?)..."
             class="w-full pl-10 pr-20 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#00897b] focus:border-transparent transition"
           />
-          <button
-            id="clearSearchBtn"
-            onclick="clearSearch()"
-            class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-700 font-medium"
-          >
+          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-700 font-medium">
             Clear
           </button>
         </div>
-        <button
-          onclick="executeSearch()"
-          class="teal-primary teal-primary-hover text-white text-sm font-medium px-5 py-2 rounded-lg shadow-sm transition shrink-0"
-        >
-          Search
+        <button onclick="executeSearch()" class="teal-primary teal-primary-hover text-white text-sm font-medium px-5 py-2 rounded-lg shadow-sm transition shrink-0">
+          Ask / Search
         </button>
       </div>
     </header>
 
-    <!-- Main Dynamic Workspace -->
     <main class="p-8 max-w-5xl w-full flex-1">
+      <div id="loadingIndicator" class="text-sm text-slate-500 py-10">Loading Aizer Health SOP records...</div>
 
-      <!-- Loading State -->
-      <div id="loadingIndicator" class="text-sm text-slate-500 py-10">
-        Loading Aizer Health SOP records...
-      </div>
-
-      <!-- HYBRID SEARCH RESULTS VIEW -->
-      <section id="searchSection" class="hidden space-y-5">
+      <!-- HYBRID SEARCH + GLICLASS DECISION VIEW -->
+      <section id="searchSection" class="hidden space-y-6">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
           <div>
-            <h1 class="text-xl font-bold text-slate-900">Hybrid Search Results</h1>
-            <p class="text-xs text-slate-500 mt-0.5">Ranked by Reciprocal Rank Fusion (D1 BM25 + Vectorize Semantic Search)</p>
+            <h1 class="text-xl font-bold text-slate-900">SOP Decision & Hybrid Search Results</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Powered by D1 + Vectorize Hybrid Search & GLiClass Discriminative Engine</p>
           </div>
           <button onclick="clearSearch()" class="text-xs font-medium teal-text hover:underline">
             &larr; Return to Section
           </button>
         </div>
-        <div id="searchResultsContainer" class="space-y-4"></div>
+
+        <!-- GLiClass Decision Engine Output Card -->
+        <div id="decisionCardContainer"></div>
+
+        <!-- Retrieved SOP Rules -->
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Matched SOP Rules</h2>
+          <div id="searchResultsContainer" class="space-y-4"></div>
+        </div>
       </section>
 
       <!-- SECTION 1: KNOWLEDGE BASE -->
@@ -140,32 +120,16 @@
           <p class="text-sm text-slate-500 mt-1">Complete SOP and operational guidelines, categorized for quick reference.</p>
         </div>
 
-        <!-- Category Filter Pills -->
         <div id="kbPills" class="flex flex-wrap gap-2.5">
-          <button onclick="filterKB('ALL', this)" class="kb-pill flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold teal-primary text-white shadow-sm transition">
-            <span>All Guidelines</span>
-          </button>
-          <button onclick="filterKB('Core Scheduling Rules', this)" class="kb-pill flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
-            <span>Governing Principles</span>
-          </button>
-          <button onclick="filterKB('Directory & Locations', this)" class="kb-pill flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
-            <span>Clinic Departments & Directory</span>
-          </button>
-          <button onclick="filterKB('Nurse & Lab Services', this)" class="kb-pill flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
-            <span>Nurse & Lab Services</span>
-          </button>
-          <button onclick="filterKB('Telephone Encounter (TE) Routing', this)" class="kb-pill flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
-            <span>Telephone Encounters (TE)</span>
-          </button>
-          <button onclick="filterKB('Referrals & Prior Authorizations', this)" class="kb-pill flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
-            <span>Referrals & Prior Authorizations</span>
-          </button>
-          <button onclick="filterKB('Special Operational Policies', this)" class="kb-pill flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
-            <span>Dr. Derman & HIPAA Policies</span>
-          </button>
+          <button onclick="filterKB('ALL', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-semibold teal-primary text-white shadow-sm transition">All Guidelines</button>
+          <button onclick="filterKB('Core Scheduling Rules', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">Governing Principles</button>
+          <button onclick="filterKB('Directory & Locations', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">Clinic Departments & Directory</button>
+          <button onclick="filterKB('Nurse & Lab Services', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">Nurse & Lab Services</button>
+          <button onclick="filterKB('Telephone Encounter (TE) Routing', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">Telephone Encounters (TE)</button>
+          <button onclick="filterKB('Referrals & Prior Authorizations', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">Referrals & Prior Authorizations</button>
+          <button onclick="filterKB('Special Operational Policies', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">Dr. Derman & HIPAA Policies</button>
         </div>
 
-        <!-- Stacked Horizontal Cards -->
         <div id="kbCardsContainer" class="space-y-4"></div>
       </section>
 
@@ -176,16 +140,12 @@
             <h1 class="text-2xl font-bold text-slate-900">Providers & Specialty Providers</h1>
             <p class="text-sm text-slate-500 mt-1">Complete directory of all providers, their schedules, and scheduling rules.</p>
           </div>
-
-          <!-- Location Quick Filter -->
           <div class="flex gap-2">
             <button onclick="filterProviders('ALL', this)" class="prov-pill px-3 py-1.5 rounded-lg text-xs font-semibold teal-primary text-white">All</button>
             <button onclick="filterProviders('Bakertown', this)" class="prov-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50">Bakertown (3rd Fl)</button>
             <button onclick="filterProviders('Forest Rd', this)" class="prov-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50">Forest Rd (2nd Fl)</button>
           </div>
         </div>
-
-        <!-- Expandable Accordion Cards -->
         <div id="providersAccordionContainer" class="space-y-3"></div>
       </section>
 
@@ -195,11 +155,8 @@
           <h1 class="text-2xl font-bold text-slate-900">Types of Visits</h1>
           <p class="text-sm text-slate-500 mt-1">Scheduling rules and duration requirements for every visit type.</p>
         </div>
-
-        <!-- 2-Column Grid Cards -->
         <div id="visitsGridContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
       </section>
-
     </main>
   </div>
 
@@ -207,12 +164,11 @@
     let kbRecords = [];
     let activeSection = 'kb';
 
-    // Convert raw paragraph content into clean bullet lines
+    // Detect if running on local FastAPI (port 8000) or Cloudflare Worker directly
+    const isLocalDecisionServer = window.location.port === '8000' || window.location.hostname.includes('app.github.dev');
+
     function extractBulletLines(content) {
-      return content
-        .split(/(?<=\.)\s+/)
-        .map(s => s.trim())
-        .filter(s => s.length > 3);
+      return content.split(/(?<=\.)\s+/).map(s => s.trim()).filter(s => s.length > 3);
     }
 
     async function loadKB() {
@@ -233,7 +189,6 @@
     function switchSection(section) {
       activeSection = section;
       clearSearch(false);
-
       document.querySelectorAll('.nav-item').forEach(el => {
         el.classList.remove('teal-soft-bg', 'teal-text');
         el.classList.add('text-slate-600', 'hover:bg-slate-50');
@@ -246,22 +201,15 @@
       document.getElementById(`section-${section}`).classList.remove('hidden');
     }
 
-    // 1. Render Knowledge Base Cards (Matches Screenshot 1)
     function renderKB(category) {
       const kbCategories = [
-        'Core Scheduling Rules',
-        'Directory & Locations',
-        'Nurse & Lab Services',
-        'Telephone Encounter (TE) Routing',
-        'Referrals & Prior Authorizations',
-        'Special Operational Policies'
+        'Core Scheduling Rules', 'Directory & Locations', 'Nurse & Lab Services',
+        'Telephone Encounter (TE) Routing', 'Referrals & Prior Authorizations', 'Special Operational Policies'
       ];
       let list = kbRecords.filter(r => kbCategories.includes(r.category));
-      if (category !== 'ALL') {
-        list = list.filter(r => r.category === category);
-      }
+      if (category !== 'ALL') list = list.filter(r => r.category === category);
 
-      const html = list.map(item => {
+      document.getElementById('kbCardsContainer').innerHTML = list.map(item => {
         const bullets = extractBulletLines(item.content);
         return `
           <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
@@ -277,18 +225,10 @@
               </div>
             </div>
             <ul class="space-y-2.5 pl-1">
-              ${bullets.map(b => `
-                <li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed">
-                  <span class="teal-text font-bold mt-0.5">&rsaquo;</span>
-                  <span>${b}</span>
-                </li>
-              `).join('')}
+              ${bullets.map(b => `<li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"><span class="teal-text font-bold mt-0.5">&rsaquo;</span><span>${b}</span></li>`).join('')}
             </ul>
-          </div>
-        `;
+          </div>`;
       }).join('');
-
-      document.getElementById('kbCardsContainer').innerHTML = html;
     }
 
     function filterKB(category, btnEl) {
@@ -301,32 +241,23 @@
       renderKB(category);
     }
 
-    // 2. Render Providers Accordion (Matches Screenshot 2)
     function renderProviders(locationFilter) {
-      let providers = kbRecords.filter(
-        r => r.category === 'Primary Care Provider' || r.category === 'Specialist Provider'
-      );
-
+      let providers = kbRecords.filter(r => r.category === 'Primary Care Provider' || r.category === 'Specialist Provider');
       if (locationFilter !== 'ALL') {
-        providers = providers.filter(p =>
-          p.content.toLowerCase().includes(locationFilter.toLowerCase())
-        );
+        providers = providers.filter(p => p.content.toLowerCase().includes(locationFilter.toLowerCase()));
       }
 
-      const html = providers.map((prov, idx) => {
+      document.getElementById('providersAccordionContainer').innerHTML = providers.map((prov, idx) => {
         const isPCP = prov.category === 'Primary Care Provider';
         let badge = isPCP ? 'Physician Assistant' : (prov.rules?.specialty || 'Specialist');
-        if (prov.entity.includes('MD')) badge = 'Medical Doctor (Sole MD)';
+        if (prov.entity.includes('MD') && isPCP) badge = 'Medical Doctor (Sole MD)';
         const deptLabel = isPCP ? 'Adult Medicine Department' : `${prov.rules?.specialty || 'Specialty'} — Forest Rd (2nd Fl)`;
         const bullets = extractBulletLines(prov.content);
-        const isOpen = idx === 0; // First card expanded by default
+        const isOpen = idx === 0;
 
         return `
           <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-            <button
-              onclick="toggleAccordion('prov-body-${prov.id}', 'prov-chev-${prov.id}')"
-              class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-slate-50/60 transition"
-            >
+            <button onclick="toggleAccordion('prov-body-${prov.id}', 'prov-chev-${prov.id}')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-slate-50/60 transition">
               <div class="flex items-center gap-4">
                 <div class="w-10 h-10 rounded-lg teal-soft-bg teal-text flex items-center justify-center shrink-0">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -345,25 +276,13 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-
             <div id="prov-body-${prov.id}" class="${isOpen ? '' : 'hidden'} px-6 pb-5 pt-3 border-t border-slate-100">
               <ul class="space-y-2.5">
-                ${bullets.map(b => `
-                  <li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed">
-                    <svg class="w-4 h-4 teal-text shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="9" />
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01" />
-                    </svg>
-                    <span>${b}</span>
-                  </li>
-                `).join('')}
+                ${bullets.map(b => `<li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"><svg class="w-4 h-4 teal-text shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01" /></svg><span>${b}</span></li>`).join('')}
               </ul>
             </div>
-          </div>
-        `;
+          </div>`;
       }).join('');
-
-      document.getElementById('providersAccordionContainer').innerHTML = html;
     }
 
     function toggleAccordion(bodyId, chevId) {
@@ -381,10 +300,9 @@
       renderProviders(loc);
     }
 
-    // 3. Render Types of Visits 2-Column Grid (Matches Screenshot 3)
     function renderVisits() {
       const visits = kbRecords.filter(r => r.category === 'Visit Types');
-      const html = visits.map(v => {
+      document.getElementById('visitsGridContainer').innerHTML = visits.map(v => {
         const bullets = extractBulletLines(v.content);
         return `
           <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs flex flex-col justify-between">
@@ -397,26 +315,62 @@
                 </div>
                 <h3 class="text-base font-bold text-slate-900">${v.entity}</h3>
               </div>
-
               <ul class="space-y-2.5">
-                ${bullets.map(b => `
-                  <li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed">
-                    <svg class="w-4 h-4 text-slate-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span>${b}</span>
-                  </li>
-                `).join('')}
+                ${bullets.map(b => `<li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"><svg class="w-4 h-4 text-slate-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><span>${b}</span></li>`).join('')}
               </ul>
             </div>
-          </div>
-        `;
+          </div>`;
       }).join('');
-
-      document.getElementById('visitsGridContainer').innerHTML = html;
     }
 
-    // Hybrid Search Handler
+    function renderDecisionCard(data) {
+      if (!data.yes_no_gate) return '';
+
+      const yn = data.yes_no_gate.decision || '';
+      let badgeStyle = 'bg-teal-50 text-teal-800 border-teal-200';
+      if (yn.startsWith('NO')) badgeStyle = 'bg-rose-50 text-rose-800 border-rose-200';
+      else if (yn.startsWith('CONDITIONAL')) badgeStyle = 'bg-amber-50 text-amber-800 border-amber-200';
+
+      return `
+        <div class="bg-white border-2 border-[#00897b]/30 rounded-xl p-6 shadow-sm space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full teal-primary"></span>
+              <span class="text-xs font-bold uppercase tracking-wider teal-text">GLiClass & Rule Decision Engine</span>
+            </div>
+            <span class="text-xs text-slate-400">Intent: ${data.detected_intent.type}</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- 1. Yes / No Gate -->
+            <div class="p-3.5 rounded-lg border ${badgeStyle}">
+              <div class="text-[11px] font-semibold uppercase opacity-75 mb-1">Eligibility / Gate</div>
+              <div class="text-sm font-bold">${yn}</div>
+              <div class="text-[11px] opacity-75 mt-1">${data.yes_no_gate.method}</div>
+            </div>
+
+            <!-- 2. GLiClass Routing -->
+            <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-[11px] font-semibold uppercase text-slate-400 mb-1">Recommended Queue / Action</div>
+              <div class="text-sm font-bold text-slate-900">${data.routing_classification.action}</div>
+              <div class="text-[11px] text-slate-400 mt-1">Confidence: ${(data.routing_classification.confidence * 100).toFixed(1)}%</div>
+            </div>
+
+            <!-- 3. Direct Fact Extraction -->
+            <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200">
+              <div class="text-[11px] font-semibold uppercase text-slate-400 mb-1">Extracted Fact</div>
+              <div class="text-sm font-bold teal-text">${data.direct_fact.answer}</div>
+              <div class="text-[11px] text-slate-400 mt-1">MiniLM QA (${(data.direct_fact.confidence * 100).toFixed(1)}%)</div>
+            </div>
+          </div>
+
+          <div class="text-sm text-slate-700 bg-slate-50/70 px-4 py-3 rounded-lg border border-slate-100">
+            <strong>Rule Summary:</strong> ${data.yes_no_gate.explanation}
+          </div>
+        </div>
+      `;
+    }
+
     async function executeSearch() {
       const query = document.getElementById('searchInput').value.trim();
       if (!query) return;
@@ -424,18 +378,25 @@
       document.getElementById('clearSearchBtn').classList.remove('hidden');
       document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
       const searchSec = document.getElementById('searchSection');
+      const decisionContainer = document.getElementById('decisionCardContainer');
       const container = document.getElementById('searchResultsContainer');
 
       searchSec.classList.remove('hidden');
-      container.innerHTML = '<div class="text-sm text-slate-500">Searching Hybrid Index...</div>';
+      decisionContainer.innerHTML = '';
+      container.innerHTML = '<div class="text-sm text-slate-500">Evaluating SOP rules...</div>';
 
-      const res = await fetch('/search', {
+      const endpoint = isLocalDecisionServer ? '/decide' : '/search';
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, topK: 5 })
+        body: JSON.stringify({ query })
       });
       const data = await res.json();
       const results = data.results || [];
+
+      if (data.yes_no_gate) {
+        decisionContainer.innerHTML = renderDecisionCard(data);
+      }
 
       if (!results.length) {
         container.innerHTML = '<div class="text-sm text-slate-500">No matching SOP rules found.</div>';
@@ -454,15 +415,9 @@
               <span class="text-xs font-mono text-slate-400">RRF: ${item.score}</span>
             </div>
             <ul class="space-y-2 pl-1">
-              ${bullets.map(b => `
-                <li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed">
-                  <span class="teal-text font-bold mt-0.5">&rsaquo;</span>
-                  <span>${b}</span>
-                </li>
-              `).join('')}
+              ${bullets.map(b => `<li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"><span class="teal-text font-bold mt-0.5">&rsaquo;</span><span>${b}</span></li>`).join('')}
             </ul>
-          </div>
-        `;
+          </div>`;
       }).join('');
     }
 
@@ -470,9 +425,7 @@
       document.getElementById('searchInput').value = '';
       document.getElementById('clearSearchBtn').classList.add('hidden');
       document.getElementById('searchSection').classList.add('hidden');
-      if (restore) {
-        document.getElementById(`section-${activeSection}`).classList.remove('hidden');
-      }
+      if (restore) document.getElementById(`section-${activeSection}`).classList.remove('hidden');
     }
 
     document.getElementById('searchInput').addEventListener('keydown', (e) => {
