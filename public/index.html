@@ -74,7 +74,7 @@
   <!-- Main Content Area -->
   <div class="flex-1 ml-64 flex flex-col min-h-screen">
 
-    <!-- Top Pure Hybrid Search Bar (Strictly for searching SOP rules) -->
+    <!-- Top Pure Hybrid Search Bar -->
     <header class="bg-white border-b border-slate-200 px-8 py-3.5 sticky top-0 z-20">
       <div class="max-w-5xl flex items-center gap-3">
         <div class="relative flex-1">
@@ -159,14 +159,13 @@
         <div id="visitsGridContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
       </section>
 
-      <!-- SECTION 4: DEDICATED DECISION ASSISTANT (GLiClass + Rules + Extractive QA) -->
+      <!-- SECTION 4: DEDICATED DECISION ASSISTANT -->
       <section id="section-assistant" class="content-section hidden space-y-6">
         <div>
           <h1 class="text-2xl font-bold text-slate-900">Decision Assistant</h1>
-          <p class="text-sm text-slate-500 mt-1">Verify scheduling eligibility (Yes/No), TE queue routing, and quick SOP facts using GLiClass & Rule Engine.</p>
+          <p class="text-sm text-slate-500 mt-1">Ask a direct question, verify scheduling eligibility, or check TE queue routing.</p>
         </div>
 
-        <!-- Dedicated Ask Box -->
         <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
           <label for="askInput" class="block text-xs font-bold uppercase tracking-wider text-slate-500">
             Enter Call Center Scenario or Question
@@ -183,7 +182,6 @@
             </button>
           </div>
 
-          <!-- Quick Test Chips -->
           <div class="flex flex-wrap items-center gap-2 pt-1">
             <span class="text-xs text-slate-400">Quick tests:</span>
             <button onclick="runQuickAsk('Can I book a 66-year-old new patient with Adam Tilson?')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md transition">
@@ -201,7 +199,6 @@
           </div>
         </div>
 
-        <!-- Decision Output Container -->
         <div id="decisionOutputContainer"></div>
       </section>
 
@@ -214,6 +211,17 @@
 
     function extractBulletLines(content) {
       return content.split(/(?<=\.)\s+/).map(s => s.trim()).filter(s => s.length > 3);
+    }
+
+    function formatPct(val) {
+      return `${(Number(val || 0) * 100).toFixed(1)}%`;
+    }
+
+    function copyText(text, btnEl) {
+      navigator.clipboard.writeText(text);
+      const original = btnEl.innerText;
+      btnEl.innerText = 'Copied!';
+      setTimeout(() => { btnEl.innerText = original; }, 1500);
     }
 
     async function loadKB() {
@@ -368,7 +376,6 @@
       }).join('');
     }
 
-    // 1. PURE HYBRID SEARCH (/search ONLY)
     async function executeSearch() {
       const query = document.getElementById('searchInput').value.trim();
       if (!query) return;
@@ -403,7 +410,7 @@
                 <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full teal-soft-bg teal-text">${item.category}</span>
                 <h3 class="text-base font-bold text-slate-900">${item.entity}</h3>
               </div>
-              <span class="text-xs font-mono text-slate-400">RRF: ${item.score}</span>
+              <span class="text-xs font-mono text-slate-400">RRF Score: ${item.score}</span>
             </div>
             <ul class="space-y-2 pl-1">
               ${bullets.map(b => `<li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"><span class="teal-text font-bold mt-0.5">&rsaquo;</span><span>${b}</span></li>`).join('')}
@@ -419,7 +426,6 @@
       if (restore) document.getElementById(`section-${activeSection}`).classList.remove('hidden');
     }
 
-    // 2. DEDICATED DECISION ASSISTANT (/decide ONLY)
     function runQuickAsk(question) {
       document.getElementById('askInput').value = question;
       executeDecision();
@@ -430,7 +436,7 @@
       if (!query) return;
 
       const out = document.getElementById('decisionOutputContainer');
-      out.innerHTML = '<div class="text-sm text-slate-500">Running GLiClass & Rule Engine...</div>';
+      out.innerHTML = '<div class="text-sm text-slate-500">Evaluating SOP rule...</div>';
 
       try {
         const res = await fetch('/decide', {
@@ -441,51 +447,105 @@
         if (!res.ok) throw new Error('Decision server offline');
         const data = await res.json();
 
-        const yn = data.yes_no_gate.decision || '';
-        let badgeStyle = 'bg-teal-50 text-teal-800 border-teal-200';
-        if (yn.startsWith('NO')) badgeStyle = 'bg-rose-50 text-rose-800 border-rose-200';
-        else if (yn.startsWith('CONDITIONAL')) badgeStyle = 'bg-amber-50 text-amber-800 border-amber-200';
+        const intentConf = formatPct(data.detected_intent?.confidence);
+        const intentMetaBadge = `<span class="text-xs font-mono bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md">Intent Confidence: ${intentConf}</span>`;
+        let primaryCardHtml = '';
+
+        // 1. Direct Fact Lookup Card
+        if (data.mode === 'fact_lookup' && data.direct_fact) {
+          const safeAns = data.direct_fact.answer.replace(/'/g, "\\'");
+          const factConf = formatPct(data.direct_fact.confidence);
+          primaryCardHtml = `
+            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <span class="text-xs font-bold uppercase tracking-wider teal-text">Direct Answer</span>
+                <div class="flex items-center gap-2">
+                  ${intentMetaBadge}
+                  <span class="text-xs font-mono font-semibold bg-teal-50 teal-text px-2.5 py-1 rounded-md">Extraction Confidence: ${factConf}</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between gap-4 bg-teal-50/60 border border-teal-200/70 rounded-lg px-5 py-4">
+                <div class="text-xl font-bold text-slate-900 font-mono">${data.direct_fact.answer}</div>
+                <button onclick="copyText('${safeAns}', this)" class="teal-primary teal-primary-hover text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition shrink-0">
+                  Copy
+                </button>
+              </div>
+            </div>
+          `;
+        }
+
+        // 2. Yes / No Eligibility Gate Card (With Explicit Confidence Score Badge)
+        else if (data.mode === 'yes_no_gate' && data.yes_no_gate) {
+          const yn = data.yes_no_gate.decision || '';
+          const ynConf = formatPct(data.yes_no_gate.confidence);
+          let boxStyle = 'bg-teal-50 text-teal-900 border-teal-200';
+          let pillStyle = 'bg-teal-600 text-white';
+
+          if (yn.startsWith('NO')) {
+            boxStyle = 'bg-rose-50 text-rose-900 border-rose-200';
+            pillStyle = 'bg-rose-600 text-white';
+          } else if (yn.startsWith('CONDITIONAL')) {
+            boxStyle = 'bg-amber-50 text-amber-900 border-amber-200';
+            pillStyle = 'bg-amber-600 text-white';
+          }
+
+          primaryCardHtml = `
+            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <span class="text-xs font-bold uppercase tracking-wider teal-text">Eligibility Verification (${data.yes_no_gate.method})</span>
+                <div class="flex items-center gap-2">
+                  ${intentMetaBadge}
+                  <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded-md ${pillStyle}">Decision Confidence: ${ynConf}</span>
+                </div>
+              </div>
+              <div class="p-4 rounded-lg border ${boxStyle}">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="text-lg font-bold">${yn}</div>
+                  <span class="text-xs font-mono font-bold opacity-80">Score: ${ynConf}</span>
+                </div>
+                <p class="text-sm mt-2 leading-relaxed opacity-90">${data.yes_no_gate.explanation}</p>
+              </div>
+            </div>
+          `;
+        }
+
+        // 3. Queue / Action Routing Card
+        else if (data.mode === 'queue_routing' && data.routing_classification) {
+          const rc = data.routing_classification;
+          const routeConf = formatPct(rc.confidence);
+          primaryCardHtml = `
+            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <span class="text-xs font-bold uppercase tracking-wider teal-text">Recommended Workflow / Routing</span>
+                <div class="flex items-center gap-2">
+                  ${intentMetaBadge}
+                  <span class="text-xs font-mono font-semibold bg-teal-50 teal-text px-2.5 py-1 rounded-md">Routing Confidence: ${routeConf}</span>
+                </div>
+              </div>
+              <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between gap-4">
+                <div>
+                  <div class="text-xs font-semibold uppercase text-slate-400 mb-1">Destination Queue / Action</div>
+                  <div class="text-lg font-bold text-slate-900">${rc.action}</div>
+                </div>
+                <span class="text-xs font-mono font-semibold bg-white border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg">Score: ${routeConf}</span>
+              </div>
+            </div>
+          `;
+        }
 
         const srcBullets = extractBulletLines(data.matched_source.content);
 
         out.innerHTML = `
           <div class="space-y-5">
-            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-5">
-              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                <span class="text-xs font-bold uppercase tracking-wider teal-text">Decision Result</span>
-                <span class="text-xs text-slate-400">Detected Type: ${data.detected_intent.type}</span>
-              </div>
+            ${primaryCardHtml}
 
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="p-4 rounded-lg border ${badgeStyle}">
-                  <div class="text-[11px] font-semibold uppercase opacity-75 mb-1">Eligibility / Gate</div>
-                  <div class="text-base font-bold">${yn}</div>
-                  <div class="text-[11px] opacity-75 mt-1">${data.yes_no_gate.method}</div>
-                </div>
-
-                <div class="p-4 rounded-lg bg-slate-50 border border-slate-200">
-                  <div class="text-[11px] font-semibold uppercase text-slate-400 mb-1">Recommended Action / Queue</div>
-                  <div class="text-sm font-bold text-slate-900">${data.routing_classification.action}</div>
-                  <div class="text-[11px] text-slate-400 mt-1">Confidence: ${(data.routing_classification.confidence * 100).toFixed(1)}%</div>
-                </div>
-
-                <div class="p-4 rounded-lg bg-slate-50 border border-slate-200">
-                  <div class="text-[11px] font-semibold uppercase text-slate-400 mb-1">Extracted Direct Fact</div>
-                  <div class="text-sm font-bold teal-text">${data.direct_fact.answer}</div>
-                  <div class="text-[11px] text-slate-400 mt-1">MiniLM QA (${(data.direct_fact.confidence * 100).toFixed(1)}%)</div>
-                </div>
-              </div>
-
-              <div class="text-sm text-slate-700 bg-slate-50 px-4 py-3 rounded-lg border border-slate-100">
-                <strong>Rule Explanation:</strong> ${data.yes_no_gate.explanation}
-              </div>
-            </div>
-
-            <!-- Source Reference Card -->
             <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
-              <div class="flex items-center gap-2.5 mb-3">
-                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full teal-soft-bg teal-text">${data.matched_source.category}</span>
-                <h3 class="text-base font-bold text-slate-900">Source: ${data.matched_source.entity}</h3>
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full teal-soft-bg teal-text">${data.matched_source.category}</span>
+                  <h3 class="text-base font-bold text-slate-900">Matched Policy: ${data.matched_source.entity}</h3>
+                </div>
+                <span class="text-xs font-mono text-slate-400">Retrieval RRF: ${data.matched_source.score}</span>
               </div>
               <ul class="space-y-2 pl-1">
                 ${srcBullets.map(b => `<li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"><span class="teal-text font-bold mt-0.5">&rsaquo;</span><span>${b}</span></li>`).join('')}
