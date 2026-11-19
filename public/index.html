@@ -3,36 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aizer Health — Call Center Platform</title>
+  <title>Aizer Health — Adult & Internal Medicine</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-    .teal-primary { background-color: #00897b; }
-    .teal-primary-hover:hover { background-color: #00796b; }
-    .teal-text { color: #00897b; }
-    .teal-soft-bg { background-color: #e6f4f1; }
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+    .brand-bg { background-color: #0f766e; }
+    .brand-bg-hover:hover { background-color: #115e59; }
+    .brand-text { color: #0f766e; }
+    .brand-soft { background-color: #f0fdfa; }
   </style>
 </head>
-<body class="text-slate-800 min-h-screen flex">
+<body class="min-h-screen flex">
 
   <!-- Left Fixed Sidebar -->
-  <aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between fixed inset-y-0 left-0 z-30">
+  <aside class="w-60 bg-white border-r border-slate-200 flex flex-col justify-between fixed inset-y-0 left-0 z-30">
     <div>
       <div class="px-5 py-5 border-b border-slate-100 flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg teal-primary flex items-center justify-center text-white shadow-sm shrink-0">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <div class="w-8 h-8 rounded-lg brand-bg flex items-center justify-center text-white shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h4l3-7 4 14 3-7h4" />
           </svg>
         </div>
         <div>
           <div class="font-bold text-slate-900 text-sm leading-tight">Aizer Health</div>
-          <div class="text-xs text-slate-400">Call Center Platform</div>
+          <div class="text-xs text-slate-500">Adult & Internal Med</div>
         </div>
       </div>
 
       <nav class="p-3 space-y-1 mt-2">
-        <button id="nav-kb" onclick="switchSection('kb')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition teal-soft-bg teal-text">
+        <button id="nav-kb" onclick="switchSection('kb')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition brand-soft brand-text">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
@@ -41,7 +41,7 @@
 
         <button id="nav-providers" onclick="switchSection('providers')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 6.75A2.25 2.25 0 016.75 4.5h1.5a2.25 2.25 0 012.25 2.25v3a3.75 3.75 0 01-7.5 0v-3zM6.75 13.5v2.25a4.5 4.5 0 009 0V12m0 0a2.25 2.25 0 104.5 0 2.25 2.25 0 00-4.5 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           <span>Providers & Specialists</span>
         </button>
@@ -64,17 +64,23 @@
       </nav>
     </div>
 
-    <div class="p-4 border-t border-slate-100 text-xs text-slate-500 space-y-1">
-      <div class="font-semibold text-slate-700">Adult & Internal Medicine</div>
-      <div>Phone: <span class="font-mono text-slate-700">845-782-3242</span></div>
-      <div>Fax: <span class="font-mono text-slate-700">855-592-1423</span></div>
+    <div class="p-4 border-t border-slate-100 text-xs text-slate-500 space-y-1.5">
+      <div class="font-semibold text-slate-700">Department Contact</div>
+      <div class="flex justify-between">
+        <span>Phone:</span>
+        <span class="font-mono text-slate-800">845-782-3242</span>
+      </div>
+      <div class="flex justify-between">
+        <span>Fax:</span>
+        <span class="font-mono text-slate-800">855-592-1423</span>
+      </div>
     </div>
   </aside>
 
   <!-- Main Content Area -->
-  <div class="flex-1 ml-64 flex flex-col min-h-screen">
+  <div class="flex-1 ml-60 flex flex-col min-h-screen">
 
-    <!-- Top Pure Hybrid Search Bar -->
+    <!-- Top Search Bar -->
     <header class="bg-white border-b border-slate-200 px-8 py-3.5 sticky top-0 z-20">
       <div class="max-w-5xl flex items-center gap-3">
         <div class="relative flex-1">
@@ -84,106 +90,98 @@
           <input
             id="searchInput"
             type="text"
-            placeholder="Search SOP rules, providers, insurance, or visit types (e.g., MVP, CDL, 2020 form, UHC)..."
-            class="w-full pl-10 pr-20 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#00897b] focus:border-transparent transition"
+            placeholder="Search guidelines, providers, insurance, or visit types..."
+            class="w-full pl-10 pr-16 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent transition"
           />
-          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-700 font-medium">
+          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 hover:text-slate-800 font-medium">
             Clear
           </button>
         </div>
-        <button onclick="executeSearch()" class="teal-primary teal-primary-hover text-white text-sm font-medium px-5 py-2 rounded-lg shadow-sm transition shrink-0">
+        <button onclick="executeSearch()" class="brand-bg brand-bg-hover text-white text-sm font-medium px-5 py-2 rounded-lg transition shrink-0">
           Search
         </button>
       </div>
     </header>
 
     <main class="p-8 max-w-5xl w-full flex-1">
-      <div id="loadingIndicator" class="text-sm text-slate-500 py-10">Loading Aizer Health SOP records...</div>
+      <div id="loadingIndicator" class="text-sm text-slate-500 py-10">Loading guidelines...</div>
 
-      <!-- PURE HYBRID SEARCH RESULTS VIEW -->
+      <!-- SEARCH RESULTS VIEW -->
       <section id="searchSection" class="hidden space-y-5">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-          <div>
-            <h1 class="text-xl font-bold text-slate-900">Hybrid Search Results</h1>
-            <p class="text-xs text-slate-500 mt-0.5">Ranked by Reciprocal Rank Fusion (D1 BM25 + Vectorize Semantic Search)</p>
-          </div>
-          <button onclick="clearSearch()" class="text-xs font-medium teal-text hover:underline">
-            &larr; Return to Section
+          <h1 class="text-xl font-bold text-slate-900">Search Results</h1>
+          <button onclick="clearSearch()" class="text-xs font-medium text-slate-600 hover:text-slate-900">
+            &larr; Back
           </button>
         </div>
         <div id="searchResultsContainer" class="space-y-4"></div>
       </section>
 
       <!-- SECTION 1: KNOWLEDGE BASE -->
-      <section id="section-kb" class="content-section hidden space-y-6">
-        <div>
-          <h1 class="text-2xl font-bold text-slate-900">Knowledge Base</h1>
-          <p class="text-sm text-slate-500 mt-1">Complete SOP and operational guidelines, categorized for quick reference.</p>
-        </div>
+      <section id="section-kb" class="content-section hidden space-y-5">
+        <h1 class="text-2xl font-bold text-slate-900">Knowledge Base</h1>
 
-        <div id="kbPills" class="flex flex-wrap gap-2.5">
-          <button onclick="filterKB('ALL', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-semibold teal-primary text-white shadow-sm transition">All Guidelines</button>
-          <button onclick="filterKB('Core Scheduling Rules', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">Governing Principles</button>
-          <button onclick="filterKB('Directory & Locations', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">Clinic Departments & Directory</button>
-          <button onclick="filterKB('Nurse & Lab Services', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">Nurse & Lab Services</button>
-          <button onclick="filterKB('Telephone Encounter (TE) Routing', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">Telephone Encounters (TE)</button>
-          <button onclick="filterKB('Referrals & Prior Authorizations', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">Referrals & Prior Authorizations</button>
-          <button onclick="filterKB('Special Operational Policies', this)" class="kb-pill px-4 py-2 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">Dr. Derman & HIPAA Policies</button>
+        <!-- Single-Row Filter Pills Matching Actual Categories -->
+        <div id="kbPills" class="flex items-center gap-2 overflow-x-auto pb-1">
+          <button onclick="filterKB('ALL', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white whitespace-nowrap transition">All</button>
+          <button onclick="filterKB('Core Scheduling Rules', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 whitespace-nowrap transition">Core Scheduling Rules</button>
+          <button onclick="filterKB('Directory & Locations', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 whitespace-nowrap transition">Directory & Locations</button>
+          <button onclick="filterKB('Nurse & Lab Services', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 whitespace-nowrap transition">Nurse & Lab Services</button>
+          <button onclick="filterKB('Telephone Encounter (TE) Routing', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 whitespace-nowrap transition">TE Routing</button>
+          <button onclick="filterKB('Referrals & Prior Authorizations', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 whitespace-nowrap transition">Referrals & Auth</button>
+          <button onclick="filterKB('Special Operational Policies', this)" class="kb-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 whitespace-nowrap transition">Special Policies</button>
         </div>
 
         <div id="kbCardsContainer" class="space-y-4"></div>
       </section>
 
-      <!-- SECTION 2: PROVIDERS & SPECIALTY PROVIDERS -->
+      <!-- SECTION 2: PROVIDERS & SPECIALISTS (Open Scannable Cards) -->
       <section id="section-providers" class="content-section hidden space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div>
-            <h1 class="text-2xl font-bold text-slate-900">Providers & Specialty Providers</h1>
-            <p class="text-sm text-slate-500 mt-1">Complete directory of all providers, their schedules, and scheduling rules.</p>
-          </div>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h1 class="text-2xl font-bold text-slate-900">Providers & Specialists</h1>
           <div class="flex gap-2">
-            <button onclick="filterProviders('ALL', this)" class="prov-pill px-3 py-1.5 rounded-lg text-xs font-semibold teal-primary text-white">All</button>
-            <button onclick="filterProviders('Bakertown', this)" class="prov-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50">Bakertown (3rd Fl)</button>
-            <button onclick="filterProviders('Forest Rd', this)" class="prov-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50">Forest Rd (2nd Fl)</button>
+            <button onclick="filterProviders('ALL', this)" class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white">All Locations</button>
+            <button onclick="filterProviders('Bakertown', this)" class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">Bakertown (3rd Fl)</button>
+            <button onclick="filterProviders('Forest Rd', this)" class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-slate-200 text-slate-700 hover:bg-slate-50">Forest Rd (2nd Fl)</button>
           </div>
         </div>
-        <div id="providersAccordionContainer" class="space-y-3"></div>
+
+        <div class="space-y-3">
+          <h2 class="text-sm font-semibold text-slate-500">Primary Care Providers</h2>
+          <div id="pcpCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+
+        <div class="space-y-3 pt-2">
+          <h2 class="text-sm font-semibold text-slate-500">Specialty Providers</h2>
+          <div id="specCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
       </section>
 
       <!-- SECTION 3: TYPES OF VISITS -->
-      <section id="section-visits" class="content-section hidden space-y-6">
-        <div>
-          <h1 class="text-2xl font-bold text-slate-900">Types of Visits</h1>
-          <p class="text-sm text-slate-500 mt-1">Scheduling rules and duration requirements for every visit type.</p>
-        </div>
-        <div id="visitsGridContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+      <section id="section-visits" class="content-section hidden space-y-5">
+        <h1 class="text-2xl font-bold text-slate-900">Types of Visits</h1>
+        <div id="visitsGridContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </section>
 
-      <!-- SECTION 4: DEDICATED DECISION ASSISTANT -->
-      <section id="section-assistant" class="content-section hidden space-y-6">
-        <div>
-          <h1 class="text-2xl font-bold text-slate-900">Decision Assistant</h1>
-          <p class="text-sm text-slate-500 mt-1">Ask a direct question, verify scheduling eligibility, or check TE queue routing.</p>
-        </div>
+      <!-- SECTION 4: DECISION ASSISTANT -->
+      <section id="section-assistant" class="content-section hidden space-y-5">
+        <h1 class="text-2xl font-bold text-slate-900">Decision Assistant</h1>
 
-        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
-          <label for="askInput" class="block text-xs font-bold uppercase tracking-wider text-slate-500">
-            Enter Call Center Scenario or Question
-          </label>
+        <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3.5">
           <div class="flex flex-col sm:flex-row gap-3">
             <input
               id="askInput"
               type="text"
-              placeholder="e.g., Can I book a 66-year-old new patient with Adam Tilson?"
-              class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#00897b] focus:border-transparent transition"
+              placeholder="Ask a booking eligibility, routing, or policy question..."
+              class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent transition"
             />
-            <button onclick="executeDecision()" class="teal-primary teal-primary-hover text-white text-sm font-semibold px-6 py-2.5 rounded-lg shadow-sm transition shrink-0">
-              Evaluate Rule
+            <button onclick="executeDecision()" class="brand-bg brand-bg-hover text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition shrink-0">
+              Check Rule
             </button>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2 pt-1">
-            <span class="text-xs text-slate-400">Quick tests:</span>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs text-slate-400">Examples:</span>
             <button onclick="runQuickAsk('Can I book a 66-year-old new patient with Adam Tilson?')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md transition">
               66yo NP with Adam Tilson
             </button>
@@ -209,19 +207,66 @@
     let kbRecords = [];
     let activeSection = 'kb';
 
+    // Abbreviation-safe sentence splitter (fixes "Dr.", "Ext.", "a.m.", "p.m.", etc.)
     function extractBulletLines(content) {
-      return content.split(/(?<=\.)\s+/).map(s => s.trim()).filter(s => s.length > 3);
+      if (!content) return [];
+      const protectedText = content.replace(
+        /\b(Dr|Mr|Mrs|Ms|Ext|St|Rd|Ave|vs|e\.g|i\.e|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\./gi,
+        '$1__DOT__'
+      );
+      return protectedText
+        .split(/\.\s+/)
+        .map(s => s.replace(/__DOT__/g, '.').trim())
+        .filter(s => s.length > 2)
+        .map(s => (s.endsWith('.') || s.endsWith(':') ? s : s + '.'));
+    }
+
+    // Format structured JSON `rules` into clean, scannable key-value badges
+    function renderStructuredChips(rules) {
+      if (!rules || typeof rules !== 'object') return '';
+      const entries = Object.entries(rules);
+      if (!entries.length) return '';
+
+      return `
+        <div class="flex flex-wrap gap-1.5 mb-3.5">
+          ${entries.map(([key, val]) => {
+            const cleanKey = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            let cleanVal = '';
+            if (Array.isArray(val)) cleanVal = val.join(', ');
+            else if (typeof val === 'object' && val !== null) {
+              cleanVal = Object.entries(val).map(([k, v]) => `${k}: ${v}`).join(' | ');
+            } else if (typeof val === 'boolean') {
+              cleanVal = val ? 'Yes' : 'No';
+            } else {
+              cleanVal = String(val);
+            }
+
+            // Semantic highlight for restrictions/warnings
+            let chipStyle = 'bg-slate-100 text-slate-700 border-slate-200';
+            if (val === false || String(val).toLowerCase().includes('only')) {
+              chipStyle = 'bg-rose-50 text-rose-800 border-rose-200';
+            } else if (key.includes('fee') || key.includes('code') || key.includes('queue')) {
+              chipStyle = 'bg-amber-50 text-amber-900 border-amber-200';
+            }
+
+            return `<span class="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-md border ${chipStyle}">
+              <span class="font-medium opacity-75">${cleanKey}:</span>
+              <span class="font-semibold">${cleanVal}</span>
+            </span>`;
+          }).join('')}
+        </div>
+      `;
     }
 
     function formatPct(val) {
-      return `${(Number(val || 0) * 100).toFixed(1)}%`;
+      return `${(Number(val || 0) * 100).toFixed(0)}%`;
     }
 
     function copyText(text, btnEl) {
       navigator.clipboard.writeText(text);
       const original = btnEl.innerText;
-      btnEl.innerText = 'Copied!';
-      setTimeout(() => { btnEl.innerText = original; }, 1500);
+      btnEl.innerText = 'Copied';
+      setTimeout(() => { btnEl.innerText = original; }, 1400);
     }
 
     async function loadKB() {
@@ -235,7 +280,7 @@
         renderVisits();
         switchSection('kb');
       } catch (e) {
-        document.getElementById('loadingIndicator').innerText = 'Failed to load SOP records.';
+        document.getElementById('loadingIndicator').innerText = 'Unable to load guidelines right now.';
       }
     }
 
@@ -243,17 +288,18 @@
       activeSection = section;
       clearSearch(false);
       document.querySelectorAll('.nav-item').forEach(el => {
-        el.classList.remove('teal-soft-bg', 'teal-text');
+        el.classList.remove('brand-soft', 'brand-text');
         el.classList.add('text-slate-600', 'hover:bg-slate-50');
       });
       const currentNav = document.getElementById(`nav-${section}`);
-      currentNav.classList.add('teal-soft-bg', 'teal-text');
+      currentNav.classList.add('brand-soft', 'brand-text');
       currentNav.classList.remove('text-slate-600', 'hover:bg-slate-50');
 
       document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
       document.getElementById(`section-${section}`).classList.remove('hidden');
     }
 
+    // 1. Render Knowledge Base
     function renderKB(category) {
       const kbCategories = [
         'Core Scheduling Rules', 'Directory & Locations', 'Nurse & Lab Services',
@@ -264,21 +310,16 @@
 
       document.getElementById('kbCardsContainer').innerHTML = list.map(item => {
         const bullets = extractBulletLines(item.content);
+        const chips = renderStructuredChips(item.rules);
         return `
-          <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
-            <div class="flex items-center gap-3.5 mb-4">
-              <div class="w-9 h-9 rounded-lg teal-soft-bg teal-text flex items-center justify-center shrink-0">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              </div>
-              <div>
-                <h3 class="text-base font-bold text-slate-900">${item.entity}</h3>
-                <span class="text-xs text-slate-400">${item.category}</span>
-              </div>
+          <div class="bg-white border border-slate-200 rounded-xl p-5">
+            <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+              <h3 class="text-base font-bold text-slate-900">${item.entity}</h3>
+              <span class="text-xs text-slate-400">${item.category}</span>
             </div>
-            <ul class="space-y-2.5 pl-1">
-              ${bullets.map(b => `<li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"><span class="teal-text font-bold mt-0.5">&rsaquo;</span><span>${b}</span></li>`).join('')}
+            ${chips}
+            <ul class="space-y-2 text-sm text-slate-700">
+              ${bullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-slate-400 select-none">&bull;</span><span>${b}</span></li>`).join('')}
             </ul>
           </div>`;
       }).join('');
@@ -286,96 +327,87 @@
 
     function filterKB(category, btnEl) {
       document.querySelectorAll('.kb-pill').forEach(btn => {
-        btn.classList.remove('teal-primary', 'text-white', 'font-semibold', 'shadow-sm');
+        btn.classList.remove('bg-slate-900', 'text-white', 'font-semibold');
         btn.classList.add('bg-white', 'border', 'border-slate-200', 'text-slate-700', 'font-medium');
       });
-      btnEl.classList.add('teal-primary', 'text-white', 'font-semibold', 'shadow-sm');
+      btnEl.classList.add('bg-slate-900', 'text-white', 'font-semibold');
       btnEl.classList.remove('bg-white', 'border', 'border-slate-200', 'text-slate-700', 'font-medium');
       renderKB(category);
     }
 
-    function renderProviders(locationFilter) {
-      let providers = kbRecords.filter(r => r.category === 'Primary Care Provider' || r.category === 'Specialist Provider');
-      if (locationFilter !== 'ALL') {
-        providers = providers.filter(p => p.content.toLowerCase().includes(locationFilter.toLowerCase()));
-      }
+    // 2. Render Providers & Specialists (Open Scannable Cards)
+    function renderProviderCard(prov) {
+      const isPCP = prov.category === 'Primary Care Provider';
+      let roleLabel = isPCP ? 'Physician Assistant' : (prov.rules?.specialty || 'Specialist');
+      if (prov.entity.includes('MD') && isPCP) roleLabel = 'Medical Doctor';
 
-      document.getElementById('providersAccordionContainer').innerHTML = providers.map((prov, idx) => {
-        const isPCP = prov.category === 'Primary Care Provider';
-        let badge = isPCP ? 'Physician Assistant' : (prov.rules?.specialty || 'Specialist');
-        if (prov.entity.includes('MD') && isPCP) badge = 'Medical Doctor (Sole MD)';
-        const deptLabel = isPCP ? 'Adult Medicine Department' : `${prov.rules?.specialty || 'Specialty'} — Forest Rd (2nd Fl)`;
-        const bullets = extractBulletLines(prov.content);
-        const isOpen = idx === 0;
+      const bullets = extractBulletLines(prov.content);
+      const chips = renderStructuredChips(prov.rules);
 
-        return `
-          <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-            <button onclick="toggleAccordion('prov-body-${prov.id}', 'prov-chev-${prov.id}')" class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-slate-50/60 transition">
-              <div class="flex items-center gap-4">
-                <div class="w-10 h-10 rounded-lg teal-soft-bg teal-text flex items-center justify-center shrink-0">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 6.75A2.25 2.25 0 016.75 4.5h1.5a2.25 2.25 0 012.25 2.25v3a3.75 3.75 0 01-7.5 0v-3zM6.75 13.5v2.25a4.5 4.5 0 009 0V12m0 0a2.25 2.25 0 104.5 0 2.25 2.25 0 00-4.5 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <div class="flex flex-wrap items-center gap-2.5">
-                    <span class="font-bold text-slate-900 text-base">${prov.entity}</span>
-                    <span class="text-xs font-medium px-2.5 py-0.5 rounded-full teal-soft-bg teal-text">${badge}</span>
-                  </div>
-                  <div class="text-xs text-slate-500 mt-0.5">${deptLabel}</div>
-                </div>
-              </div>
-              <svg id="prov-chev-${prov.id}" class="w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div id="prov-body-${prov.id}" class="${isOpen ? '' : 'hidden'} px-6 pb-5 pt-3 border-t border-slate-100">
-              <ul class="space-y-2.5">
-                ${bullets.map(b => `<li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"><svg class="w-4 h-4 teal-text shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01" /></svg><span>${b}</span></li>`).join('')}
-              </ul>
+      return `
+        <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <h3 class="text-base font-bold text-slate-900">${prov.entity}</h3>
+              <span class="text-xs font-medium px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700">${roleLabel}</span>
             </div>
-          </div>`;
-      }).join('');
+            ${chips}
+            <ul class="space-y-2 text-sm text-slate-700">
+              ${bullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-slate-400 select-none">&bull;</span><span>${b}</span></li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      `;
     }
 
-    function toggleAccordion(bodyId, chevId) {
-      document.getElementById(bodyId).classList.toggle('hidden');
-      document.getElementById(chevId).classList.toggle('rotate-180');
+    function renderProviders(locationFilter) {
+      let pcps = kbRecords.filter(r => r.category === 'Primary Care Provider');
+      let specs = kbRecords.filter(r => r.category === 'Specialist Provider');
+
+      if (locationFilter !== 'ALL') {
+        pcps = pcps.filter(p => p.content.toLowerCase().includes(locationFilter.toLowerCase()));
+        specs = specs.filter(p => p.content.toLowerCase().includes(locationFilter.toLowerCase()));
+      }
+
+      document.getElementById('pcpCardsContainer').innerHTML = pcps.length
+        ? pcps.map(renderProviderCard).join('')
+        : '<p class="text-sm text-slate-500">No Primary Care Providers at this location.</p>';
+
+      document.getElementById('specCardsContainer').innerHTML = specs.length
+        ? specs.map(renderProviderCard).join('')
+        : '<p class="text-sm text-slate-500">No Specialty Providers at this location.</p>';
     }
 
     function filterProviders(loc, btnEl) {
       document.querySelectorAll('.prov-pill').forEach(btn => {
-        btn.classList.remove('teal-primary', 'text-white', 'font-semibold');
-        btn.classList.add('bg-white', 'border', 'border-slate-200', 'text-slate-600', 'font-medium');
+        btn.classList.remove('bg-slate-900', 'text-white', 'font-semibold');
+        btn.classList.add('bg-white', 'border', 'border-slate-200', 'text-slate-700', 'font-medium');
       });
-      btnEl.classList.add('teal-primary', 'text-white', 'font-semibold');
-      btnEl.classList.remove('bg-white', 'border', 'border-slate-200', 'text-slate-600', 'font-medium');
+      btnEl.classList.add('bg-slate-900', 'text-white', 'font-semibold');
+      btnEl.classList.remove('bg-white', 'border', 'border-slate-200', 'text-slate-700', 'font-medium');
       renderProviders(loc);
     }
 
+    // 3. Render Types of Visits
     function renderVisits() {
       const visits = kbRecords.filter(r => r.category === 'Visit Types');
       document.getElementById('visitsGridContainer').innerHTML = visits.map(v => {
         const bullets = extractBulletLines(v.content);
+        const chips = renderStructuredChips(v.rules);
         return `
-          <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs flex flex-col justify-between">
+          <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between">
             <div>
-              <div class="flex items-center gap-3.5 mb-4">
-                <div class="w-9 h-9 rounded-lg teal-soft-bg teal-text flex items-center justify-center shrink-0">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <h3 class="text-base font-bold text-slate-900">${v.entity}</h3>
-              </div>
-              <ul class="space-y-2.5">
-                ${bullets.map(b => `<li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"><svg class="w-4 h-4 text-slate-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg><span>${b}</span></li>`).join('')}
+              <h3 class="text-base font-bold text-slate-900 mb-3">${v.entity}</h3>
+              ${chips}
+              <ul class="space-y-2 text-sm text-slate-700">
+                ${bullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-slate-400 select-none">&bull;</span><span>${b}</span></li>`).join('')}
               </ul>
             </div>
           </div>`;
       }).join('');
     }
 
+    // 4. Clean Search Results (No technical jargon or RRF scores)
     async function executeSearch() {
       const query = document.getElementById('searchInput').value.trim();
       if (!query) return;
@@ -386,7 +418,7 @@
       const container = document.getElementById('searchResultsContainer');
 
       searchSec.classList.remove('hidden');
-      container.innerHTML = '<div class="text-sm text-slate-500">Searching Hybrid Index...</div>';
+      container.innerHTML = '<div class="text-sm text-slate-500">Searching...</div>';
 
       const res = await fetch('/search', {
         method: 'POST',
@@ -397,23 +429,22 @@
       const results = data.results || [];
 
       if (!results.length) {
-        container.innerHTML = '<div class="text-sm text-slate-500">No matching SOP rules found.</div>';
+        container.innerHTML = '<div class="text-sm text-slate-500">No matching guidelines found.</div>';
         return;
       }
 
       container.innerHTML = results.map(item => {
         const bullets = extractBulletLines(item.content);
+        const chips = renderStructuredChips(item.rules);
         return `
-          <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center gap-3">
-                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full teal-soft-bg teal-text">${item.category}</span>
-                <h3 class="text-base font-bold text-slate-900">${item.entity}</h3>
-              </div>
-              <span class="text-xs font-mono text-slate-400">RRF Score: ${item.score}</span>
+          <div class="bg-white border border-slate-200 rounded-xl p-5">
+            <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+              <h3 class="text-base font-bold text-slate-900">${item.entity}</h3>
+              <span class="text-xs text-slate-400">${item.category}</span>
             </div>
-            <ul class="space-y-2 pl-1">
-              ${bullets.map(b => `<li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"><span class="teal-text font-bold mt-0.5">&rsaquo;</span><span>${b}</span></li>`).join('')}
+            ${chips}
+            <ul class="space-y-2 text-sm text-slate-700">
+              ${bullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-slate-400 select-none">&bull;</span><span>${b}</span></li>`).join('')}
             </ul>
           </div>`;
       }).join('');
@@ -426,6 +457,7 @@
       if (restore) document.getElementById(`section-${activeSection}`).classList.remove('hidden');
     }
 
+    // 5. Decision Assistant (Single Clean Confidence Badge + Staff-Friendly Error)
     function runQuickAsk(question) {
       document.getElementById('askInput').value = question;
       executeDecision();
@@ -436,7 +468,7 @@
       if (!query) return;
 
       const out = document.getElementById('decisionOutputContainer');
-      out.innerHTML = '<div class="text-sm text-slate-500">Evaluating SOP rule...</div>';
+      out.innerHTML = '<div class="text-sm text-slate-500">Checking clinic rules...</div>';
 
       try {
         const res = await fetch('/decide', {
@@ -444,111 +476,85 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ query })
         });
-        if (!res.ok) throw new Error('Decision server offline');
+        if (!res.ok) throw new Error('Service unavailable');
         const data = await res.json();
 
-        const intentConf = formatPct(data.detected_intent?.confidence);
-        const intentMetaBadge = `<span class="text-xs font-mono bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md">Intent Confidence: ${intentConf}</span>`;
         let primaryCardHtml = '';
 
-        // 1. Direct Fact Lookup Card
         if (data.mode === 'fact_lookup' && data.direct_fact) {
           const safeAns = data.direct_fact.answer.replace(/'/g, "\\'");
-          const factConf = formatPct(data.direct_fact.confidence);
+          const conf = formatPct(data.direct_fact.confidence);
           primaryCardHtml = `
-            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
-              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                <span class="text-xs font-bold uppercase tracking-wider teal-text">Direct Answer</span>
-                <div class="flex items-center gap-2">
-                  ${intentMetaBadge}
-                  <span class="text-xs font-mono font-semibold bg-teal-50 teal-text px-2.5 py-1 rounded-md">Extraction Confidence: ${factConf}</span>
-                </div>
+            <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500">Answer</span>
+                <span class="text-xs font-mono text-slate-500">Confidence: ${conf}</span>
               </div>
-              <div class="flex items-center justify-between gap-4 bg-teal-50/60 border border-teal-200/70 rounded-lg px-5 py-4">
-                <div class="text-xl font-bold text-slate-900 font-mono">${data.direct_fact.answer}</div>
-                <button onclick="copyText('${safeAns}', this)" class="teal-primary teal-primary-hover text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition shrink-0">
+              <div class="flex items-center justify-between gap-4 bg-slate-50 border border-slate-200 rounded-lg px-4 py-3.5">
+                <div class="text-lg font-bold text-slate-900 font-mono">${data.direct_fact.answer}</div>
+                <button onclick="copyText('${safeAns}', this)" class="brand-bg brand-bg-hover text-white text-xs font-medium px-3.5 py-1.5 rounded-md transition shrink-0">
                   Copy
                 </button>
               </div>
             </div>
           `;
-        }
-
-        // 2. Yes / No Eligibility Gate Card (With Explicit Confidence Score Badge)
-        else if (data.mode === 'yes_no_gate' && data.yes_no_gate) {
+        } else if (data.mode === 'yes_no_gate' && data.yes_no_gate) {
           const yn = data.yes_no_gate.decision || '';
-          const ynConf = formatPct(data.yes_no_gate.confidence);
-          let boxStyle = 'bg-teal-50 text-teal-900 border-teal-200';
-          let pillStyle = 'bg-teal-600 text-white';
+          const conf = formatPct(data.yes_no_gate.confidence);
+          let boxStyle = 'bg-emerald-50 text-emerald-950 border-emerald-200';
+          let badgeStyle = 'bg-emerald-100 text-emerald-800';
 
           if (yn.startsWith('NO')) {
-            boxStyle = 'bg-rose-50 text-rose-900 border-rose-200';
-            pillStyle = 'bg-rose-600 text-white';
+            boxStyle = 'bg-rose-50 text-rose-950 border-rose-200';
+            badgeStyle = 'bg-rose-100 text-rose-800';
           } else if (yn.startsWith('CONDITIONAL')) {
-            boxStyle = 'bg-amber-50 text-amber-900 border-amber-200';
-            pillStyle = 'bg-amber-600 text-white';
+            boxStyle = 'bg-amber-50 text-amber-950 border-amber-200';
+            badgeStyle = 'bg-amber-100 text-amber-900';
           }
 
           primaryCardHtml = `
-            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
-              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                <span class="text-xs font-bold uppercase tracking-wider teal-text">Eligibility Verification (${data.yes_no_gate.method})</span>
-                <div class="flex items-center gap-2">
-                  ${intentMetaBadge}
-                  <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded-md ${pillStyle}">Decision Confidence: ${ynConf}</span>
-                </div>
+            <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500">Eligibility Check</span>
+                <span class="text-xs font-mono font-medium px-2 py-0.5 rounded ${badgeStyle}">Confidence: ${conf}</span>
               </div>
               <div class="p-4 rounded-lg border ${boxStyle}">
-                <div class="flex items-center justify-between gap-2">
-                  <div class="text-lg font-bold">${yn}</div>
-                  <span class="text-xs font-mono font-bold opacity-80">Score: ${ynConf}</span>
-                </div>
-                <p class="text-sm mt-2 leading-relaxed opacity-90">${data.yes_no_gate.explanation}</p>
+                <div class="text-base font-bold">${yn}</div>
+                <p class="text-sm mt-1.5 leading-relaxed">${data.yes_no_gate.explanation}</p>
               </div>
             </div>
           `;
-        }
-
-        // 3. Queue / Action Routing Card
-        else if (data.mode === 'queue_routing' && data.routing_classification) {
+        } else if (data.mode === 'queue_routing' && data.routing_classification) {
           const rc = data.routing_classification;
-          const routeConf = formatPct(rc.confidence);
+          const conf = formatPct(rc.confidence);
           primaryCardHtml = `
-            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
-              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                <span class="text-xs font-bold uppercase tracking-wider teal-text">Recommended Workflow / Routing</span>
-                <div class="flex items-center gap-2">
-                  ${intentMetaBadge}
-                  <span class="text-xs font-mono font-semibold bg-teal-50 teal-text px-2.5 py-1 rounded-md">Routing Confidence: ${routeConf}</span>
-                </div>
+            <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-500">Recommended Routing</span>
+                <span class="text-xs font-mono text-slate-500">Confidence: ${conf}</span>
               </div>
-              <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between gap-4">
-                <div>
-                  <div class="text-xs font-semibold uppercase text-slate-400 mb-1">Destination Queue / Action</div>
-                  <div class="text-lg font-bold text-slate-900">${rc.action}</div>
-                </div>
-                <span class="text-xs font-mono font-semibold bg-white border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg">Score: ${routeConf}</span>
+              <div class="p-4 rounded-lg bg-slate-50 border border-slate-200">
+                <div class="text-base font-bold text-slate-900">${rc.action}</div>
               </div>
             </div>
           `;
         }
 
         const srcBullets = extractBulletLines(data.matched_source.content);
+        const srcChips = renderStructuredChips(data.matched_source.rules);
 
         out.innerHTML = `
-          <div class="space-y-5">
+          <div class="space-y-4">
             ${primaryCardHtml}
 
-            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
-              <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                <div class="flex items-center gap-2.5">
-                  <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full teal-soft-bg teal-text">${data.matched_source.category}</span>
-                  <h3 class="text-base font-bold text-slate-900">Matched Policy: ${data.matched_source.entity}</h3>
-                </div>
-                <span class="text-xs font-mono text-slate-400">Retrieval RRF: ${data.matched_source.score}</span>
+            <div class="bg-white border border-slate-200 rounded-xl p-5">
+              <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+                <h3 class="text-base font-bold text-slate-900">${data.matched_source.entity}</h3>
+                <span class="text-xs text-slate-400">${data.matched_source.category}</span>
               </div>
-              <ul class="space-y-2 pl-1">
-                ${srcBullets.map(b => `<li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"><span class="teal-text font-bold mt-0.5">&rsaquo;</span><span>${b}</span></li>`).join('')}
+              ${srcChips}
+              <ul class="space-y-2 text-sm text-slate-700">
+                ${srcBullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-slate-400 select-none">&bull;</span><span>${b}</span></li>`).join('')}
               </ul>
             </div>
           </div>
@@ -556,7 +562,7 @@
       } catch (err) {
         out.innerHTML = `
           <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-4 text-sm">
-            <strong>Local GLiClass Engine Offline:</strong> To use the Decision Assistant, open the app via Codespace Port <strong>8000</strong> while <code>uvicorn app:app</code> is running.
+            Decision Assistant is currently unavailable. Please use the top Search bar or contact IT support.
           </div>
         `;
       }
