@@ -52,6 +52,15 @@
           </svg>
           <span>Types of Visits</span>
         </button>
+
+        <div class="pt-3 mt-3 border-t border-slate-100">
+          <button id="nav-assistant" onclick="switchSection('assistant')" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Decision Assistant</span>
+          </button>
+        </div>
       </nav>
     </div>
 
@@ -65,7 +74,7 @@
   <!-- Main Content Area -->
   <div class="flex-1 ml-64 flex flex-col min-h-screen">
 
-    <!-- Top Search & Decision Bar -->
+    <!-- Top Pure Hybrid Search Bar (Strictly for searching SOP rules) -->
     <header class="bg-white border-b border-slate-200 px-8 py-3.5 sticky top-0 z-20">
       <div class="max-w-5xl flex items-center gap-3">
         <div class="relative flex-1">
@@ -75,7 +84,7 @@
           <input
             id="searchInput"
             type="text"
-            placeholder="Ask a decision question or search SOP (e.g., Can I book a 66-year-old new patient with Adam Tilson?)..."
+            placeholder="Search SOP rules, providers, insurance, or visit types (e.g., MVP, CDL, 2020 form, UHC)..."
             class="w-full pl-10 pr-20 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#00897b] focus:border-transparent transition"
           />
           <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-700 font-medium">
@@ -83,7 +92,7 @@
           </button>
         </div>
         <button onclick="executeSearch()" class="teal-primary teal-primary-hover text-white text-sm font-medium px-5 py-2 rounded-lg shadow-sm transition shrink-0">
-          Ask / Search
+          Search
         </button>
       </div>
     </header>
@@ -91,26 +100,18 @@
     <main class="p-8 max-w-5xl w-full flex-1">
       <div id="loadingIndicator" class="text-sm text-slate-500 py-10">Loading Aizer Health SOP records...</div>
 
-      <!-- HYBRID SEARCH + GLICLASS DECISION VIEW -->
-      <section id="searchSection" class="hidden space-y-6">
+      <!-- PURE HYBRID SEARCH RESULTS VIEW -->
+      <section id="searchSection" class="hidden space-y-5">
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
           <div>
-            <h1 class="text-xl font-bold text-slate-900">SOP Decision & Hybrid Search Results</h1>
-            <p class="text-xs text-slate-500 mt-0.5">Powered by D1 + Vectorize Hybrid Search & GLiClass Discriminative Engine</p>
+            <h1 class="text-xl font-bold text-slate-900">Hybrid Search Results</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Ranked by Reciprocal Rank Fusion (D1 BM25 + Vectorize Semantic Search)</p>
           </div>
           <button onclick="clearSearch()" class="text-xs font-medium teal-text hover:underline">
             &larr; Return to Section
           </button>
         </div>
-
-        <!-- GLiClass Decision Engine Output Card -->
-        <div id="decisionCardContainer"></div>
-
-        <!-- Retrieved SOP Rules -->
-        <div>
-          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Matched SOP Rules</h2>
-          <div id="searchResultsContainer" class="space-y-4"></div>
-        </div>
+        <div id="searchResultsContainer" class="space-y-4"></div>
       </section>
 
       <!-- SECTION 1: KNOWLEDGE BASE -->
@@ -157,15 +158,59 @@
         </div>
         <div id="visitsGridContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
       </section>
+
+      <!-- SECTION 4: DEDICATED DECISION ASSISTANT (GLiClass + Rules + Extractive QA) -->
+      <section id="section-assistant" class="content-section hidden space-y-6">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900">Decision Assistant</h1>
+          <p class="text-sm text-slate-500 mt-1">Verify scheduling eligibility (Yes/No), TE queue routing, and quick SOP facts using GLiClass & Rule Engine.</p>
+        </div>
+
+        <!-- Dedicated Ask Box -->
+        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
+          <label for="askInput" class="block text-xs font-bold uppercase tracking-wider text-slate-500">
+            Enter Call Center Scenario or Question
+          </label>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <input
+              id="askInput"
+              type="text"
+              placeholder="e.g., Can I book a 66-year-old new patient with Adam Tilson?"
+              class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#00897b] focus:border-transparent transition"
+            />
+            <button onclick="executeDecision()" class="teal-primary teal-primary-hover text-white text-sm font-semibold px-6 py-2.5 rounded-lg shadow-sm transition shrink-0">
+              Evaluate Rule
+            </button>
+          </div>
+
+          <!-- Quick Test Chips -->
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <span class="text-xs text-slate-400">Quick tests:</span>
+            <button onclick="runQuickAsk('Can I book a 66-year-old new patient with Adam Tilson?')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md transition">
+              66yo NP with Adam Tilson
+            </button>
+            <button onclick="runQuickAsk('Where do I route a Medicaid 2020 transportation form request?')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md transition">
+              2020 Form Routing
+            </button>
+            <button onclick="runQuickAsk('Does Dr. David Coven accept MVP insurance?')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md transition">
+              Dr. Coven + MVP
+            </button>
+            <button onclick="runQuickAsk('What is the department fax number?')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-md transition">
+              Dept Fax Number
+            </button>
+          </div>
+        </div>
+
+        <!-- Decision Output Container -->
+        <div id="decisionOutputContainer"></div>
+      </section>
+
     </main>
   </div>
 
   <script>
     let kbRecords = [];
     let activeSection = 'kb';
-
-    // Detect if running on local FastAPI (port 8000) or Cloudflare Worker directly
-    const isLocalDecisionServer = window.location.port === '8000' || window.location.hostname.includes('app.github.dev');
 
     function extractBulletLines(content) {
       return content.split(/(?<=\.)\s+/).map(s => s.trim()).filter(s => s.length > 3);
@@ -323,54 +368,7 @@
       }).join('');
     }
 
-    function renderDecisionCard(data) {
-      if (!data.yes_no_gate) return '';
-
-      const yn = data.yes_no_gate.decision || '';
-      let badgeStyle = 'bg-teal-50 text-teal-800 border-teal-200';
-      if (yn.startsWith('NO')) badgeStyle = 'bg-rose-50 text-rose-800 border-rose-200';
-      else if (yn.startsWith('CONDITIONAL')) badgeStyle = 'bg-amber-50 text-amber-800 border-amber-200';
-
-      return `
-        <div class="bg-white border-2 border-[#00897b]/30 rounded-xl p-6 shadow-sm space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full teal-primary"></span>
-              <span class="text-xs font-bold uppercase tracking-wider teal-text">GLiClass & Rule Decision Engine</span>
-            </div>
-            <span class="text-xs text-slate-400">Intent: ${data.detected_intent.type}</span>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- 1. Yes / No Gate -->
-            <div class="p-3.5 rounded-lg border ${badgeStyle}">
-              <div class="text-[11px] font-semibold uppercase opacity-75 mb-1">Eligibility / Gate</div>
-              <div class="text-sm font-bold">${yn}</div>
-              <div class="text-[11px] opacity-75 mt-1">${data.yes_no_gate.method}</div>
-            </div>
-
-            <!-- 2. GLiClass Routing -->
-            <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200">
-              <div class="text-[11px] font-semibold uppercase text-slate-400 mb-1">Recommended Queue / Action</div>
-              <div class="text-sm font-bold text-slate-900">${data.routing_classification.action}</div>
-              <div class="text-[11px] text-slate-400 mt-1">Confidence: ${(data.routing_classification.confidence * 100).toFixed(1)}%</div>
-            </div>
-
-            <!-- 3. Direct Fact Extraction -->
-            <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200">
-              <div class="text-[11px] font-semibold uppercase text-slate-400 mb-1">Extracted Fact</div>
-              <div class="text-sm font-bold teal-text">${data.direct_fact.answer}</div>
-              <div class="text-[11px] text-slate-400 mt-1">MiniLM QA (${(data.direct_fact.confidence * 100).toFixed(1)}%)</div>
-            </div>
-          </div>
-
-          <div class="text-sm text-slate-700 bg-slate-50/70 px-4 py-3 rounded-lg border border-slate-100">
-            <strong>Rule Summary:</strong> ${data.yes_no_gate.explanation}
-          </div>
-        </div>
-      `;
-    }
-
+    // 1. PURE HYBRID SEARCH (/search ONLY)
     async function executeSearch() {
       const query = document.getElementById('searchInput').value.trim();
       if (!query) return;
@@ -378,25 +376,18 @@
       document.getElementById('clearSearchBtn').classList.remove('hidden');
       document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
       const searchSec = document.getElementById('searchSection');
-      const decisionContainer = document.getElementById('decisionCardContainer');
       const container = document.getElementById('searchResultsContainer');
 
       searchSec.classList.remove('hidden');
-      decisionContainer.innerHTML = '';
-      container.innerHTML = '<div class="text-sm text-slate-500">Evaluating SOP rules...</div>';
+      container.innerHTML = '<div class="text-sm text-slate-500">Searching Hybrid Index...</div>';
 
-      const endpoint = isLocalDecisionServer ? '/decide' : '/search';
-      const res = await fetch(endpoint, {
+      const res = await fetch('/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query })
+        body: JSON.stringify({ query, topK: 5 })
       });
       const data = await res.json();
       const results = data.results || [];
-
-      if (data.yes_no_gate) {
-        decisionContainer.innerHTML = renderDecisionCard(data);
-      }
 
       if (!results.length) {
         container.innerHTML = '<div class="text-sm text-slate-500">No matching SOP rules found.</div>';
@@ -428,8 +419,94 @@
       if (restore) document.getElementById(`section-${activeSection}`).classList.remove('hidden');
     }
 
+    // 2. DEDICATED DECISION ASSISTANT (/decide ONLY)
+    function runQuickAsk(question) {
+      document.getElementById('askInput').value = question;
+      executeDecision();
+    }
+
+    async function executeDecision() {
+      const query = document.getElementById('askInput').value.trim();
+      if (!query) return;
+
+      const out = document.getElementById('decisionOutputContainer');
+      out.innerHTML = '<div class="text-sm text-slate-500">Running GLiClass & Rule Engine...</div>';
+
+      try {
+        const res = await fetch('/decide', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query })
+        });
+        if (!res.ok) throw new Error('Decision server offline');
+        const data = await res.json();
+
+        const yn = data.yes_no_gate.decision || '';
+        let badgeStyle = 'bg-teal-50 text-teal-800 border-teal-200';
+        if (yn.startsWith('NO')) badgeStyle = 'bg-rose-50 text-rose-800 border-rose-200';
+        else if (yn.startsWith('CONDITIONAL')) badgeStyle = 'bg-amber-50 text-amber-800 border-amber-200';
+
+        const srcBullets = extractBulletLines(data.matched_source.content);
+
+        out.innerHTML = `
+          <div class="space-y-5">
+            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-5">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <span class="text-xs font-bold uppercase tracking-wider teal-text">Decision Result</span>
+                <span class="text-xs text-slate-400">Detected Type: ${data.detected_intent.type}</span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 rounded-lg border ${badgeStyle}">
+                  <div class="text-[11px] font-semibold uppercase opacity-75 mb-1">Eligibility / Gate</div>
+                  <div class="text-base font-bold">${yn}</div>
+                  <div class="text-[11px] opacity-75 mt-1">${data.yes_no_gate.method}</div>
+                </div>
+
+                <div class="p-4 rounded-lg bg-slate-50 border border-slate-200">
+                  <div class="text-[11px] font-semibold uppercase text-slate-400 mb-1">Recommended Action / Queue</div>
+                  <div class="text-sm font-bold text-slate-900">${data.routing_classification.action}</div>
+                  <div class="text-[11px] text-slate-400 mt-1">Confidence: ${(data.routing_classification.confidence * 100).toFixed(1)}%</div>
+                </div>
+
+                <div class="p-4 rounded-lg bg-slate-50 border border-slate-200">
+                  <div class="text-[11px] font-semibold uppercase text-slate-400 mb-1">Extracted Direct Fact</div>
+                  <div class="text-sm font-bold teal-text">${data.direct_fact.answer}</div>
+                  <div class="text-[11px] text-slate-400 mt-1">MiniLM QA (${(data.direct_fact.confidence * 100).toFixed(1)}%)</div>
+                </div>
+              </div>
+
+              <div class="text-sm text-slate-700 bg-slate-50 px-4 py-3 rounded-lg border border-slate-100">
+                <strong>Rule Explanation:</strong> ${data.yes_no_gate.explanation}
+              </div>
+            </div>
+
+            <!-- Source Reference Card -->
+            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-xs">
+              <div class="flex items-center gap-2.5 mb-3">
+                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full teal-soft-bg teal-text">${data.matched_source.category}</span>
+                <h3 class="text-base font-bold text-slate-900">Source: ${data.matched_source.entity}</h3>
+              </div>
+              <ul class="space-y-2 pl-1">
+                ${srcBullets.map(b => `<li class="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"><span class="teal-text font-bold mt-0.5">&rsaquo;</span><span>${b}</span></li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        out.innerHTML = `
+          <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-4 text-sm">
+            <strong>Local GLiClass Engine Offline:</strong> To use the Decision Assistant, open the app via Codespace Port <strong>8000</strong> while <code>uvicorn app:app</code> is running.
+          </div>
+        `;
+      }
+    }
+
     document.getElementById('searchInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') executeSearch();
+    });
+    document.getElementById('askInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') executeDecision();
     });
 
     loadKB();
