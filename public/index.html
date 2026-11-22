@@ -1,204 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aizer Health — Call Center Operations</title>
   <link rel="icon" type="image/avif" href="/AizerLogo.avif" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+    rel="stylesheet">
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #F7F8FA;
-      color: #1B2433;
+    :root {
+      --navy: #0F2A4A;
+      --navy-hover: #173B66;
+      --accent: #1565C0;
+      --accent-soft: #E8F2FC;
     }
 
-    /* Brand Tokens */
-    .brand-navy-bg { background-color: #0F2A4A; }
-    .brand-navy-bg-hover:hover { background-color: #173B66; }
-    .brand-accent-bg { background-color: #1565C0; }
-    .brand-accent-bg-hover:hover { background-color: #104FA0; }
-    .brand-accent-text { color: #1565C0; }
-    .brand-soft-bg { background-color: #E8F2FC; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F4F6FA;
+      color: #1B2433;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    /* Horizontal Cards Rail */
+    .font-mono {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+
+    /* Horizontal Department Rail */
     .dept-rail {
       display: flex;
-      gap: 20px;
+      gap: 16px;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
-      padding-bottom: 14px;
+      padding: 4px 2px 16px;
+      cursor: grab;
+      user-select: none;
     }
+
+    .dept-rail.is-dragging {
+      cursor: grabbing;
+      scroll-snap-type: none;
+    }
+
     .dept-rail::-webkit-scrollbar {
-      height: 8px;
+      height: 7px;
     }
+
     .dept-rail::-webkit-scrollbar-track {
       background: transparent;
     }
+
     .dept-rail::-webkit-scrollbar-thumb {
-      background-color: #C9D1DC;
-      border-radius: 8px;
-    }
-    .dept-rail::-webkit-scrollbar-thumb:hover {
-      background-color: #AEB9C8;
+      background: #CBD5E1;
+      border-radius: 999px;
     }
 
-    /* Vertical Portrait Department Card (280x480) */
     .dept-card {
-      flex: 0 0 280px;
-      width: 280px;
-      height: 480px;
-      background-color: #FFFFFF;
-      border-radius: 22px;
+      flex: 0 0 220px;
+      width: 220px;
+      background: #FFFFFF;
+      border-radius: 20px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       scroll-snap-align: start;
+      cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+
     .dept-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 28px rgba(15, 42, 74, 0.10);
-    }
-    .dept-card--active {
-      border: 2px solid #1565C0;
-    }
-    .dept-card--inactive {
-      border: 1px solid #E6EAF0;
+      transform: translateY(-3px);
+      box-shadow: 0 14px 28px -8px rgba(15, 42, 74, 0.12);
     }
 
-    /* Top 52% Illustration Area with Dotted Tint */
     .dept-card-media {
       position: relative;
-      height: 52%;
+      height: 112px;
       width: 100%;
-      overflow: hidden;
       flex-shrink: 0;
-    }
-    .dept-card--active .dept-card-media {
-      background-color: #E8F2FC;
-      background-image: radial-gradient(#C5DCF5 1.2px, transparent 1.2px);
-      background-size: 16px 16px;
-    }
-    .dept-card--inactive .dept-card-media {
-      background-color: #F2F4F7;
-      background-image: radial-gradient(#DCE1E8 1.2px, transparent 1.2px);
-      background-size: 16px 16px;
+      overflow: hidden;
     }
 
-    /* Centered 104x104 Icon Tile */
+    /* Animated Cloud Surface */
+    .cloud-surface {
+      background: linear-gradient(120deg, #0B2545 0%, #134074 55%, #1565C0 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cloud-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .cloud-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .cloud {
+      position: absolute;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 70%);
+      filter: blur(10px);
+      will-change: transform;
+    }
+
+    .cloud-1 {
+      width: 280px;
+      height: 90px;
+      top: -20px;
+      left: -300px;
+      animation: cloudDrift 48s linear infinite;
+    }
+
+    .cloud-2 {
+      width: 360px;
+      height: 110px;
+      top: -10px;
+      left: -380px;
+      opacity: 0.75;
+      animation: cloudDrift 64s linear infinite;
+      animation-delay: -24s;
+    }
+
+    .cloud-3 {
+      width: 220px;
+      height: 80px;
+      bottom: -25px;
+      left: -240px;
+      opacity: 0.65;
+      animation: cloudDrift 54s linear infinite;
+      animation-delay: -12s;
+    }
+
+    @keyframes cloudDrift {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(calc(100vw + 420px)); }
+    }
+
+    .dept-card--active .dept-card-media {
+      background: radial-gradient(circle at 20% 20%, #E0EEFD 0%, #EDF5FE 100%);
+    }
+
+    .dept-card--inactive .dept-card-media {
+      background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
+    }
+
     .dept-icon-tile {
       position: absolute;
-      top: 50%;
-      left: 50%;
+      inset: 50% auto auto 50%;
       transform: translate(-50%, -50%);
-      width: 104px;
-      height: 104px;
-      border-radius: 28px;
-      background-color: #FFFFFF;
-      box-shadow: 0 8px 24px rgba(15, 42, 74, 0.10);
+      width: 92px;
+      height: 92px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 25px rgba(15, 42, 74, 0.10);
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-    .dept-icon-tile--with-image {
-      background-color: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      box-shadow: 0 10px 28px rgba(15, 42, 74, 0.18);
+      overflow: hidden;
     }
 
-    /* Screen-reader only utility */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   </style>
 </head>
+
 <body class="min-h-screen flex flex-col">
 
-  <!-- Header (Max-width 1360px, horizontal padding 40px) -->
-  <header class="bg-white border-b border-[#E6EAF0] sticky top-0 z-30">
-    <div class="max-w-[1360px] mx-auto px-5 sm:px-[40px]">
-      <div class="flex flex-wrap lg:flex-nowrap items-center justify-between gap-4 min-h-[68px] py-2.5">
+  <!-- Animated Cloud Header -->
+  <header class="cloud-surface cloud-header border-b border-white/15 shadow-sm">
+    <div class="cloud-layer" aria-hidden="true">
+      <div class="cloud cloud-1"></div>
+      <div class="cloud cloud-2"></div>
+      <div class="cloud cloud-3"></div>
+    </div>
+    <div class="relative z-10 w-full px-3 sm:px-5">
+      <div class="flex flex-wrap lg:grid lg:grid-cols-[1fr_auto_1fr] items-center justify-between gap-4 py-4">
 
-        <!-- Left Side: Logo + Navigation Links -->
-        <div class="flex items-center gap-5 min-w-0">
-          <button onclick="switchSection('home')" title="Clinical Departments" class="flex items-center cursor-pointer shrink-0 focus:outline-none">
-            <img
-              src="/AizerLogo.avif"
-              alt="Aizer Health"
-              class="h-7 w-auto object-contain"
-              onerror="this.style.display='none'; document.getElementById('fallbackLogo').classList.remove('hidden');"
-            />
-            <div id="fallbackLogo" class="hidden w-8 h-8 rounded-[10px] brand-navy-bg flex items-center justify-center text-white shrink-0">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h4l3-7 4 14 3-7h4" />
-              </svg>
-            </div>
+        <!-- Left: Bigger Brand Closer to Edge (White) -->
+        <button onclick="switchSection('home')" title="Aizer Health Home"
+          class="lg:justify-self-start flex items-center gap-2.5 shrink-0 cursor-pointer focus:outline-none pl-1">
+          <img src="/AizerLogo.avif" alt="Aizer Health" class="h-9 sm:h-10 w-auto object-contain brightness-0 invert"
+            onerror="this.style.display='none'; document.getElementById('fallbackLogo').classList.remove('hidden');" />
+          <div id="fallbackLogo"
+            class="hidden w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white font-bold text-base">
+            A</div>
+        </button>
+
+        <!-- Center: Frosted White-Text Segmented Navigation -->
+        <nav
+          class="order-3 lg:order-2 w-full lg:w-auto lg:justify-self-center flex items-center gap-1 bg-white/10 backdrop-blur-md p-1.5 rounded-2xl border border-white/20 overflow-x-auto no-scrollbar">
+          <button id="nav-home" onclick="switchSection('home')"
+            class="nav-item flex items-center gap-2 px-4 py-2 rounded-xl text-[15px] font-medium text-white/80 hover:text-white hover:bg-white/10 transition whitespace-nowrap shrink-0">
+            <span>Home</span>
           </button>
-
-          <div class="h-5 w-px bg-[#E6EAF0] hidden md:block shrink-0"></div>
-
-          <nav class="flex items-center gap-1 overflow-x-auto md:overflow-visible">
-            <button id="nav-kb" onclick="switchSection('kb')" class="nav-item flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-sm font-medium transition brand-soft-bg brand-accent-text whitespace-nowrap shrink-0">
-              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-              <span>Knowledge Base</span>
-            </button>
-
-            <button id="nav-providers" onclick="switchSection('providers')" class="nav-item flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-sm font-medium text-[#4F5A6B] hover:bg-slate-50 transition whitespace-nowrap shrink-0">
-              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span>Providers</span>
-            </button>
-
-            <button id="nav-visits" onclick="switchSection('visits')" class="nav-item flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-sm font-medium text-[#4F5A6B] hover:bg-slate-50 transition whitespace-nowrap shrink-0">
-              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span>Visit Types</span>
-            </button>
-
-            <div class="h-4 w-px bg-[#E6EAF0] mx-1 shrink-0"></div>
-
-            <button id="nav-assistant" onclick="switchSection('assistant')" class="nav-item flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-sm font-medium text-[#4F5A6B] hover:bg-slate-50 transition whitespace-nowrap shrink-0">
-              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
-              <span>Ask Jewel</span>
-            </button>
-          </nav>
-        </div>
-
-        <!-- Right Side: Search Input (44px tall, 10px radius) + Navy Search Button -->
-        <div class="flex items-center gap-2 w-full sm:w-auto sm:min-w-[280px] xl:min-w-[320px] shrink-0">
-          <div class="relative flex-1">
-            <label for="searchInput" class="sr-only">Search guidelines</label>
-            <svg class="w-4 h-4 text-[#5B6576] absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
+          <button id="nav-kb" onclick="switchSection('kb')"
+            class="nav-item flex items-center gap-2 px-4 py-2 rounded-xl text-[15px] font-medium text-white/80 hover:text-white hover:bg-white/10 transition whitespace-nowrap shrink-0">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
-            <input
-              id="searchInput"
-              type="text"
-              placeholder="Search guidelines..."
-              class="w-full h-[44px] pl-10 pr-12 bg-white border border-[#D5DBE3] rounded-[10px] text-sm text-[#0F1B2D] placeholder-[#5B6576] focus:outline-none focus:ring-2 focus:ring-[#1565C0] focus:border-transparent transition"
-            />
-            <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#5B6576] hover:text-[#0F1B2D] font-medium">
-              Clear
-            </button>
-          </div>
-          <button onclick="executeSearch()" class="h-[44px] brand-navy-bg brand-navy-bg-hover text-white text-sm font-semibold px-4 rounded-[10px] transition shrink-0">
+            <span>Knowledge Base</span>
+          </button>
+          <button id="nav-providers" onclick="switchSection('providers')"
+            class="nav-item flex items-center gap-2 px-4 py-2 rounded-xl text-[15px] font-medium text-white/80 hover:text-white hover:bg-white/10 transition whitespace-nowrap shrink-0">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span>Providers</span>
+          </button>
+          <button id="nav-visits" onclick="switchSection('visits')"
+            class="nav-item flex items-center gap-2 px-4 py-2 rounded-xl text-[15px] font-medium text-white/80 hover:text-white hover:bg-white/10 transition whitespace-nowrap shrink-0">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>Visit Types</span>
+          </button>
+          <button id="nav-assistant" onclick="switchSection('assistant')"
+            class="nav-item flex items-center gap-2 px-4 py-2 rounded-xl text-[15px] font-medium text-white/90 hover:text-white hover:bg-white/10 transition whitespace-nowrap shrink-0">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            </svg>
+            <span>Ask Jewel</span>
+          </button>
+        </nav>
+
+        <!-- Right: Unified Frosted Search Capsule -->
+        <div
+          class="order-2 lg:order-3 lg:justify-self-end flex items-center h-11 flex-1 sm:flex-initial sm:w-[310px] xl:w-[350px] bg-white/12 backdrop-blur-md border border-white/25 rounded-2xl p-1 pl-3.5 gap-2 focus-within:bg-white/20 focus-within:border-white/50 transition shrink-0">
+          <label for="searchInput" class="sr-only">Search guidelines</label>
+          <svg class="w-4 h-4 text-white/80 shrink-0 pointer-events-none" fill="none" stroke="currentColor"
+            stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
+          </svg>
+          <input id="searchInput" type="text" placeholder="Search guidelines..."
+            class="flex-1 min-w-0 bg-transparent text-sm text-white placeholder-white/75 focus:outline-none" />
+          <button id="clearSearchBtn" onclick="clearSearch()"
+            class="hidden text-xs font-medium text-white/90 hover:text-white px-2 py-1 rounded-lg bg-white/15 hover:bg-white/25 transition shrink-0">
+            Clear
+          </button>
+          <button onclick="executeSearch()"
+            class="h-full bg-white hover:bg-sky-50 text-[#0F2A4A] text-xs sm:text-sm font-semibold px-4 rounded-xl transition shrink-0 shadow-sm">
             Search
           </button>
         </div>
@@ -207,138 +267,227 @@
     </div>
   </header>
 
-  <!-- Main Workspace (Max-width 1360px, 40px top, 40px sides, 64px bottom) -->
-  <main class="max-w-[1360px] mx-auto w-full flex-1 pt-[40px] px-5 sm:px-[40px] pb-[64px]">
-    <div id="loadingIndicator" class="text-sm text-[#5B6576] py-10">Loading guidelines...</div>
+  <!-- Main Workspace -->
+  <main class="max-w-[1560px] mx-auto w-full flex-1 pt-5 px-4 sm:px-6 pb-12">
+    <div id="loadingIndicator" class="flex items-center gap-3 text-sm text-slate-500 py-12">
+      <span class="w-4 h-4 border-2 border-[#1565C0] border-t-transparent rounded-full animate-spin"></span>
+      <span>Loading clinical guidelines...</span>
+    </div>
 
-    <!-- HOME VIEW: CLINICAL DEPARTMENTS (Vertical Portrait Cards Rail) -->
-    <section id="section-home" class="content-section hidden">
-      <!-- Title Row -->
-      <div class="flex flex-wrap items-end justify-between gap-4 border-b border-[#E6EAF0] pb-[24px] mb-[28px]">
-        <div>
-          <h1 class="text-[32px] font-bold text-[#0F1B2D] tracking-[-0.5px] leading-tight">Clinical Departments</h1>
-          <p class="text-[16px] text-[#4F5A6B] mt-1">Select a department to access scheduling guidelines, providers, and rules.</p>
+    <!-- HOME: HERO PAGE -->
+    <section id="section-home" class="content-section hidden space-y-8">
+      <div
+        class="bg-gradient-to-br from-[#0F2A4A] via-[#133863] to-[#1565C0] rounded-3xl p-8 sm:p-12 text-white shadow-md flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+        <div class="space-y-4 max-w-2xl">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-medium text-sky-100">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>Call Center Operations Portal &bull; Internal Medicine Live</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">Aizer Health Operations Hub</h1>
+          <p class="text-base sm:text-lg text-slate-200 leading-relaxed">Your central workspace for department
+            scheduling guidelines, provider directories, visit rules, and instant policy decisions.</p>
+          <div class="flex flex-wrap gap-3 pt-2">
+            <button onclick="switchSection('assistant')"
+              class="px-6 py-3 rounded-xl bg-white text-[#0F2A4A] hover:bg-sky-50 font-semibold text-sm transition shadow-sm flex items-center gap-2">
+              <svg class="w-4 h-4 text-[#1565C0]" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
+              <span>Ask Jewel</span>
+            </button>
+            <button onclick="switchSection('kb')"
+              class="px-6 py-3 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-sm transition border border-white/20">
+              Open Knowledge Base
+            </button>
+          </div>
         </div>
 
-        <!-- Previous / Next Rail Controls (44x44) -->
-        <div class="flex items-center gap-2.5 shrink-0">
-          <button
-            type="button"
-            onclick="scrollDeptRail(-1)"
-            aria-label="Previous departments"
-            class="w-[44px] h-[44px] rounded-full bg-white border border-[#D5DBE3] hover:bg-slate-50 flex items-center justify-center text-[#0F2A4A] transition cursor-pointer"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M19 12H5M11 6l-6 6 6 6"/>
-            </svg>
+        <div class="grid grid-cols-2 gap-3 sm:w-[360px] shrink-0">
+          <button onclick="switchSection('kb')"
+            class="text-left p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 transition">
+            <div class="text-xs font-semibold text-sky-200 uppercase tracking-wider">SOPs</div>
+            <div class="text-base font-bold mt-1">Knowledge Base</div>
+            <div class="text-xs text-slate-300 mt-1">Departments &amp; rules</div>
           </button>
-          <button
-            type="button"
-            onclick="scrollDeptRail(1)"
-            aria-label="Next departments"
-            class="w-[44px] h-[44px] rounded-full bg-[#0F2A4A] hover:bg-[#173B66] flex items-center justify-center text-white transition cursor-pointer"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 12h14M13 6l6 6-6 6"/>
-            </svg>
+          <button onclick="switchSection('providers')"
+            class="text-left p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 transition">
+            <div class="text-xs font-semibold text-sky-200 uppercase tracking-wider">Directory</div>
+            <div class="text-base font-bold mt-1">Providers</div>
+            <div class="text-xs text-slate-300 mt-1">PCPs &amp; specialists</div>
+          </button>
+          <button onclick="switchSection('visits')"
+            class="text-left p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 transition">
+            <div class="text-xs font-semibold text-sky-200 uppercase tracking-wider">Scheduling</div>
+            <div class="text-base font-bold mt-1">Visit Types</div>
+            <div class="text-xs text-slate-300 mt-1">Durations &amp; limits</div>
+          </button>
+          <button onclick="switchSection('assistant')"
+            class="text-left p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 transition">
+            <div class="text-xs font-semibold text-sky-200 uppercase tracking-wider">Decision Engine</div>
+            <div class="text-base font-bold mt-1">Ask Jewel</div>
+            <div class="text-xs text-slate-300 mt-1">Instant answers</div>
           </button>
         </div>
       </div>
-
-      <!-- Horizontal Cards Rail -->
-      <div id="homeDepartmentsRail" class="dept-rail"></div>
     </section>
 
-    <!-- SEARCH RESULTS VIEW -->
+    <!-- SEARCH RESULTS -->
     <section id="searchSection" class="hidden space-y-5">
-      <div class="flex items-center justify-between border-b border-[#E6EAF0] pb-3">
-        <h1 class="text-xl font-bold text-[#0F1B2D]">Search Results</h1>
-        <button onclick="clearSearch()" class="text-xs font-medium text-[#4F5A6B] hover:text-[#0F1B2D]">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div>
+          <h1 class="text-xl font-bold text-slate-900">Search Results</h1>
+          <p id="searchMeta" class="text-xs text-slate-500 mt-0.5"></p>
+        </div>
+        <button onclick="clearSearch()"
+          class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition">
           &larr; Back
         </button>
       </div>
-      <div id="searchResultsContainer" class="space-y-4"></div>
+      <div id="searchResultsContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
     </section>
 
     <!-- SECTION 1: KNOWLEDGE BASE -->
-    <section id="section-kb" class="content-section hidden space-y-5">
-      <div class="flex items-center gap-2.5">
-        <svg class="w-6 h-6 text-[#1565C0]" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M5 3v5a5 5 0 0 0 10 0V3"/><path d="M10 13v3a4 4 0 0 0 8 0v-2"/><circle cx="18" cy="12" r="2"/>
-        </svg>
-        <h1 class="text-2xl font-bold text-[#0F1B2D]">Internal Medicine — Knowledge Base</h1>
+    <section id="section-kb" class="content-section hidden space-y-6">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-bold text-slate-900">All Departments</h2>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="scrollDeptRail(-1)" aria-label="Previous departments"
+              class="w-9 h-9 rounded-full bg-white border border-slate-200 hover:bg-slate-50 flex items-center justify-center text-slate-700 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5M11 6l-6 6 6 6" />
+              </svg>
+            </button>
+            <button type="button" onclick="scrollDeptRail(1)" aria-label="Next departments"
+              class="w-9 h-9 rounded-full bg-[#0F2A4A] hover:bg-[#173B66] flex items-center justify-center text-white transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="homeDepartmentsRail" class="dept-rail"></div>
       </div>
 
-      <div id="kbPills" class="flex items-center gap-2 overflow-x-auto pb-1">
-        <button onclick="filterKB('ALL', this)" class="kb-pill px-3.5 py-1.5 rounded-[10px] text-xs font-semibold brand-navy-bg text-white whitespace-nowrap transition">All</button>
-        <button onclick="filterKB('Core Scheduling Rules', this)" class="kb-pill px-3.5 py-1.5 rounded-[10px] text-xs font-medium bg-white border border-[#E6EAF0] text-[#4F5A6B] hover:bg-slate-50 whitespace-nowrap transition">Core Scheduling Rules</button>
-        <button onclick="filterKB('Directory & Locations', this)" class="kb-pill px-3.5 py-1.5 rounded-[10px] text-xs font-medium bg-white border border-[#E6EAF0] text-[#4F5A6B] hover:bg-slate-50 whitespace-nowrap transition">Directory & Locations</button>
-        <button onclick="filterKB('Nurse & Lab Services', this)" class="kb-pill px-3.5 py-1.5 rounded-[10px] text-xs font-medium bg-white border border-[#E6EAF0] text-[#4F5A6B] hover:bg-slate-50 whitespace-nowrap transition">Nurse & Lab Services</button>
-        <button onclick="filterKB('Telephone Encounter (TE) Routing', this)" class="kb-pill px-3.5 py-1.5 rounded-[10px] text-xs font-medium bg-white border border-[#E6EAF0] text-[#4F5A6B] hover:bg-slate-50 whitespace-nowrap transition">TE Routing</button>
-        <button onclick="filterKB('Referrals & Prior Authorizations', this)" class="kb-pill px-3.5 py-1.5 rounded-[10px] text-xs font-medium bg-white border border-[#E6EAF0] text-[#4F5A6B] hover:bg-slate-50 whitespace-nowrap transition">Referrals & Auth</button>
-        <button onclick="filterKB('Special Operational Policies', this)" class="kb-pill px-3.5 py-1.5 rounded-[10px] text-xs font-medium bg-white border border-[#E6EAF0] text-[#4F5A6B] hover:bg-slate-50 whitespace-nowrap transition">Special Policies</button>
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-200">
+        <h1 id="kbHeading" class="text-2xl font-bold text-slate-900 tracking-tight">Internal Medicine Knowledge Base
+        </h1>
+        <span id="kbCountBadge"
+          class="text-xs font-mono font-medium px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600"></span>
       </div>
 
-      <div id="kbCardsContainer" class="space-y-4"></div>
+      <div id="kbPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+        <button onclick="filterKB('ALL', this)"
+          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#0F2A4A] text-white whitespace-nowrap transition">All
+          Rules</button>
+        <button onclick="filterKB('Core Scheduling Rules', this)"
+          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Core
+          Scheduling</button>
+        <button onclick="filterKB('Directory & Locations', this)"
+          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Directory
+          &amp; Locations</button>
+        <button onclick="filterKB('Nurse & Lab Services', this)"
+          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Nurse
+          &amp; Lab</button>
+        <button onclick="filterKB('Telephone Encounter (TE) Routing', this)"
+          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">TE
+          Routing</button>
+        <button onclick="filterKB('Referrals & Prior Authorizations', this)"
+          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Referrals
+          &amp; Auth</button>
+        <button onclick="filterKB('Special Operational Policies', this)"
+          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Special
+          Policies</button>
+      </div>
+
+      <div id="kbCardsContainer" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4"></div>
     </section>
 
-    <!-- SECTION 2: PROVIDERS & SPECIALISTS -->
+    <!-- SECTION 2: PROVIDERS -->
     <section id="section-providers" class="content-section hidden space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 class="text-2xl font-bold text-[#0F1B2D]">Providers & Specialists</h1>
-        <div class="flex gap-2">
-          <button onclick="filterProviders('ALL', this)" class="prov-pill px-3.5 py-1.5 rounded-[10px] text-xs font-semibold brand-navy-bg text-white">All Locations</button>
-          <button onclick="filterProviders('Bakertown', this)" class="prov-pill px-3.5 py-1.5 rounded-[10px] text-xs font-medium bg-white border border-[#E6EAF0] text-[#4F5A6B] hover:bg-slate-50">Bakertown (3rd Fl)</button>
-          <button onclick="filterProviders('Forest Rd', this)" class="prov-pill px-3.5 py-1.5 rounded-[10px] text-xs font-medium bg-white border border-[#E6EAF0] text-[#4F5A6B] hover:bg-slate-50">Forest Rd (2nd Fl)</button>
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Providers &amp; Specialists</h1>
+          <p class="text-sm text-slate-500 mt-0.5">Filter by clinic location to check schedules, restrictions, and visit
+            rules.</p>
+        </div>
+        <div class="inline-flex p-1 bg-slate-200/70 rounded-xl gap-1 self-start">
+          <button onclick="filterProviders('ALL', this)"
+            class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#0F2A4A] text-white transition">All
+            Locations</button>
+          <button onclick="filterProviders('Bakertown', this)"
+            class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition">Bakertown
+            (3rd Fl)</button>
+          <button onclick="filterProviders('Forest Rd', this)"
+            class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition">Forest
+            Rd (2nd Fl)</button>
         </div>
       </div>
 
       <div class="space-y-3">
-        <h2 class="text-sm font-semibold text-[#5B6576]">Primary Care Providers</h2>
+        <div class="flex items-center gap-2">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Primary Care Providers</h2>
+          <span id="pcpCount" class="text-xs font-mono text-slate-400"></span>
+        </div>
         <div id="pcpCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </div>
 
       <div class="space-y-3 pt-2">
-        <h2 class="text-sm font-semibold text-[#5B6576]">Specialty Providers</h2>
+        <div class="flex items-center gap-2">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Specialty Providers</h2>
+          <span id="specCount" class="text-xs font-mono text-slate-400"></span>
+        </div>
         <div id="specCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </div>
     </section>
 
-    <!-- SECTION 3: TYPES OF VISITS -->
+    <!-- SECTION 3: VISIT TYPES -->
     <section id="section-visits" class="content-section hidden space-y-5">
-      <h1 class="text-2xl font-bold text-[#0F1B2D]">Types of Visits</h1>
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Types of Visits</h1>
+        <p class="text-sm text-slate-500 mt-0.5">Appointment durations, age limits, and booking prerequisites.</p>
+      </div>
       <div id="visitsGridContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     </section>
 
     <!-- SECTION 4: ASK JEWEL -->
-    <section id="section-assistant" class="content-section hidden space-y-5 max-w-4xl">
-      <div class="bg-white border border-[#E6EAF0] rounded-[16px] p-5 space-y-3.5">
-        <div class="flex flex-col sm:flex-row gap-3">
-          <label for="askInput" class="sr-only">Ask Jewel a question</label>
-          <input
-            id="askInput"
-            type="text"
-            placeholder="Ask Jewel about Internal Medicine eligibility, routing, or policies..."
-            class="flex-1 h-[44px] px-4 bg-[#F7F8FA] border border-[#D5DBE3] rounded-[10px] text-sm text-[#0F1B2D] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0] focus:border-transparent transition"
-          />
-          <button onclick="executeDecision()" class="h-[44px] brand-navy-bg brand-navy-bg-hover text-white text-sm font-semibold px-6 rounded-[10px] transition shrink-0">
-            Jewel it
-          </button>
+    <section id="section-assistant" class="content-section hidden max-w-5xl mx-auto pt-[16vh] pb-8 transition-[padding] duration-500 ease-out flex flex-col gap-5">
+      <div class="cloud-surface border border-white/20 rounded-3xl p-7 sm:p-8 shadow-[0_24px_60px_-15px_rgba(15,42,74,0.40)] w-full">
+        <div class="cloud-layer" aria-hidden="true">
+          <div class="cloud cloud-1"></div>
+          <div class="cloud cloud-2"></div>
+          <div class="cloud cloud-3"></div>
         </div>
+        <div class="relative z-10 space-y-5">
+          <h1 class="text-2xl font-extrabold text-white tracking-tight">Ask Jewel</h1>
 
-        <!-- Department Selector Pills -->
-        <div id="jewelDeptSelector" class="flex flex-wrap items-center gap-2 pt-0.5"></div>
+          <div class="flex items-center h-14 bg-white/12 backdrop-blur-md border border-white/25 rounded-2xl p-1.5 pl-4 gap-3 focus-within:bg-white/20 focus-within:border-white/50 transition shadow-sm">
+            <label for="askInput" class="sr-only">Ask Jewel a question</label>
+            <input id="askInput" type="text"
+              placeholder="Ask Jewel about Internal Medicine eligibility, routing, or policies..."
+              class="flex-1 min-w-0 bg-transparent text-sm sm:text-base text-white placeholder-white/70 focus:outline-none" />
+            <button id="jewelBtn" onclick="executeDecision()"
+              class="h-full bg-white hover:bg-sky-50 text-[#0F2A4A] text-sm font-bold px-6 rounded-xl transition shrink-0 shadow-sm flex items-center justify-center gap-2">
+              <span>Jewel it</span>
+            </button>
+          </div>
+
+          <div id="jewelDeptSelector" class="flex items-center justify-between gap-1.5 overflow-x-auto no-scrollbar pt-0.5"></div>
+        </div>
       </div>
 
-      <div id="decisionOutputContainer"></div>
+      <div id="decisionOutputContainer" class="transition-all duration-300 ease-out opacity-0 translate-y-3"></div>
     </section>
-
   </main>
 
   <script>
     let kbRecords = [];
-    let activeSection = 'kb';
+    let activeSection = 'home';
+    let selectedKbDept = 'internal_medicine';
     let selectedJewelDept = 'internal_medicine';
+    let didDragRail = false;
 
     const ICON_SVGS = {
       stethoscope: `<path d="M5 3v5a5 5 0 0 0 10 0V3"/><path d="M10 13v3a4 4 0 0 0 8 0v-2"/><circle cx="18" cy="12" r="2"/>`,
@@ -348,170 +497,35 @@
       foot: `<path d="M8 3c-1 4-2 8-1 12 .5 2.5 2.5 5 5.5 5H19a2 2 0 0 0 0-4h-3c-2 0-3.2-1.2-3.6-3.2L11 3"/>`,
       eye: `<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>`,
       female: `<circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6"/>`,
-      arrow_right: `<path d="M5 12h14M13 6l6 6-6 6"/>`
     };
 
     const DEPARTMENTS = [
-      {
-        id: 'internal_medicine',
-        title: 'Internal Medicine',
-        description: 'Adult Primary Care, Specialty Referrals & Scheduling SOPs',
-        image: null,
-        alt: 'Internal Medicine clinic illustration',
-        icon: 'stethoscope',
-        isActive: true
-      },
-      {
-        id: 'acute_care',
-        title: 'Acute Care',
-        description: 'Walk-in Urgent Visits & Same-Day Triage',
-        image: null,
-        alt: 'Acute Care clinic illustration',
-        icon: 'heart_pulse',
-        isActive: false
-      },
-      {
-        id: 'behavioral_health',
-        title: 'Behavioral Health',
-        description: 'Psychiatry, Counseling & Therapy Scheduling',
-        image: null,
-        alt: 'Behavioral Health clinic illustration',
-        icon: 'brain',
-        isActive: false
-      },
-      {
-        id: 'pediatrics',
-        title: 'Pediatrics',
-        description: 'Well-Child Exams, Immunizations & Sick Visits',
-        image: null,
-        alt: 'Pediatric clinic illustration',
-        icon: 'cube',
-        isActive: false
-      },
-      {
-        id: 'podiatry',
-        title: 'Podiatry',
-        description: 'Foot & Ankle Care, Diabetic Foot Exams',
-        image: null,
-        alt: 'Podiatry clinic illustration',
-        icon: 'foot',
-        isActive: false
-      },
-      {
-        id: 'vision',
-        title: 'Vision',
-        description: 'Optometry, Eye Exams & Optical Services',
-        image: null,
-        alt: 'Vision clinic illustration',
-        icon: 'eye',
-        isActive: false
-      },
-      {
-        id: 'womens_health',
-        title: "Women's Health",
-        description: 'OB/GYN Care, Prenatal & Preventative Screenings',
-        image: null,
-        alt: "Women's Health clinic illustration",
-        icon: 'female',
-        isActive: false
-      }
+      { id: 'internal_medicine', title: 'Internal Medicine', description: 'Adult Primary Care, Specialty Referrals & Scheduling SOPs', image: '/icons/aizer-icons-v2_InternalMedicine.avif', icon: 'stethoscope', isActive: true },
+      { id: 'acute_care', title: 'Acute Care', description: 'Walk-in Urgent Visits & Same-Day Triage', image: '/icons/aizer-icons-v2_AcuteCare.avif', icon: 'heart_pulse', isActive: false },
+      { id: 'behavioral_health', title: 'Behavioral Health', description: 'Psychiatry, Counseling & Therapy Scheduling', image: '/icons/aizer-icons-v2_BehavioralHealth.avif', icon: 'brain', isActive: false },
+      { id: 'pediatrics', title: 'Pediatrics', description: 'Well-Child Exams, Immunizations & Sick Visits', image: '/icons/aizer-icons-v2_Pediatrics.avif', icon: 'cube', isActive: false },
+      { id: 'podiatry', title: 'Podiatry', description: 'Foot & Ankle Care, Diabetic Foot Exams', image: '/icons/aizer-icons-v2_Podiatry.avif', icon: 'foot', isActive: false },
+      { id: 'vision', title: 'Vision', description: 'Optometry, Eye Exams & Optical Services', image: '/icons/aizer-icons-v2_Vision.avif', icon: 'eye', isActive: false },
+      { id: 'womens_health', title: "Women's Health", description: 'OB/GYN Care, Prenatal & Preventative Screenings', image: '/icons/aizer-icons-v2_WomensHealth.avif', icon: 'female', isActive: false },
     ];
 
-    function renderHomeDepartments() {
-      const rail = document.getElementById('homeDepartmentsRail');
-      rail.innerHTML = DEPARTMENTS.map(dept => {
-        const cardStateClass = dept.isActive ? 'dept-card--active' : 'dept-card--inactive';
-        const iconColor = dept.isActive ? '#1565C0' : '#0F2A4A';
-        const tileImageClass = dept.image ? 'dept-icon-tile--with-image' : '';
-
-        const imageMarkup = dept.image
-          ? `<img src="${dept.image}" alt="${dept.alt}" class="absolute inset-0 w-full h-full object-cover" />`
-          : '';
-
-        const titleMarkup = dept.isActive
-          ? `<h2 class="text-[22px] font-extrabold text-[#0F1B2D] tracking-[-0.3px] leading-snug">${dept.title}</h2>`
-          : `<h2 class="text-[22px] font-bold text-[#3A4556] tracking-[-0.3px] leading-snug">${dept.title}</h2>`;
-
-        const descColor = dept.isActive ? 'text-[#4F5A6B]' : 'text-[#5B6576]';
-
-        const statusMarkup = dept.isActive
-          ? `<div class="text-[13px] font-medium text-[#0F6B3E]">SOP data available</div>`
-          : `<div class="text-[13px] text-[#5B6576]">SOP data pending</div>`;
-
-        const ctaMarkup = dept.isActive
-          ? `<a href="#internal-medicine" onclick="event.preventDefault(); switchSection('kb');" class="w-full h-[48px] rounded-full bg-[#1565C0] hover:bg-[#104FA0] text-white font-bold text-[15px] flex items-center justify-center gap-2 transition mt-1">
-               <span>Open Guidelines</span>
-               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">${ICON_SVGS.arrow_right}</svg>
-             </a>`
-          : `<button type="button" disabled class="w-full h-[48px] rounded-full bg-[#F7F8FA] border border-[#DDE2E9] text-[#5B6576] font-medium text-[15px] flex items-center justify-center cursor-not-allowed mt-1">
-               Not available yet
-             </button>`;
-
-        return `
-          <article class="dept-card ${cardStateClass}">
-            <div class="dept-card-media">
-              ${imageMarkup}
-              <div class="dept-icon-tile ${tileImageClass}">
-                <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  ${ICON_SVGS[dept.icon]}
-                </svg>
-              </div>
-            </div>
-
-            <div class="flex-1 flex flex-col gap-[8px] pt-[20px] px-[22px] pb-[22px]">
-              ${titleMarkup}
-              <p class="text-[14px] leading-[1.5] ${descColor}">${dept.description}</p>
-              <div class="flex-1"></div>
-              ${statusMarkup}
-              ${ctaMarkup}
-            </div>
-          </article>
-        `;
-      }).join('');
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
     }
 
-    function scrollDeptRail(direction) {
-      const rail = document.getElementById('homeDepartmentsRail');
-      const card = rail.querySelector('.dept-card');
-      const cardWidth = card ? card.offsetWidth : 280;
-      rail.scrollBy({
-        left: direction * (cardWidth + 20),
-        behavior: 'smooth'
-      });
+    function formatPct(val) {
+      return `${(Number(val || 0) * 100).toFixed(0)}%`;
     }
 
-    function renderJewelDeptSelector() {
-      const container = document.getElementById('jewelDeptSelector');
-      container.innerHTML = DEPARTMENTS.map(dept => {
-        const isSelected = dept.id === selectedJewelDept;
-        const btnClasses = isSelected
-          ? 'bg-[#E8F2FC] border-[#1565C0] text-[#0F2A4A] font-semibold'
-          : 'bg-[#F7F8FA] border-[#E6EAF0] text-[#5B6576] hover:bg-slate-100 hover:text-[#1B2433] opacity-75 hover:opacity-100';
-        const strokeColor = isSelected ? '#1565C0' : '#0F2A4A';
-
-        return `
-          <button
-            type="button"
-            onclick="selectJewelDepartment('${dept.id}')"
-            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-[10px] border text-xs transition ${btnClasses}"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${strokeColor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              ${ICON_SVGS[dept.icon]}
-            </svg>
-            <span>${dept.title}</span>
-          </button>
-        `;
-      }).join('');
-    }
-
-    function selectJewelDepartment(deptId) {
-      selectedJewelDept = deptId;
-      renderJewelDeptSelector();
-      const dept = DEPARTMENTS.find(d => d.id === deptId);
-      const input = document.getElementById('askInput');
-      if (dept) {
-        input.placeholder = `Ask Jewel about ${dept.title} eligibility, routing, or policies...`;
-      }
+    function copyText(text, btnEl) {
+      navigator.clipboard.writeText(text);
+      const original = btnEl.innerHTML;
+      btnEl.innerText = 'Copied!';
+      setTimeout(() => { btnEl.innerHTML = original; }, 1400);
     }
 
     function extractBulletLines(content) {
@@ -535,46 +549,135 @@
       return `
         <div class="flex flex-wrap gap-1.5 mb-3.5">
           ${entries.map(([key, val]) => {
-            const cleanKey = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-            let cleanVal = '';
-            if (Array.isArray(val)) cleanVal = val.join(', ');
-            else if (typeof val === 'object' && val !== null) {
-              cleanVal = Object.entries(val).map(([k, v]) => `${k}: ${v}`).join(' | ');
-            } else if (typeof val === 'boolean') {
-              cleanVal = val ? 'Yes' : 'No';
-            } else {
-              cleanVal = String(val);
-            }
+        const cleanKey = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        let cleanVal = '';
+        if (Array.isArray(val)) cleanVal = val.join(', ');
+        else if (typeof val === 'object' && val !== null) cleanVal = Object.entries(val).map(([k, v]) => `${k}: ${v}`).join(' | ');
+        else if (typeof val === 'boolean') cleanVal = val ? 'Yes' : 'No';
+        else cleanVal = String(val);
 
-            let chipStyle = 'bg-[#F7F8FA] text-[#1B2433] border-[#E6EAF0]';
-            if (val === false || String(val).toLowerCase().includes('only')) {
-              chipStyle = 'bg-rose-50 text-rose-800 border-rose-200';
-            } else if (key.includes('fee') || key.includes('code') || key.includes('queue')) {
-              chipStyle = 'bg-[#E8F2FC] text-[#0F2A4A] border-[#C5DCF5]';
-            }
+        let chipStyle = 'bg-slate-50 text-slate-700 border-slate-200';
+        if (val === false || String(val).toLowerCase().includes('only')) chipStyle = 'bg-rose-50 text-rose-800 border-rose-200';
+        else if (key.includes('fee') || key.includes('code') || key.includes('queue')) chipStyle = 'bg-[#E8F2FC] text-[#0F2A4A] border-[#C5DCF5]';
 
-            return `<span class="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-md border ${chipStyle}">
-              <span class="font-medium opacity-75">${cleanKey}:</span>
-              <span class="font-semibold">${cleanVal}</span>
+        return `<span class="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-md border ${chipStyle}">
+              <span class="opacity-70">${escapeHtml(cleanKey)}:</span>
+              <span class="font-semibold">${escapeHtml(cleanVal)}</span>
             </span>`;
-          }).join('')}
+      }).join('')}
         </div>
       `;
     }
 
-    function formatPct(val) {
-      return `${(Number(val || 0) * 100).toFixed(0)}%`;
+    function renderGuidelineCard(item, badgeText = item.category) {
+      const bullets = extractBulletLines(item.content);
+      const chips = renderStructuredChips(item.rules);
+      return `
+        <article class="bg-white border border-slate-200/90 rounded-2xl p-5 hover:border-slate-300 transition shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+          <div class="flex flex-wrap items-start justify-between gap-2 mb-3">
+            <h3 class="text-base font-bold text-slate-900">${escapeHtml(item.entity)}</h3>
+            ${badgeText ? `<span class="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0">${escapeHtml(badgeText)}</span>` : ''}
+          </div>
+          ${chips}
+          <ul class="space-y-2 text-sm text-slate-700">
+            ${bullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-slate-400 select-none mt-0.5">&bull;</span><span>${escapeHtml(b)}</span></li>`).join('')}
+          </ul>
+        </article>`;
     }
 
-    function copyText(text, btnEl) {
-      navigator.clipboard.writeText(text);
-      const original = btnEl.innerHTML;
-      btnEl.innerText = 'Copied!';
-      setTimeout(() => { btnEl.innerHTML = original; }, 1400);
+    function selectKbDepartment(deptId) {
+      if (didDragRail) return;
+      selectedKbDept = deptId;
+      renderHomeDepartments();
+      const dept = DEPARTMENTS.find(d => d.id === deptId);
+      if (dept) {
+        document.getElementById('kbHeading').innerText = `${dept.title} Knowledge Base`;
+      }
+    }
+
+    function renderHomeDepartments() {
+      const rail = document.getElementById('homeDepartmentsRail');
+      rail.innerHTML = DEPARTMENTS.map(dept => {
+        const isSelected = dept.id === selectedKbDept;
+        const cardBorder = isSelected ? 'border-2 border-[#1565C0]' : 'border border-slate-200 hover:border-slate-300';
+        const stateClass = isSelected ? 'dept-card--active' : 'dept-card--inactive';
+
+        return `
+          <article onclick="selectKbDepartment('${dept.id}')" class="dept-card ${stateClass} ${cardBorder}">
+            <div class="dept-card-media">
+              <div class="dept-icon-tile">
+                <img src="${dept.image}" alt="${escapeHtml(dept.title)}" draggable="false" class="w-14 h-14 object-contain pointer-events-none" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+                <svg class="hidden w-10 h-10 text-[#0F2A4A]" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">${ICON_SVGS[dept.icon]}</svg>
+              </div>
+            </div>
+            <div class="px-4 py-3.5 text-center">
+              <h2 class="text-sm font-bold text-slate-900">${escapeHtml(dept.title)}</h2>
+            </div>
+          </article>`;
+      }).join('');
+    }
+
+    function initDeptRailDrag() {
+      const rail = document.getElementById('homeDepartmentsRail');
+      let isDown = false;
+      let startX = 0;
+      let scrollLeft = 0;
+
+      rail.addEventListener('mousedown', (e) => {
+        isDown = true;
+        didDragRail = false;
+        startX = e.pageX - rail.offsetLeft;
+        scrollLeft = rail.scrollLeft;
+        rail.classList.add('is-dragging');
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (!isDown) return;
+        isDown = false;
+        rail.classList.remove('is-dragging');
+        setTimeout(() => { didDragRail = false; }, 0);
+      });
+
+      rail.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        const x = e.pageX - rail.offsetLeft;
+        const walk = x - startX;
+        if (Math.abs(walk) > 5) didDragRail = true;
+        rail.scrollLeft = scrollLeft - walk;
+      });
+    }
+
+    function scrollDeptRail(dir) {
+      const rail = document.getElementById('homeDepartmentsRail');
+      rail.scrollBy({ left: dir * 236, behavior: 'smooth' });
+    }
+
+    function renderJewelDeptSelector() {
+      const container = document.getElementById('jewelDeptSelector');
+      container.innerHTML = DEPARTMENTS.map(dept => {
+        const isSelected = dept.id === selectedJewelDept;
+        const cls = isSelected
+          ? 'bg-white border-white text-[#0F2A4A] font-semibold shadow-sm'
+          : 'bg-white/10 border-white/20 text-white/85 hover:bg-white/20 hover:text-white';
+        const stroke = isSelected ? '#1565C0' : '#FFFFFF';
+        return `
+          <button type="button" onclick="selectJewelDepartment('${dept.id}')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs whitespace-nowrap shrink-0 transition ${cls}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON_SVGS[dept.icon]}</svg>
+            <span>${escapeHtml(dept.title)}</span>
+          </button>`;
+      }).join('');
+    }
+
+    function selectJewelDepartment(deptId) {
+      selectedJewelDept = deptId;
+      renderJewelDeptSelector();
+      const dept = DEPARTMENTS.find(d => d.id === deptId);
+      if (dept) document.getElementById('askInput').placeholder = `Ask Jewel about ${dept.title} eligibility, routing, or policies...`;
     }
 
     async function loadKB() {
       renderHomeDepartments();
+      initDeptRailDrag();
       renderJewelDeptSelector();
       try {
         const res = await fetch('/kb');
@@ -584,8 +687,8 @@
         renderKB('ALL');
         renderProviders('ALL');
         renderVisits();
-        switchSection('kb');
-      } catch (e) {
+        switchSection('home');
+      } catch {
         document.getElementById('loadingIndicator').innerText = 'Unable to load guidelines right now.';
       }
     }
@@ -594,18 +697,25 @@
       activeSection = section;
       clearSearch(false);
       document.querySelectorAll('.nav-item').forEach(el => {
-        el.classList.remove('brand-soft-bg', 'brand-accent-text');
-        el.classList.add('text-[#4F5A6B]', 'hover:bg-slate-50');
+        el.classList.remove('bg-white/25', 'text-white', 'shadow-sm', 'font-semibold');
+        el.classList.add('text-white/80', 'font-medium');
       });
-
-      const currentNav = document.getElementById(`nav-${section}`);
-      if (currentNav) {
-        currentNav.classList.add('brand-soft-bg', 'brand-accent-text');
-        currentNav.classList.remove('text-[#4F5A6B]', 'hover:bg-slate-50');
+      const current = document.getElementById(`nav-${section}`);
+      if (current) {
+        current.classList.remove('text-white/80', 'font-medium');
+        current.classList.add('bg-white/25', 'text-white', 'shadow-sm', 'font-semibold');
       }
-
       document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
       document.getElementById(`section-${section}`).classList.remove('hidden');
+    }
+
+    function setActivePill(selector, btnEl, inactiveClasses) {
+      document.querySelectorAll(selector).forEach(btn => {
+        btn.classList.remove('bg-[#0F2A4A]', 'text-white', 'font-semibold');
+        btn.classList.add(...inactiveClasses);
+      });
+      btnEl.classList.remove(...inactiveClasses);
+      btnEl.classList.add('bg-[#0F2A4A]', 'text-white', 'font-semibold');
     }
 
     function renderKB(category) {
@@ -615,102 +725,42 @@
       ];
       let list = kbRecords.filter(r => kbCategories.includes(r.category));
       if (category !== 'ALL') list = list.filter(r => r.category === category);
-
-      document.getElementById('kbCardsContainer').innerHTML = list.map(item => {
-        const bullets = extractBulletLines(item.content);
-        const chips = renderStructuredChips(item.rules);
-        return `
-          <div class="bg-white border border-[#E6EAF0] rounded-[16px] p-5">
-            <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-              <h3 class="text-base font-bold text-[#0F1B2D]">${item.entity}</h3>
-              <span class="text-xs text-[#5B6576]">${item.category}</span>
-            </div>
-            ${chips}
-            <ul class="space-y-2 text-sm text-[#1B2433]">
-              ${bullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-[#5B6576] select-none">&bull;</span><span>${b}</span></li>`).join('')}
-            </ul>
-          </div>`;
-      }).join('');
+      document.getElementById('kbCountBadge').innerText = `${list.length} rules`;
+      document.getElementById('kbCardsContainer').innerHTML = list.map(item => renderGuidelineCard(item)).join('');
     }
 
     function filterKB(category, btnEl) {
-      document.querySelectorAll('.kb-pill').forEach(btn => {
-        btn.classList.remove('brand-navy-bg', 'text-white', 'font-semibold');
-        btn.classList.add('bg-white', 'border', 'border-[#E6EAF0]', 'text-[#4F5A6B]', 'font-medium');
-      });
-      btnEl.classList.add('brand-navy-bg', 'text-white', 'font-semibold');
-      btnEl.classList.remove('bg-white', 'border', 'border-[#E6EAF0]', 'text-[#4F5A6B]', 'font-medium');
+      setActivePill('.kb-pill', btnEl, ['bg-white', 'border', 'border-slate-200', 'text-slate-600', 'font-medium']);
       renderKB(category);
-    }
-
-    function renderProviderCard(prov) {
-      const isPCP = prov.category === 'Primary Care Provider';
-      let roleLabel = isPCP ? 'Physician Assistant' : (prov.rules?.specialty || 'Specialist');
-      if (prov.entity.includes('MD') && isPCP) roleLabel = 'Medical Doctor';
-
-      const bullets = extractBulletLines(prov.content);
-      const chips = renderStructuredChips(prov.rules);
-
-      return `
-        <div class="bg-white border border-[#E6EAF0] rounded-[16px] p-5 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <h3 class="text-base font-bold text-[#0F1B2D]">${prov.entity}</h3>
-              <span class="text-xs font-medium px-2.5 py-0.5 rounded-md bg-[#F7F8FA] border border-[#E6EAF0] text-[#4F5A6B]">${roleLabel}</span>
-            </div>
-            ${chips}
-            <ul class="space-y-2 text-sm text-[#1B2433]">
-              ${bullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-[#5B6576] select-none">&bull;</span><span>${b}</span></li>`).join('')}
-            </ul>
-          </div>
-        </div>
-      `;
     }
 
     function renderProviders(locationFilter) {
       let pcps = kbRecords.filter(r => r.category === 'Primary Care Provider');
       let specs = kbRecords.filter(r => r.category === 'Specialist Provider');
-
       if (locationFilter !== 'ALL') {
-        pcps = pcps.filter(p => p.content.toLowerCase().includes(locationFilter.toLowerCase()));
-        specs = specs.filter(p => p.content.toLowerCase().includes(locationFilter.toLowerCase()));
+        const q = locationFilter.toLowerCase();
+        pcps = pcps.filter(p => p.content.toLowerCase().includes(q));
+        specs = specs.filter(p => p.content.toLowerCase().includes(q));
       }
-
+      const getRole = (p) => p.category === 'Primary Care Provider' ? (p.entity.includes('MD') ? 'Medical Doctor' : 'Physician Assistant') : (p.rules?.specialty || 'Specialist');
+      document.getElementById('pcpCount').innerText = `(${pcps.length})`;
+      document.getElementById('specCount').innerText = `(${specs.length})`;
       document.getElementById('pcpCardsContainer').innerHTML = pcps.length
-        ? pcps.map(renderProviderCard).join('')
-        : '<p class="text-sm text-[#5B6576]">No Primary Care Providers at this location.</p>';
-
+        ? pcps.map(p => renderGuidelineCard(p, getRole(p))).join('')
+        : '<p class="text-sm text-slate-500">No Primary Care Providers at this location.</p>';
       document.getElementById('specCardsContainer').innerHTML = specs.length
-        ? specs.map(renderProviderCard).join('')
-        : '<p class="text-sm text-[#5B6576]">No Specialty Providers at this location.</p>';
+        ? specs.map(p => renderGuidelineCard(p, getRole(p))).join('')
+        : '<p class="text-sm text-slate-500">No Specialty Providers at this location.</p>';
     }
 
     function filterProviders(loc, btnEl) {
-      document.querySelectorAll('.prov-pill').forEach(btn => {
-        btn.classList.remove('brand-navy-bg', 'text-white', 'font-semibold');
-        btn.classList.add('bg-white', 'border', 'border-[#E6EAF0]', 'text-[#4F5A6B]', 'font-medium');
-      });
-      btnEl.classList.add('brand-navy-bg', 'text-white', 'font-semibold');
-      btnEl.classList.remove('bg-white', 'border', 'border-[#E6EAF0]', 'text-[#4F5A6B]', 'font-medium');
+      setActivePill('.prov-pill', btnEl, ['text-slate-600', 'font-medium']);
       renderProviders(loc);
     }
 
     function renderVisits() {
       const visits = kbRecords.filter(r => r.category === 'Visit Types');
-      document.getElementById('visitsGridContainer').innerHTML = visits.map(v => {
-        const bullets = extractBulletLines(v.content);
-        const chips = renderStructuredChips(v.rules);
-        return `
-          <div class="bg-white border border-[#E6EAF0] rounded-[16px] p-5 flex flex-col justify-between">
-            <div>
-              <h3 class="text-base font-bold text-[#0F1B2D] mb-3">${v.entity}</h3>
-              ${chips}
-              <ul class="space-y-2 text-sm text-[#1B2433]">
-                ${bullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-[#5B6576] select-none">&bull;</span><span>${b}</span></li>`).join('')}
-              </ul>
-            </div>
-          </div>`;
-      }).join('');
+      document.getElementById('visitsGridContainer').innerHTML = visits.map(v => renderGuidelineCard(v, '')).join('');
     }
 
     async function executeSearch() {
@@ -719,11 +769,10 @@
 
       document.getElementById('clearSearchBtn').classList.remove('hidden');
       document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
-      const searchSec = document.getElementById('searchSection');
+      document.getElementById('searchSection').classList.remove('hidden');
+      document.getElementById('searchMeta').innerText = `Showing top matches for "${query}"`;
       const container = document.getElementById('searchResultsContainer');
-
-      searchSec.classList.remove('hidden');
-      container.innerHTML = '<div class="text-sm text-[#5B6576]">Searching...</div>';
+      container.innerHTML = '<div class="text-sm text-slate-500">Searching...</div>';
 
       const res = await fetch('/search', {
         method: 'POST',
@@ -732,27 +781,9 @@
       });
       const data = await res.json();
       const results = data.results || [];
-
-      if (!results.length) {
-        container.innerHTML = '<div class="text-sm text-[#5B6576]">No matching guidelines found.</div>';
-        return;
-      }
-
-      container.innerHTML = results.map(item => {
-        const bullets = extractBulletLines(item.content);
-        const chips = renderStructuredChips(item.rules);
-        return `
-          <div class="bg-white border border-[#E6EAF0] rounded-[16px] p-5">
-            <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-              <h3 class="text-base font-bold text-[#0F1B2D]">${item.entity}</h3>
-              <span class="text-xs text-[#5B6576]">${item.category}</span>
-            </div>
-            ${chips}
-            <ul class="space-y-2 text-sm text-[#1B2433]">
-              ${bullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-[#5B6576] select-none">&bull;</span><span>${b}</span></li>`).join('')}
-            </ul>
-          </div>`;
-      }).join('');
+      container.innerHTML = results.length
+        ? results.map(item => renderGuidelineCard(item)).join('')
+        : '<div class="text-sm text-slate-500">No matching guidelines found.</div>';
     }
 
     function clearSearch(restore = true) {
@@ -766,27 +797,33 @@
       const query = document.getElementById('askInput').value.trim();
       if (!query) return;
 
+      const sec = document.getElementById('section-assistant');
       const out = document.getElementById('decisionOutputContainer');
+      const btn = document.getElementById('jewelBtn');
+
+      sec.classList.remove('pt-[16vh]');
+      sec.classList.add('pt-2');
+      out.classList.remove('opacity-0', 'translate-y-3');
+      out.classList.add('opacity-100', 'translate-y-0');
 
       if (selectedJewelDept !== 'internal_medicine') {
         const dept = DEPARTMENTS.find(d => d.id === selectedJewelDept);
         out.innerHTML = `
-          <div class="bg-[#E8F2FC] border border-[#C5DCF5] text-[#0F1B2D] rounded-[16px] p-5 flex items-center gap-3.5">
+          <div class="bg-[#E8F2FC] border border-[#C5DCF5] text-slate-900 rounded-2xl p-5 flex items-center gap-3.5">
             <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                ${ICON_SVGS[dept.icon]}
-              </svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON_SVGS[dept.icon]}</svg>
             </div>
             <div>
-              <div class="text-sm font-bold text-[#0F1B2D]">${dept.title} Knowledge Base Pending</div>
-              <p class="text-xs text-[#4F5A6B] mt-0.5">SOP rules for ${dept.title} are not indexed yet. Select <strong>Internal Medicine</strong> above to query active clinic rules.</p>
+              <div class="text-sm font-bold">${escapeHtml(dept.title)} Knowledge Base Pending</div>
+              <p class="text-xs text-slate-600 mt-0.5">SOP rules for ${escapeHtml(dept.title)} are not indexed yet. Select <strong>Internal Medicine</strong> above to query active clinic rules.</p>
             </div>
-          </div>
-        `;
+          </div>`;
         return;
       }
 
-      out.innerHTML = '<div class="text-sm text-[#5B6576]">Checking clinic rules...</div>';
+      btn.disabled = true;
+      btn.innerHTML = `<span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span><span>Thinking...</span>`;
+      out.innerHTML = '<div class="text-sm text-slate-500 py-4">Checking clinic rules...</div>';
 
       try {
         const res = await fetch('/decide', {
@@ -799,29 +836,20 @@
 
         let primaryCardHtml = '';
 
-        // 1. Direct Fact Card
         if (data.mode === 'fact_lookup' && data.direct_fact) {
           const safeAns = data.direct_fact.answer.replace(/'/g, "\\'");
-          const conf = formatPct(data.direct_fact.confidence);
           primaryCardHtml = `
-            <div class="flex items-center justify-between gap-4 bg-[#E8F2FC] border border-[#C5DCF5] rounded-[16px] px-5 py-4">
-              <div class="text-lg font-bold text-[#0F1B2D] font-mono">${data.direct_fact.answer}</div>
-              <div class="flex items-center gap-3 shrink-0">
-                <span class="text-xs font-mono font-medium px-2.5 py-1 rounded bg-white/80 text-[#0F2A4A]">Confidence: ${conf}</span>
-                <button onclick="copyText('${safeAns}', this)" class="brand-navy-bg brand-navy-bg-hover text-white text-xs font-medium px-3.5 py-1.5 rounded-[10px] transition">
-                  Copy
-                </button>
+            <div class="flex items-center justify-between gap-4 bg-[#E8F2FC] border border-[#C5DCF5] rounded-2xl px-5 py-4 shadow-sm">
+              <div class="text-xl font-bold text-slate-900 font-mono break-words">${escapeHtml(data.direct_fact.answer)}</div>
+              <div class="flex items-center gap-2.5 shrink-0">
+                <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-lg bg-white/90 text-[#0F2A4A]">Confidence: ${formatPct(data.direct_fact.confidence)}</span>
+                <button onclick="copyText('${safeAns}', this)" class="bg-[#0F2A4A] hover:bg-[#173B66] text-white text-xs font-medium px-3.5 py-1.5 rounded-lg transition">Copy</button>
               </div>
-            </div>
-          `;
-        }
-        // 2. Yes/No Gate Card
-        else if (data.mode === 'yes_no_gate' && data.yes_no_gate) {
+            </div>`;
+        } else if (data.mode === 'yes_no_gate' && data.yes_no_gate) {
           const yn = data.yes_no_gate.decision || '';
-          const conf = formatPct(data.yes_no_gate.confidence);
           let boxStyle = 'bg-emerald-50 text-emerald-950 border-emerald-200';
           let badgeStyle = 'bg-emerald-100 text-emerald-900';
-
           if (yn.startsWith('NO')) {
             boxStyle = 'bg-rose-50 text-rose-950 border-rose-200';
             badgeStyle = 'bg-rose-100 text-rose-900';
@@ -829,63 +857,50 @@
             boxStyle = 'bg-amber-50 text-amber-950 border-amber-200';
             badgeStyle = 'bg-amber-100 text-amber-900';
           }
-
           primaryCardHtml = `
-            <div class="p-5 rounded-[16px] border ${boxStyle}">
+            <div class="p-5 rounded-2xl border ${boxStyle} shadow-sm">
               <div class="flex items-center justify-between gap-3">
-                <div class="text-base font-bold">${yn}</div>
-                <span class="text-xs font-mono font-medium px-2.5 py-0.5 rounded shrink-0 ${badgeStyle}">Confidence: ${conf}</span>
+                <div class="text-base font-bold">${escapeHtml(yn)}</div>
+                <span class="text-xs font-mono font-medium px-2.5 py-0.5 rounded-lg shrink-0 ${badgeStyle}">Confidence: ${formatPct(data.yes_no_gate.confidence)}</span>
               </div>
-              <p class="text-sm mt-1.5 leading-relaxed">${data.yes_no_gate.explanation}</p>
-            </div>
-          `;
-        }
-        // 3. Queue Routing Card
-        else if (data.mode === 'queue_routing' && data.routing_classification) {
+              <p class="text-sm mt-1.5 leading-relaxed">${escapeHtml(data.yes_no_gate.explanation)}</p>
+            </div>`;
+        } else if (data.mode === 'queue_routing' && data.routing_classification) {
           const rc = data.routing_classification;
-          const conf = formatPct(rc.confidence);
           primaryCardHtml = `
-            <div class="p-5 rounded-[16px] bg-[#E8F2FC] border border-[#C5DCF5] flex items-center justify-between gap-4">
-              <div class="text-base font-bold text-[#0F1B2D]">${rc.action}</div>
-              <span class="text-xs font-mono font-medium px-2.5 py-0.5 rounded bg-white/80 text-[#0F2A4A] shrink-0">Confidence: ${conf}</span>
-            </div>
-          `;
+            <div class="p-5 rounded-2xl bg-[#E8F2FC] border border-[#C5DCF5] flex items-center justify-between gap-4 shadow-sm">
+              <div class="text-base font-bold text-slate-900">${escapeHtml(rc.action)}</div>
+              <span class="text-xs font-mono font-medium px-2.5 py-0.5 rounded-lg bg-white/90 text-[#0F2A4A] shrink-0">Confidence: ${formatPct(rc.confidence)}</span>
+            </div>`;
         }
 
-        const srcBullets = extractBulletLines(data.matched_source.content);
-        const srcChips = renderStructuredChips(data.matched_source.rules);
+        const intentHtml = data.detected_intent
+          ? `<div class="flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-slate-500">
+               <span>Intent: <strong class="text-slate-800 font-medium">${escapeHtml(data.detected_intent.type)}</strong></span>
+               <span class="font-mono font-medium px-2.5 py-0.5 rounded-lg bg-white border border-slate-200 text-[#0F2A4A]">Question Understanding: ${formatPct(data.detected_intent.confidence)}</span>
+             </div>`
+          : '';
 
         out.innerHTML = `
-          <div class="space-y-5">
+          <div class="space-y-4">
+            ${intentHtml}
             ${primaryCardHtml}
-
             <div class="space-y-2 pt-1">
-              <div class="flex items-center gap-2 text-xs font-semibold text-[#5B6576] px-1">
-                <svg class="w-3.5 h-3.5 text-[#1565C0]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-500 px-1">
+                <svg class="w-3.5 h-3.5 text-[#1565C0]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <span>Source &amp; Reference Guideline</span>
               </div>
-
-              <div class="bg-white border border-[#E6EAF0] rounded-[16px] p-5">
-                <div class="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-                  <h3 class="text-base font-bold text-[#0F1B2D]">${data.matched_source.entity}</h3>
-                  <span class="text-xs text-[#5B6576]">${data.matched_source.category}</span>
-                </div>
-                ${srcChips}
-                <ul class="space-y-2 text-sm text-[#1B2433]">
-                  ${srcBullets.map(b => `<li class="flex items-start gap-2 leading-relaxed"><span class="text-[#5B6576] select-none">&bull;</span><span>${b}</span></li>`).join('')}
-                </ul>
-              </div>
+              ${renderGuidelineCard(data.matched_source)}
             </div>
-          </div>
-        `;
-      } catch (err) {
+          </div>`;
+      } catch {
         out.innerHTML = `
-          <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-[16px] p-4 text-sm">
+          <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-4 text-sm">
             Jewel is currently unavailable. Please use the top Search bar or contact IT support.
-          </div>
-        `;
+          </div>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Jewel it</span>';
       }
     }
 
@@ -895,8 +910,15 @@
     document.getElementById('askInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') executeDecision();
     });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        document.getElementById('searchInput').focus();
+      }
+    });
 
     loadKB();
   </script>
 </body>
+
 </html>

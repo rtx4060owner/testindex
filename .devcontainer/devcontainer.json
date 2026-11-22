@@ -1,0 +1,12 @@
+{
+  "name": "Aizer Health KB & Jewel",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:24",
+  "postCreateCommand": "npm install",
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": {
+      "label": "Aizer Health Portal",
+      "onAutoForward": "openBrowser"
+    }
+  }
+}

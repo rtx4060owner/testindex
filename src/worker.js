@@ -1,11 +1,13 @@
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+const json = (data, status = 200) => Response.json(data, { status, headers: corsHeaders });
+
 export default {
   async fetch(request, env) {
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    };
-
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: corsHeaders });
     }
@@ -21,7 +23,7 @@ export default {
 
       const chunks = await request.json();
       await ingestData(chunks, env);
-      return Response.json({ status: "success", indexed: chunks.length }, { headers: corsHeaders });
+      return json({ status: "success", indexed: chunks.length });
     }
 
     // 2. Fetch all structured KB items for UI Navigation Tabs
@@ -35,18 +37,18 @@ export default {
         content: r.content,
         rules: JSON.parse(r.rules),
       }));
-      return Response.json({ items: formatted }, { headers: corsHeaders });
+      return json({ items: formatted });
     }
 
     // 3. Hybrid Search Endpoint (D1 FTS5 + Vectorize + RRF)
     if (url.pathname === "/search" && request.method === "POST") {
       const { query, topK = 5 } = await request.json();
       if (!query || !query.trim()) {
-        return Response.json({ error: "Query is required" }, { status: 400, headers: corsHeaders });
+        return json({ error: "Query is required" }, 400);
       }
 
       const results = await hybridSearch(query.trim(), topK, env);
-      return Response.json({ query: query.trim(), results }, { headers: corsHeaders });
+      return json({ query: query.trim(), results });
     }
 
     // 4. Serve Frontend UI from ./public
