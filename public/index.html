@@ -29,44 +29,13 @@
       font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
     }
 
-    /* Horizontal Department Rail */
-    .dept-rail {
-      display: flex;
-      gap: 16px;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      padding: 4px 2px 16px;
-      cursor: grab;
-      user-select: none;
-    }
-
-    .dept-rail.is-dragging {
-      cursor: grabbing;
-      scroll-snap-type: none;
-    }
-
-    .dept-rail::-webkit-scrollbar {
-      height: 7px;
-    }
-
-    .dept-rail::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .dept-rail::-webkit-scrollbar-thumb {
-      background: #CBD5E1;
-      border-radius: 999px;
-    }
-
     .dept-card {
-      flex: 0 0 220px;
-      width: 220px;
+      width: 100%;
       background: #FFFFFF;
       border-radius: 20px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      scroll-snap-align: start;
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -84,9 +53,9 @@
       overflow: hidden;
     }
 
-    /* Animated Cloud Surface */
+    /* Flat Dark Blue Surface */
     .cloud-surface {
-      background: linear-gradient(120deg, #0B2545 0%, #134074 55%, #1565C0 100%);
+      background: #0F2A4A;
       position: relative;
       overflow: hidden;
     }
@@ -98,51 +67,7 @@
     }
 
     .cloud-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .cloud {
-      position: absolute;
-      border-radius: 999px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 70%);
-      filter: blur(10px);
-      will-change: transform;
-    }
-
-    .cloud-1 {
-      width: 280px;
-      height: 90px;
-      top: -20px;
-      left: -300px;
-      animation: cloudDrift 48s linear infinite;
-    }
-
-    .cloud-2 {
-      width: 360px;
-      height: 110px;
-      top: -10px;
-      left: -380px;
-      opacity: 0.75;
-      animation: cloudDrift 64s linear infinite;
-      animation-delay: -24s;
-    }
-
-    .cloud-3 {
-      width: 220px;
-      height: 80px;
-      bottom: -25px;
-      left: -240px;
-      opacity: 0.65;
-      animation: cloudDrift 54s linear infinite;
-      animation-delay: -12s;
-    }
-
-    @keyframes cloudDrift {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(calc(100vw + 420px)); }
+      display: none;
     }
 
     .dept-card--active .dept-card-media {
@@ -216,22 +141,6 @@
             </svg>
             <span>Knowledge Base</span>
           </button>
-          <button id="nav-providers" onclick="switchSection('providers')"
-            class="nav-item flex items-center gap-2 px-4 py-2 rounded-xl text-[15px] font-medium text-white/80 hover:text-white hover:bg-white/10 transition whitespace-nowrap shrink-0">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span>Providers</span>
-          </button>
-          <button id="nav-visits" onclick="switchSection('visits')"
-            class="nav-item flex items-center gap-2 px-4 py-2 rounded-xl text-[15px] font-medium text-white/80 hover:text-white hover:bg-white/10 transition whitespace-nowrap shrink-0">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>Visit Types</span>
-          </button>
           <button id="nav-assistant" onclick="switchSection('assistant')"
             class="nav-item flex items-center gap-2 px-4 py-2 rounded-xl text-[15px] font-medium text-white/90 hover:text-white hover:bg-white/10 transition whitespace-nowrap shrink-0">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -275,59 +184,22 @@
     </div>
 
     <!-- HOME: HERO PAGE -->
-    <section id="section-home" class="content-section hidden space-y-8">
-      <div
-        class="bg-gradient-to-br from-[#0F2A4A] via-[#133863] to-[#1565C0] rounded-3xl p-8 sm:p-12 text-white shadow-md flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-        <div class="space-y-4 max-w-2xl">
-          <div
-            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-medium text-sky-100">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span>Call Center Operations Portal &bull; Internal Medicine Live</span>
-          </div>
-          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">Aizer Health Operations Hub</h1>
-          <p class="text-base sm:text-lg text-slate-200 leading-relaxed">Your central workspace for department
-            scheduling guidelines, provider directories, visit rules, and instant policy decisions.</p>
-          <div class="flex flex-wrap gap-3 pt-2">
-            <button onclick="switchSection('assistant')"
-              class="px-6 py-3 rounded-xl bg-white text-[#0F2A4A] hover:bg-sky-50 font-semibold text-sm transition shadow-sm flex items-center gap-2">
-              <svg class="w-4 h-4 text-[#1565C0]" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
-              <span>Ask Jewel</span>
-            </button>
-            <button onclick="switchSection('kb')"
-              class="px-6 py-3 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-sm transition border border-white/20">
-              Open Knowledge Base
-            </button>
-          </div>
+    <section id="section-home" class="content-section hidden min-h-[calc(100vh-140px)] flex flex-col items-center justify-center text-center px-4 py-12">
+      <div class="max-w-4xl mx-auto space-y-6">
+        <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+          <img src="/AizerLogo.avif" alt="Aizer Health" class="h-14 sm:h-20 w-auto object-contain" />
+          <h1 class="text-4xl sm:text-6xl lg:text-[76px] font-black text-[#0F2A4A] tracking-[-0.04em] leading-none">
+            Knowledge Base
+          </h1>
         </div>
-
-        <div class="grid grid-cols-2 gap-3 sm:w-[360px] shrink-0">
-          <button onclick="switchSection('kb')"
-            class="text-left p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 transition">
-            <div class="text-xs font-semibold text-sky-200 uppercase tracking-wider">SOPs</div>
-            <div class="text-base font-bold mt-1">Knowledge Base</div>
-            <div class="text-xs text-slate-300 mt-1">Departments &amp; rules</div>
-          </button>
-          <button onclick="switchSection('providers')"
-            class="text-left p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 transition">
-            <div class="text-xs font-semibold text-sky-200 uppercase tracking-wider">Directory</div>
-            <div class="text-base font-bold mt-1">Providers</div>
-            <div class="text-xs text-slate-300 mt-1">PCPs &amp; specialists</div>
-          </button>
-          <button onclick="switchSection('visits')"
-            class="text-left p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 transition">
-            <div class="text-xs font-semibold text-sky-200 uppercase tracking-wider">Scheduling</div>
-            <div class="text-base font-bold mt-1">Visit Types</div>
-            <div class="text-xs text-slate-300 mt-1">Durations &amp; limits</div>
-          </button>
+        <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
           <button onclick="switchSection('assistant')"
-            class="text-left p-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 transition">
-            <div class="text-xs font-semibold text-sky-200 uppercase tracking-wider">Decision Engine</div>
-            <div class="text-base font-bold mt-1">Ask Jewel</div>
-            <div class="text-xs text-slate-300 mt-1">Instant answers</div>
+            class="px-6 py-3 rounded-full bg-[#0F2A4A] hover:bg-[#173B66] text-white font-semibold text-sm transition shadow-sm flex items-center gap-2">
+            <span>Ask Jewel</span>
+          </button>
+          <button onclick="switchSection('kb'); switchKbTab('rules');"
+            class="px-6 py-3 rounded-full bg-white hover:bg-slate-50 text-[#0F2A4A] font-semibold text-sm border border-slate-200 transition shadow-sm">
+            Knowledge Base
           </button>
         </div>
       </div>
@@ -351,130 +223,116 @@
     <!-- SECTION 1: KNOWLEDGE BASE -->
     <section id="section-kb" class="content-section hidden space-y-6">
       <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <h2 class="text-lg font-bold text-slate-900">All Departments</h2>
-          <div class="flex items-center gap-2">
-            <button type="button" onclick="scrollDeptRail(-1)" aria-label="Previous departments"
-              class="w-9 h-9 rounded-full bg-white border border-slate-200 hover:bg-slate-50 flex items-center justify-center text-slate-700 transition">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5M11 6l-6 6 6 6" />
-              </svg>
-            </button>
-            <button type="button" onclick="scrollDeptRail(1)" aria-label="Next departments"
-              class="w-9 h-9 rounded-full bg-[#0F2A4A] hover:bg-[#173B66] flex items-center justify-center text-white transition">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        <div id="homeDepartmentsRail" class="dept-rail"></div>
+        <h2 class="text-lg font-bold text-slate-900">All Departments</h2>
+        <div id="homeDepartmentsRail" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3.5"></div>
       </div>
 
       <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-200">
-        <h1 id="kbHeading" class="text-2xl font-bold text-slate-900 tracking-tight">Internal Medicine Knowledge Base
-        </h1>
-        <span id="kbCountBadge"
-          class="text-xs font-mono font-medium px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600"></span>
-      </div>
-
-      <div id="kbPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-        <button onclick="filterKB('ALL', this)"
-          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#0F2A4A] text-white whitespace-nowrap transition">All
-          Rules</button>
-        <button onclick="filterKB('Core Scheduling Rules', this)"
-          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Core
-          Scheduling</button>
-        <button onclick="filterKB('Directory & Locations', this)"
-          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Directory
-          &amp; Locations</button>
-        <button onclick="filterKB('Nurse & Lab Services', this)"
-          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Nurse
-          &amp; Lab</button>
-        <button onclick="filterKB('Telephone Encounter (TE) Routing', this)"
-          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">TE
-          Routing</button>
-        <button onclick="filterKB('Referrals & Prior Authorizations', this)"
-          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Referrals
-          &amp; Auth</button>
-        <button onclick="filterKB('Special Operational Policies', this)"
-          class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Special
-          Policies</button>
-      </div>
-
-      <div id="kbCardsContainer" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4"></div>
-    </section>
-
-    <!-- SECTION 2: PROVIDERS -->
-    <section id="section-providers" class="content-section hidden space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Providers &amp; Specialists</h1>
-          <p class="text-sm text-slate-500 mt-0.5">Filter by clinic location to check schedules, restrictions, and visit
-            rules.</p>
+        <div class="flex flex-wrap items-center gap-3">
+          <h1 id="kbHeading" class="text-2xl font-bold text-slate-900 tracking-tight">Internal Medicine Knowledge Base</h1>
+          <span id="kbCountBadge"
+            class="text-xs font-mono font-medium px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600"></span>
         </div>
-        <div class="inline-flex p-1 bg-slate-200/70 rounded-xl gap-1 self-start">
-          <button onclick="filterProviders('ALL', this)"
-            class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#0F2A4A] text-white transition">All
-            Locations</button>
-          <button onclick="filterProviders('Bakertown', this)"
-            class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition">Bakertown
-            (3rd Fl)</button>
-          <button onclick="filterProviders('Forest Rd', this)"
-            class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition">Forest
-            Rd (2nd Fl)</button>
+
+        <div class="inline-flex p-1 bg-slate-200/70 rounded-xl gap-1">
+          <button id="kbTabBtn-rules" onclick="switchKbTab('rules')"
+            class="kb-subtab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#0F2A4A] text-white transition">Rules &amp; SOPs</button>
+          <button id="kbTabBtn-providers" onclick="switchKbTab('providers')"
+            class="kb-subtab px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition">Providers</button>
+          <button id="kbTabBtn-visits" onclick="switchKbTab('visits')"
+            class="kb-subtab px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition">Visit Types</button>
         </div>
       </div>
 
-      <div class="space-y-3">
-        <div class="flex items-center gap-2">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Primary Care Providers</h2>
-          <span id="pcpCount" class="text-xs font-mono text-slate-400"></span>
+      <!-- KB SUB-TAB 1: RULES & SOPS -->
+      <div id="kb-tab-rules" class="kb-subpanel space-y-5">
+        <div id="kbPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          <button onclick="filterKB('ALL', this)"
+            class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#0F2A4A] text-white whitespace-nowrap transition">All
+            Rules</button>
+          <button onclick="filterKB('Core Scheduling Rules', this)"
+            class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Core
+            Scheduling</button>
+          <button onclick="filterKB('Directory & Locations', this)"
+            class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Directory
+            &amp; Locations</button>
+          <button onclick="filterKB('Nurse & Lab Services', this)"
+            class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Nurse
+            &amp; Lab</button>
+          <button onclick="filterKB('Telephone Encounter (TE) Routing', this)"
+            class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">TE
+            Routing</button>
+          <button onclick="filterKB('Referrals & Prior Authorizations', this)"
+            class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Referrals
+            &amp; Auth</button>
+          <button onclick="filterKB('Special Operational Policies', this)"
+            class="kb-pill px-3.5 py-1.5 rounded-xl text-xs font-medium bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 whitespace-nowrap transition">Special
+            Policies</button>
         </div>
-        <div id="pcpCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+        <div id="kbCardsContainer" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4"></div>
       </div>
 
-      <div class="space-y-3 pt-2">
-        <div class="flex items-center gap-2">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Specialty Providers</h2>
-          <span id="specCount" class="text-xs font-mono text-slate-400"></span>
+      <!-- KB SUB-TAB 2: PROVIDERS -->
+      <div id="kb-tab-providers" class="kb-subpanel hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <p class="text-sm text-slate-500">Filter by clinic location to check schedules, restrictions, and visit rules.</p>
+          <div class="inline-flex p-1 bg-slate-200/70 rounded-xl gap-1 self-start">
+            <button onclick="filterProviders('ALL', this)"
+              class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#0F2A4A] text-white transition">All
+              Locations</button>
+            <button onclick="filterProviders('Bakertown', this)"
+              class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition">Bakertown
+              (3rd Fl)</button>
+            <button onclick="filterProviders('Forest Rd', this)"
+              class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition">Forest
+              Rd (2nd Fl)</button>
+          </div>
         </div>
-        <div id="specCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-      </div>
-    </section>
 
-    <!-- SECTION 3: VISIT TYPES -->
-    <section id="section-visits" class="content-section hidden space-y-5">
-      <div>
-        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Types of Visits</h1>
-        <p class="text-sm text-slate-500 mt-0.5">Appointment durations, age limits, and booking prerequisites.</p>
+        <div class="space-y-3">
+          <div class="flex items-center gap-2">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Primary Care Providers</h2>
+            <span id="pcpCount" class="text-xs font-mono text-slate-400"></span>
+          </div>
+          <div id="pcpCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+
+        <div class="space-y-3 pt-2">
+          <div class="flex items-center gap-2">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Specialty Providers</h2>
+            <span id="specCount" class="text-xs font-mono text-slate-400"></span>
+          </div>
+          <div id="specCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
       </div>
-      <div id="visitsGridContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+      <!-- KB SUB-TAB 3: VISIT TYPES -->
+      <div id="kb-tab-visits" class="kb-subpanel hidden space-y-5">
+        <p class="text-sm text-slate-500">Appointment durations, age limits, and booking prerequisites.</p>
+        <div id="visitsGridContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
     </section>
 
     <!-- SECTION 4: ASK JEWEL -->
     <section id="section-assistant" class="content-section hidden max-w-5xl mx-auto pt-[16vh] pb-8 transition-[padding] duration-500 ease-out flex flex-col gap-5">
-      <div class="cloud-surface border border-white/20 rounded-3xl p-7 sm:p-8 shadow-[0_24px_60px_-15px_rgba(15,42,74,0.40)] w-full">
-        <div class="cloud-layer" aria-hidden="true">
-          <div class="cloud cloud-1"></div>
-          <div class="cloud cloud-2"></div>
-          <div class="cloud cloud-3"></div>
-        </div>
+      <div class="cloud-surface border border-white/15 rounded-3xl p-6 sm:p-7 shadow-[0_24px_60px_-15px_rgba(15,42,74,0.35)] w-full">
         <div class="relative z-10 space-y-5">
-          <h1 class="text-2xl font-extrabold text-white tracking-tight">Ask Jewel</h1>
+          <div id="jewelDeptSelector" class="flex items-center justify-between gap-2 border-b border-white/15 overflow-x-auto no-scrollbar"></div>
 
-          <div class="flex items-center h-14 bg-white/12 backdrop-blur-md border border-white/25 rounded-2xl p-1.5 pl-4 gap-3 focus-within:bg-white/20 focus-within:border-white/50 transition shadow-sm">
+          <div class="flex items-center h-14 bg-white/10 border border-white/20 rounded-2xl p-1.5 pl-4 gap-3 focus-within:bg-white/15 focus-within:border-white/45 transition">
             <label for="askInput" class="sr-only">Ask Jewel a question</label>
+            <svg class="w-4 h-4 text-white/70 shrink-0 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
+            </svg>
             <input id="askInput" type="text"
-              placeholder="Ask Jewel about Internal Medicine eligibility, routing, or policies..."
-              class="flex-1 min-w-0 bg-transparent text-sm sm:text-base text-white placeholder-white/70 focus:outline-none" />
+              placeholder="Ask about Internal Medicine eligibility, routing or policies..."
+              class="flex-1 min-w-0 bg-transparent text-sm sm:text-base text-white placeholder-white/65 focus:outline-none" />
             <button id="jewelBtn" onclick="executeDecision()"
               class="h-full bg-white hover:bg-sky-50 text-[#0F2A4A] text-sm font-bold px-6 rounded-xl transition shrink-0 shadow-sm flex items-center justify-center gap-2">
               <span>Jewel it</span>
             </button>
           </div>
-
-          <div id="jewelDeptSelector" class="flex items-center justify-between gap-1.5 overflow-x-auto no-scrollbar pt-0.5"></div>
         </div>
       </div>
 
@@ -657,12 +515,11 @@
       container.innerHTML = DEPARTMENTS.map(dept => {
         const isSelected = dept.id === selectedJewelDept;
         const cls = isSelected
-          ? 'bg-white border-white text-[#0F2A4A] font-semibold shadow-sm'
-          : 'bg-white/10 border-white/20 text-white/85 hover:bg-white/20 hover:text-white';
-        const stroke = isSelected ? '#1565C0' : '#FFFFFF';
+          ? 'border-b-2 border-white text-white font-semibold'
+          : 'border-b-2 border-transparent text-white/65 hover:text-white';
         return `
-          <button type="button" onclick="selectJewelDepartment('${dept.id}')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs whitespace-nowrap shrink-0 transition ${cls}">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON_SVGS[dept.icon]}</svg>
+          <button type="button" onclick="selectJewelDepartment('${dept.id}')" class="inline-flex items-center gap-2 px-2 pb-3 pt-1 text-[13px] whitespace-nowrap shrink-0 transition ${cls}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON_SVGS[dept.icon]}</svg>
             <span>${escapeHtml(dept.title)}</span>
           </button>`;
       }).join('');
@@ -707,6 +564,13 @@
       }
       document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
       document.getElementById(`section-${section}`).classList.remove('hidden');
+    }
+
+    function switchKbTab(tab) {
+      document.querySelectorAll('.kb-subpanel').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`kb-tab-${tab}`).classList.remove('hidden');
+      const btn = document.getElementById(`kbTabBtn-${tab}`);
+      if (btn) setActivePill('.kb-subtab', btn, ['text-slate-600', 'font-medium']);
     }
 
     function setActivePill(selector, btnEl, inactiveClasses) {
