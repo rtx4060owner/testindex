@@ -28,6 +28,9 @@ const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".avif": "image/avif",
+  ".webp": "image/webp",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
   ".png": "image/png",
   ".svg": "image/svg+xml",
 };
@@ -70,10 +73,12 @@ function sendJson(res, status, data) {
 
 async function handleDecide(body) {
   const query = body?.query || "";
+  const department = body?.department || null;
+
   const searchRes = await fetchWorkerJson("/search", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query, topK: 5 }),
+    body: JSON.stringify({ query, topK: 5, department }),
   });
 
   const chunks = searchRes.results || [];
@@ -95,7 +100,7 @@ async function handleDecide(body) {
     intentScore = intentOut.scores[0];
   }
 
-  const detCheck = checkDeterministicRules(query, chunks);
+  const detCheck = checkDeterministicRules(query, chunks, department);
   if (detCheck?.override_chunk_id) {
     const match = chunks.find((c) => c.id === detCheck.override_chunk_id);
     if (match) bestChunk = match;
@@ -104,6 +109,7 @@ async function handleDecide(body) {
   const groundedInput = `SOP Rule (${bestChunk.entity}): ${bestChunk.content}\nStaff Question: ${query}`;
   const payload = {
     query,
+    department,
     detected_intent: {
       type: intentLabel,
       confidence: Number(intentScore.toFixed(4)),
@@ -164,11 +170,12 @@ const server = http.createServer(async (req, res) => {
     return res.end();
   }
 
-  const reqPath = new URL(req.url, `http://${req.headers.host}`).pathname;
+  const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+  const reqPath = parsedUrl.pathname;
 
   try {
     if (reqPath === "/kb" && req.method === "GET") {
-      return sendJson(res, 200, await fetchWorkerJson("/kb"));
+      return sendJson(res, 200, await fetchWorkerJson(`/kb${parsedUrl.search}`));
     }
 
     if (reqPath === "/search" && req.method === "POST") {
@@ -176,7 +183,11 @@ const server = http.createServer(async (req, res) => {
       const data = await fetchWorkerJson("/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: body?.query || "", topK: 5 }),
+        body: JSON.stringify({
+          query: body?.query || "",
+          topK: body?.topK || 5,
+          department: body?.department || null,
+        }),
       });
       return sendJson(res, 200, data);
     }

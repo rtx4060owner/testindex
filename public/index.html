@@ -106,7 +106,7 @@
 
 <body class="min-h-screen flex flex-col">
 
-  <!-- Animated Cloud Header -->
+  <!-- Header -->
   <header class="cloud-surface cloud-header border-b border-white/15 shadow-sm">
     <div class="cloud-layer" aria-hidden="true">
       <div class="cloud cloud-1"></div>
@@ -116,7 +116,7 @@
     <div class="relative z-10 w-full px-3 sm:px-5">
       <div class="flex flex-wrap lg:grid lg:grid-cols-[1fr_auto_1fr] items-center justify-between gap-4 py-4">
 
-        <!-- Left: Bigger Brand Closer to Edge (White) -->
+        <!-- Left: Brand Logo -->
         <button onclick="switchSection('home')" title="Aizer Health Home"
           class="lg:justify-self-start flex items-center gap-2.5 shrink-0 cursor-pointer focus:outline-none pl-1">
           <img src="/AizerLogo.avif" alt="Aizer Health" class="h-9 sm:h-10 w-auto object-contain brightness-0 invert"
@@ -160,7 +160,7 @@
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z" />
           </svg>
-          <input id="searchInput" type="text" placeholder="Search guidelines..."
+          <input id="searchInput" type="text" placeholder="Search all departments..."
             class="flex-1 min-w-0 bg-transparent text-sm text-white placeholder-white/75 focus:outline-none" />
           <button id="clearSearchBtn" onclick="clearSearch()"
             class="hidden text-xs font-medium text-white/90 hover:text-white px-2 py-1 rounded-lg bg-white/15 hover:bg-white/25 transition shrink-0">
@@ -180,7 +180,7 @@
   <main class="max-w-[1560px] mx-auto w-full flex-1 pt-5 px-4 sm:px-6 pb-12">
     <div id="loadingIndicator" class="flex items-center gap-3 text-sm text-slate-500 py-12">
       <span class="w-4 h-4 border-2 border-[#1565C0] border-t-transparent rounded-full animate-spin"></span>
-      <span>Loading clinical guidelines...</span>
+      <span>Loading clinical guidelines across all 7 departments...</span>
     </div>
 
     <!-- HOME: HERO PAGE -->
@@ -223,7 +223,10 @@
     <!-- SECTION 1: KNOWLEDGE BASE -->
     <section id="section-kb" class="content-section hidden space-y-6">
       <div class="space-y-3">
-        <h2 class="text-lg font-bold text-slate-900">All Departments</h2>
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-bold text-slate-900">All Departments</h2>
+          <span id="totalIndexedBadge" class="text-xs font-mono text-slate-500"></span>
+        </div>
         <div id="homeDepartmentsRail" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3.5"></div>
       </div>
 
@@ -277,30 +280,32 @@
       <div id="kb-tab-providers" class="kb-subpanel hidden space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <p class="text-sm text-slate-500">Filter by clinic location to check schedules, restrictions, and visit rules.</p>
-          <div class="inline-flex p-1 bg-slate-200/70 rounded-xl gap-1 self-start">
+          <div id="providerLocationPills" class="inline-flex p-1 bg-slate-200/70 rounded-xl gap-1 self-start">
             <button onclick="filterProviders('ALL', this)"
               class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#0F2A4A] text-white transition">All
               Locations</button>
             <button onclick="filterProviders('Bakertown', this)"
-              class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition">Bakertown
-              (3rd Fl)</button>
-            <button onclick="filterProviders('Forest Rd', this)"
+              class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition">Bakertown</button>
+            <button onclick="filterProviders('Forest', this)"
               class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition">Forest
-              Rd (2nd Fl)</button>
+              Rd</button>
+            <button onclick="filterProviders('Blooming Grove', this)"
+              class="prov-pill px-3.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition">Blooming
+              Grove</button>
           </div>
         </div>
 
         <div class="space-y-3">
           <div class="flex items-center gap-2">
-            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Primary Care Providers</h2>
+            <h2 id="pcpSectionTitle" class="text-xs font-bold uppercase tracking-wider text-slate-500">Primary Care Providers</h2>
             <span id="pcpCount" class="text-xs font-mono text-slate-400"></span>
           </div>
           <div id="pcpCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
 
-        <div class="space-y-3 pt-2">
+        <div id="specSectionWrapper" class="space-y-3 pt-2">
           <div class="flex items-center gap-2">
-            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Specialty Providers</h2>
+            <h2 id="specSectionTitle" class="text-xs font-bold uppercase tracking-wider text-slate-500">Specialty Providers</h2>
             <span id="specCount" class="text-xs font-mono text-slate-400"></span>
           </div>
           <div id="specCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
@@ -345,6 +350,8 @@
     let activeSection = 'home';
     let selectedKbDept = 'internal_medicine';
     let selectedJewelDept = 'internal_medicine';
+    let currentRuleCategory = 'ALL';
+    let currentProviderLocation = 'ALL';
     let didDragRail = false;
 
     const ICON_SVGS = {
@@ -358,14 +365,19 @@
     };
 
     const DEPARTMENTS = [
-      { id: 'internal_medicine', title: 'Internal Medicine', description: 'Adult Primary Care, Specialty Referrals & Scheduling SOPs', image: '/icons/aizer-icons-v2_InternalMedicine.avif', icon: 'stethoscope', isActive: true },
-      { id: 'acute_care', title: 'Acute Care', description: 'Walk-in Urgent Visits & Same-Day Triage', image: '/icons/aizer-icons-v2_AcuteCare.avif', icon: 'heart_pulse', isActive: false },
-      { id: 'behavioral_health', title: 'Behavioral Health', description: 'Psychiatry, Counseling & Therapy Scheduling', image: '/icons/aizer-icons-v2_BehavioralHealth.avif', icon: 'brain', isActive: false },
-      { id: 'pediatrics', title: 'Pediatrics', description: 'Well-Child Exams, Immunizations & Sick Visits', image: '/icons/aizer-icons-v2_Pediatrics.avif', icon: 'cube', isActive: false },
-      { id: 'podiatry', title: 'Podiatry', description: 'Foot & Ankle Care, Diabetic Foot Exams', image: '/icons/aizer-icons-v2_Podiatry.avif', icon: 'foot', isActive: false },
-      { id: 'vision', title: 'Vision', description: 'Optometry, Eye Exams & Optical Services', image: '/icons/aizer-icons-v2_Vision.avif', icon: 'eye', isActive: false },
-      { id: 'womens_health', title: "Women's Health", description: 'OB/GYN Care, Prenatal & Preventative Screenings', image: '/icons/aizer-icons-v2_WomensHealth.avif', icon: 'female', isActive: false },
+      { id: 'internal_medicine', dbName: 'Internal Medicine', title: 'Internal Medicine', description: 'Adult Primary Care, Specialty Referrals & Scheduling SOPs', image: '/icons/aizer-icons-v2_InternalMedicine.avif', icon: 'stethoscope', isActive: true },
+      { id: 'acute_care', dbName: 'Acute Care', title: 'Acute Care', description: 'Walk-in Urgent Visits & Same-Day Triage', image: '/icons/aizer-icons-v2_AcuteCare.avif', icon: 'heart_pulse', isActive: true },
+      { id: 'behavioral_health', dbName: 'Behavioral Health', title: 'Behavioral Health', description: 'Psychiatry, Counseling & Therapy Scheduling', image: '/icons/aizer-icons-v2_BehavioralHealth.avif', icon: 'brain', isActive: true },
+      { id: 'pediatrics', dbName: 'Pediatrics', title: 'Pediatrics', description: 'Well-Child Exams, Immunizations & Sick Visits', image: '/icons/aizer-icons-v2_Pediatrics.avif', icon: 'cube', isActive: true },
+      { id: 'podiatry', dbName: 'Podiatry', title: 'Podiatry', description: 'Foot & Ankle Care, Diabetic Foot Exams', image: '/icons/aizer-icons-v2_Podiatry.avif', icon: 'foot', isActive: true },
+      { id: 'vision', dbName: 'Vision', title: 'Vision', description: 'Optometry, Eye Exams & Optical Services', image: '/icons/aizer-icons-v2_Vision.avif', icon: 'eye', isActive: true },
+      { id: 'womens_health', dbName: "Women's Health", title: "Women's Health", description: 'OB/GYN Care, Prenatal & Preventative Screenings', image: '/icons/aizer-icons-v2_WomensHealth.avif', icon: 'female', isActive: true },
     ];
+
+    function getDeptDbName(deptId) {
+      const dept = DEPARTMENTS.find(d => d.id === deptId);
+      return dept ? dept.dbName : 'Internal Medicine';
+    }
 
     function escapeHtml(str) {
       return String(str ?? '')
@@ -427,14 +439,17 @@
       `;
     }
 
-    function renderGuidelineCard(item, badgeText = item.category) {
+    function renderGuidelineCard(item, badgeText = item.category, showDeptBadge = false) {
       const bullets = extractBulletLines(item.content);
       const chips = renderStructuredChips(item.rules);
       return `
         <article class="bg-white border border-slate-200/90 rounded-2xl p-5 hover:border-slate-300 transition shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
           <div class="flex flex-wrap items-start justify-between gap-2 mb-3">
             <h3 class="text-base font-bold text-slate-900">${escapeHtml(item.entity)}</h3>
-            ${badgeText ? `<span class="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0">${escapeHtml(badgeText)}</span>` : ''}
+            <div class="flex items-center gap-1.5 shrink-0">
+              ${showDeptBadge && item.department ? `<span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[#E8F2FC] text-[#1565C0]">${escapeHtml(item.department)}</span>` : ''}
+              ${badgeText ? `<span class="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">${escapeHtml(badgeText)}</span>` : ''}
+            </div>
           </div>
           ${chips}
           <ul class="space-y-2 text-sm text-slate-700">
@@ -451,6 +466,9 @@
       if (dept) {
         document.getElementById('kbHeading').innerText = `${dept.title} Knowledge Base`;
       }
+      renderKB(currentRuleCategory);
+      renderProviders(currentProviderLocation);
+      renderVisits();
     }
 
     function renderHomeDepartments() {
@@ -459,6 +477,7 @@
         const isSelected = dept.id === selectedKbDept;
         const cardBorder = isSelected ? 'border-2 border-[#1565C0]' : 'border border-slate-200 hover:border-slate-300';
         const stateClass = isSelected ? 'dept-card--active' : 'dept-card--inactive';
+        const count = kbRecords.filter(r => (r.department || 'Internal Medicine') === dept.dbName).length;
 
         return `
           <article onclick="selectKbDepartment('${dept.id}')" class="dept-card ${stateClass} ${cardBorder}">
@@ -468,8 +487,9 @@
                 <svg class="hidden w-10 h-10 text-[#0F2A4A]" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">${ICON_SVGS[dept.icon]}</svg>
               </div>
             </div>
-            <div class="px-4 py-3.5 text-center">
+            <div class="px-3.5 py-3 text-center">
               <h2 class="text-sm font-bold text-slate-900">${escapeHtml(dept.title)}</h2>
+              ${count ? `<p class="text-[11px] font-mono text-slate-400 mt-0.5">${count} guidelines</p>` : ''}
             </div>
           </article>`;
       }).join('');
@@ -505,11 +525,6 @@
       });
     }
 
-    function scrollDeptRail(dir) {
-      const rail = document.getElementById('homeDepartmentsRail');
-      rail.scrollBy({ left: dir * 236, behavior: 'smooth' });
-    }
-
     function renderJewelDeptSelector() {
       const container = document.getElementById('jewelDeptSelector');
       container.innerHTML = DEPARTMENTS.map(dept => {
@@ -529,7 +544,9 @@
       selectedJewelDept = deptId;
       renderJewelDeptSelector();
       const dept = DEPARTMENTS.find(d => d.id === deptId);
-      if (dept) document.getElementById('askInput').placeholder = `Ask Jewel about ${dept.title} eligibility, routing, or policies...`;
+      if (dept) {
+        document.getElementById('askInput').placeholder = `Ask Jewel about ${dept.title} eligibility, routing, or policies...`;
+      }
     }
 
     async function loadKB() {
@@ -541,6 +558,8 @@
         const data = await res.json();
         kbRecords = data.items || [];
         document.getElementById('loadingIndicator').classList.add('hidden');
+        document.getElementById('totalIndexedBadge').innerText = `${kbRecords.length} total guidelines indexed`;
+        renderHomeDepartments();
         renderKB('ALL');
         renderProviders('ALL');
         renderVisits();
@@ -583,14 +602,20 @@
     }
 
     function renderKB(category) {
+      currentRuleCategory = category;
+      const activeDeptName = getDeptDbName(selectedKbDept);
       const kbCategories = [
         'Core Scheduling Rules', 'Directory & Locations', 'Nurse & Lab Services',
         'Telephone Encounter (TE) Routing', 'Referrals & Prior Authorizations', 'Special Operational Policies'
       ];
-      let list = kbRecords.filter(r => kbCategories.includes(r.category));
+      let list = kbRecords.filter(
+        r => (r.department || 'Internal Medicine') === activeDeptName && kbCategories.includes(r.category)
+      );
       if (category !== 'ALL') list = list.filter(r => r.category === category);
       document.getElementById('kbCountBadge').innerText = `${list.length} rules`;
-      document.getElementById('kbCardsContainer').innerHTML = list.map(item => renderGuidelineCard(item)).join('');
+      document.getElementById('kbCardsContainer').innerHTML = list.length
+        ? list.map(item => renderGuidelineCard(item)).join('')
+        : '<div class="col-span-full text-sm text-slate-500 py-4">No rules in this category for this department.</div>';
     }
 
     function filterKB(category, btnEl) {
@@ -599,22 +624,54 @@
     }
 
     function renderProviders(locationFilter) {
-      let pcps = kbRecords.filter(r => r.category === 'Primary Care Provider');
-      let specs = kbRecords.filter(r => r.category === 'Specialist Provider');
+      currentProviderLocation = locationFilter;
+      const activeDeptName = getDeptDbName(selectedKbDept);
+      let pcps = kbRecords.filter(
+        r => (r.department || 'Internal Medicine') === activeDeptName && r.category === 'Primary Care Provider'
+      );
+      let specs = kbRecords.filter(
+        r => (r.department || 'Internal Medicine') === activeDeptName && r.category === 'Specialist Provider'
+      );
+
       if (locationFilter !== 'ALL') {
         const q = locationFilter.toLowerCase();
         pcps = pcps.filter(p => p.content.toLowerCase().includes(q));
         specs = specs.filter(p => p.content.toLowerCase().includes(q));
       }
-      const getRole = (p) => p.category === 'Primary Care Provider' ? (p.entity.includes('MD') ? 'Medical Doctor' : 'Physician Assistant') : (p.rules?.specialty || 'Specialist');
+
+      const getRole = (p) => {
+        if (p.rules?.role) return p.rules.role;
+        if (p.rules?.specialty) return p.rules.specialty;
+        if (p.entity.includes('MD')) return 'Medical Doctor';
+        if (p.entity.includes('DO')) return 'Doctor of Osteopathy';
+        if (p.entity.includes('DPM')) return 'Podiatrist';
+        if (p.entity.includes('OD')) return 'Optometrist';
+        if (p.entity.includes('NP') || p.entity.includes('CPNP')) return 'Nurse Practitioner';
+        if (p.entity.includes('PA')) return 'Physician Assistant';
+        return 'Clinician';
+      };
+
+      document.getElementById('pcpSectionTitle').innerText =
+        activeDeptName === 'Behavioral Health' ? 'Psychiatry Providers' : 'Department Providers';
+      document.getElementById('specSectionTitle').innerText =
+        activeDeptName === 'Behavioral Health' ? 'Counseling & Integrative Care Clinicians' : 'Specialty Providers';
+
       document.getElementById('pcpCount').innerText = `(${pcps.length})`;
       document.getElementById('specCount').innerText = `(${specs.length})`;
+
       document.getElementById('pcpCardsContainer').innerHTML = pcps.length
         ? pcps.map(p => renderGuidelineCard(p, getRole(p))).join('')
-        : '<p class="text-sm text-slate-500">No Primary Care Providers at this location.</p>';
-      document.getElementById('specCardsContainer').innerHTML = specs.length
-        ? specs.map(p => renderGuidelineCard(p, getRole(p))).join('')
-        : '<p class="text-sm text-slate-500">No Specialty Providers at this location.</p>';
+        : '<p class="text-sm text-slate-500">No providers listed for this filter.</p>';
+
+      const specWrapper = document.getElementById('specSectionWrapper');
+      if (specs.length === 0 && locationFilter === 'ALL') {
+        specWrapper.classList.add('hidden');
+      } else {
+        specWrapper.classList.remove('hidden');
+        document.getElementById('specCardsContainer').innerHTML = specs.length
+          ? specs.map(p => renderGuidelineCard(p, getRole(p))).join('')
+          : '<p class="text-sm text-slate-500">No specialty providers at this location.</p>';
+      }
     }
 
     function filterProviders(loc, btnEl) {
@@ -623,8 +680,13 @@
     }
 
     function renderVisits() {
-      const visits = kbRecords.filter(r => r.category === 'Visit Types');
-      document.getElementById('visitsGridContainer').innerHTML = visits.map(v => renderGuidelineCard(v, '')).join('');
+      const activeDeptName = getDeptDbName(selectedKbDept);
+      const visits = kbRecords.filter(
+        r => (r.department || 'Internal Medicine') === activeDeptName && r.category === 'Visit Types'
+      );
+      document.getElementById('visitsGridContainer').innerHTML = visits.length
+        ? visits.map(v => renderGuidelineCard(v, '')).join('')
+        : '<p class="text-sm text-slate-500">Visit type rules for this department are listed under Rules &amp; SOPs.</p>';
     }
 
     async function executeSearch() {
@@ -634,19 +696,19 @@
       document.getElementById('clearSearchBtn').classList.remove('hidden');
       document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
       document.getElementById('searchSection').classList.remove('hidden');
-      document.getElementById('searchMeta').innerText = `Showing top matches for "${query}"`;
+      document.getElementById('searchMeta').innerText = `Showing top matches across all departments for "${query}"`;
       const container = document.getElementById('searchResultsContainer');
       container.innerHTML = '<div class="text-sm text-slate-500">Searching...</div>';
 
       const res = await fetch('/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, topK: 5 })
+        body: JSON.stringify({ query, topK: 6 })
       });
       const data = await res.json();
       const results = data.results || [];
       container.innerHTML = results.length
-        ? results.map(item => renderGuidelineCard(item)).join('')
+        ? results.map(item => renderGuidelineCard(item, item.category, true)).join('')
         : '<div class="text-sm text-slate-500">No matching guidelines found.</div>';
     }
 
@@ -664,39 +726,33 @@
       const sec = document.getElementById('section-assistant');
       const out = document.getElementById('decisionOutputContainer');
       const btn = document.getElementById('jewelBtn');
+      const deptName = getDeptDbName(selectedJewelDept);
 
       sec.classList.remove('pt-[16vh]');
       sec.classList.add('pt-2');
       out.classList.remove('opacity-0', 'translate-y-3');
       out.classList.add('opacity-100', 'translate-y-0');
 
-      if (selectedJewelDept !== 'internal_medicine') {
-        const dept = DEPARTMENTS.find(d => d.id === selectedJewelDept);
-        out.innerHTML = `
-          <div class="bg-[#E8F2FC] border border-[#C5DCF5] text-slate-900 rounded-2xl p-5 flex items-center gap-3.5">
-            <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON_SVGS[dept.icon]}</svg>
-            </div>
-            <div>
-              <div class="text-sm font-bold">${escapeHtml(dept.title)} Knowledge Base Pending</div>
-              <p class="text-xs text-slate-600 mt-0.5">SOP rules for ${escapeHtml(dept.title)} are not indexed yet. Select <strong>Internal Medicine</strong> above to query active clinic rules.</p>
-            </div>
-          </div>`;
-        return;
-      }
-
       btn.disabled = true;
-      btn.innerHTML = `<span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span><span>Thinking...</span>`;
-      out.innerHTML = '<div class="text-sm text-slate-500 py-4">Checking clinic rules...</div>';
+      btn.innerHTML = `<span class="w-4 h-4 border-2 border-[#0F2A4A] border-t-transparent rounded-full animate-spin"></span><span>Thinking...</span>`;
+      out.innerHTML = `<div class="text-sm text-slate-500 py-4">Checking ${escapeHtml(deptName)} rules...</div>`;
 
       try {
         const res = await fetch('/decide', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query })
+          body: JSON.stringify({ query, department: deptName })
         });
         if (!res.ok) throw new Error('Service unavailable');
         const data = await res.json();
+
+        if (data.error || !data.matched_source) {
+          out.innerHTML = `
+            <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-4 text-sm">
+              No matching SOP rules found in <strong>${escapeHtml(deptName)}</strong>. Try rephrasing or switching departments above.
+            </div>`;
+          return;
+        }
 
         let primaryCardHtml = '';
 
@@ -740,7 +796,7 @@
 
         const intentHtml = data.detected_intent
           ? `<div class="flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-slate-500">
-               <span>Intent: <strong class="text-slate-800 font-medium">${escapeHtml(data.detected_intent.type)}</strong></span>
+               <span>Department: <strong class="text-[#1565C0] font-semibold">${escapeHtml(deptName)}</strong> &middot; Intent: <strong class="text-slate-800 font-medium">${escapeHtml(data.detected_intent.type)}</strong></span>
                <span class="font-mono font-medium px-2.5 py-0.5 rounded-lg bg-white border border-slate-200 text-[#0F2A4A]">Question Understanding: ${formatPct(data.detected_intent.confidence)}</span>
              </div>`
           : '';
@@ -754,7 +810,7 @@
                 <svg class="w-3.5 h-3.5 text-[#1565C0]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <span>Source &amp; Reference Guideline</span>
               </div>
-              ${renderGuidelineCard(data.matched_source)}
+              ${renderGuidelineCard(data.matched_source, data.matched_source.category, true)}
             </div>
           </div>`;
       } catch {
