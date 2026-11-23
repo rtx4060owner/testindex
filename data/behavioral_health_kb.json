@@ -1,0 +1,102 @@
+[
+  {
+    "id": "bh_critical_no_direct_scheduling",
+    "department": "Behavioral Health",
+    "category": "Core Scheduling Rules",
+    "entity": "Critical Inbound Rule (No Direct Scheduling) & Service Branches",
+    "keywords": ["no direct scheduling", "Portal, BH", "Psychiatry", "PSYCH", "Psychotherapy", "Counseling", "COUNS", "Integrative Care", "IC", "Warm Hand-Off", "WHO", "10-minute", "15-minute"],
+    "content": "CRITICAL INBOUND WORKFLOW RULE (NO DIRECT SCHEDULING): The Inbound Team NO LONGER directly schedules Behavioral Health appointments (Psychiatry, Counseling/Psychotherapy, Phone Screens, Evaluations, Follow-Ups, or Integrative Care Visits). Inbound Job on Every Call: Understand what kind of care the caller needs, gather the right intake details, and send a Telephone Encounter (TE) to the correct queue or coordinator so the BH/Outbound team can schedule and follow up. Service Branches: (1) Psychiatry (PSYCH — Medication Management): Medical doctors (MDs/DOs) who evaluate mental health conditions and prescribe/adjust psychiatric medications (do NOT provide weekly talk therapy); ECW 10-minute grid; Scheduling TEs -> Portal, BH; Refills/Clinical TEs -> Queue, PSYCHRN / Norfleet, Shadasha SN. (2) Psychotherapy / Counseling (COUNS — Talk Therapy): Licensed therapists/social workers (LCSWs, LMSWs, MSWs, PsyDs) who provide talk therapy via 3-Step Intake: (1) Phone Screen -> (2) Initial Evaluation -> (3) Ongoing 1-hr Therapy Sessions (do NOT prescribe medication); ECW 10-min or 15-min grid; send TE to Portal, BH with requested clinician specialty. (3) Integrative Care (IC) & Warm Hand-Offs (WHO): Short-term, problem-focused therapy (up to 8 sessions, 30 min each) embedded inside Adult Medicine, Women's Health, or Pediatrics via same-day PCP Warm Hand-Off (WHO); follow-up TEs -> Portal, BH.",
+    "rules": {
+      "inbound_direct_booking": false,
+      "psychiatry_grid_min": 10,
+      "counseling_grid_min": "10 or 15",
+      "ic_max_sessions": "8 Sessions (30 min each)"
+    }
+  },
+  {
+    "id": "bh_crisis_cmt_escalation",
+    "department": "Behavioral Health",
+    "category": "Core Scheduling Rules",
+    "entity": "Active Crisis Escalation, CMT Workflow & Emergency Contacts",
+    "keywords": ["crisis", "CMT", "Crisis Management Team", "suicidal", "domestic violence", "psychosis", "mania", "Outbound Team", "Malkie Schick", "1400", "Naalla Schreiber", "1450", "Moshe Weiner", "1405", "Ilene Edwards", "1006", "Laura Rose", "1410", "HIPAA"],
+    "content": "ACTIVE PATIENT IN CRISIS (DO NOT SEND A ROUTINE TE — TRANSFER IMMEDIATELY): If a caller reports active domestic violence, severe depression or suicidal thoughts, onset of psychosis, mania, special needs decompensation, or acute medical symptoms in a BH setting: Directly transfer the caller to the Outbound Team right away to run the official CMT protocol (never leave a crisis caller on a long unmonitored hold). PCP Urgent Consult: Call Dr. Naalla Schreiber directly (845-806-1805 / Ext. 1450). Key Escalation Contacts: Crisis / Urgent Counseling -> Malkie (Marla) Schick (214-734-7565 | Ext. 1400); Crisis / Urgent Psychiatry -> Dr. Naalla Schreiber (845-806-1805 | Ext. 1450); IC / WHO Emergency -> Moshe Weiner (Ext. 1405); Psychiatric Nurse (All Med Refills) -> Queue, PSYCHRN / Norfleet, Shadasha SN; Medical Records -> Ilene Edwards (Ext. 1006); Clinical Coordinator -> Laura Rose (914-295-7597 | Ext. 1410). Official CMT Workflow: (1) Check for existing open TE with reason CMT; if none, create new TE with reason CMT and send to provider; (2) Notify team via Outlook email (PN team, Directors, counselor, psychiatrist) with ONLY Patient Full Name, DOB, and who the TE was sent to (DO NOT include clinical details in email); (3) If provider is out of office or end of day, also call provider cell AND contact Director; (4) Provider marks TE addressed once crisis passes.",
+    "rules": {
+      "crisis_action": "Transfer Immediately to Outbound Team (No Routine TE)",
+      "urgent_counseling": "Malkie Schick (Ext. 1400)",
+      "urgent_psychiatry": "Dr. Naalla Schreiber (Ext. 1450)",
+      "cmt_email_rule": "Name, DOB & TE Recipient ONLY (No Clinical Details)"
+    }
+  },
+  {
+    "id": "bh_te_routing_directory",
+    "department": "Behavioral Health",
+    "category": "Telephone Encounter (TE) Routing",
+    "entity": "Behavioral Health Inbound TE Routing & Queue Directory",
+    "keywords": ["Portal, BH", "Queue, PSYCHRN", "Norfleet, Shadasha SN", "Moamen Ibrahim", "Moshe Weiner", "Rama Omar", "Prior Authorizations", "Ilene Edwards", "1006", "Friday after 2:00 PM", "Sunday", "Dr. Bliss coverage", "termination"],
+    "content": "New or Follow-Up Psychiatry Visit (10-min grid): Send TE to Portal, BH (do NOT schedule directly). New or Follow-Up Psychotherapy / Counseling Visit (10 or 15-min grid): Send TE to Portal, BH (note clinician specialty preferences and Yiddish language needs). Integrative Care (IC) Follow-Up / Dr. Grodko Visit: Send TE to Portal, BH. Moshe Weiner (Social Worker) Reschedule / Cancel: Take down reason and send TE directly to Moamen Ibrahim (Assistant). Psychiatric Medication Refills & Clinical Calls (Mon AM - Fri 2:00 PM): Send TE to Queue, PSYCHRN / Norfleet, Shadasha SN (Shadasha handles ALL medication refills for ALL psychiatry doctors; Martin Lowery is no longer with Aizer). Psychiatric Refills (Fri after 2:00 PM & Sun — Routine): Send TE to Queue, PSYCHRN / Norfleet, Shadasha SN and advise caller it will be addressed Monday. Psychiatric Requests (Fri after 2:00 PM & Sun — Urgent): Send TE directly to Patient's Individual Psychiatrist plus email/WhatsApp per provider rules. Dr. Bliss Coverage (Sundays / Weekends): Send TE / request directly to Dr. Naalla Schreiber. Psychiatry Prior Authorizations (PA): Send TE to Rama Omar (include medication, dosage, & authorization status). Medical Records Requests: Direct ALL record requests to Ilene Edwards at Ext. 1006 (do NOT disclose diagnoses, prescriptions, or procedures). Therapy Termination or Counselor Transfer Request: Send TE to Primary Counselor (reason: termination of therapy or transfer therapy request) & Director of Counseling (Malkie Schick).",
+    "rules": {
+      "scheduling_tes": "Portal, BH",
+      "all_psych_refills": "Queue, PSYCHRN / Norfleet, Shadasha SN",
+      "moshe_weiner_reschedule": "Moamen Ibrahim",
+      "psych_prior_auth": "Rama Omar",
+      "medical_records": "Ilene Edwards (Ext. 1006)"
+    }
+  },
+  {
+    "id": "bh_psychiatry_providers_nurse",
+    "department": "Behavioral Health",
+    "category": "Primary Care Provider",
+    "entity": "Psychiatry Providers (MDs/DOs) & Psychiatric Nurse (10-Min Grid)",
+    "keywords": ["Shadasha Norfleet", "PSYCHRN", "Naalla Schreiber", "Tuesday", "Andrew Klafter", "Zoom", "WhatsApp", "Rachel Michaels", "00 / 20 / 40", "Michael Bliss", "confidentiality", "cell phone"],
+    "content": "PRIVACY MANDATE: NEVER give provider cell phone numbers to patients or family members, and NEVER include a patient's full name or DOB in WhatsApp/text messages. Norfleet, Shadasha SN (Psychiatric Nurse — Queue, PSYCHRN): Handles ALL medication refills for ALL psychiatry doctors (Dr. Schreiber, Dr. Klafter, Dr. Michaels, Dr. Bliss); route all routine psychiatric refill & clinical TEs here. Dr. Naalla Schreiber, MD (Director of Psychiatry | Ext. 1450): 10-minute slots; Administrative day is Tuesday (no patients); refills/clinical -> Queue, PSYCHRN first; covers herself daily + Dr. Bliss on weekends; handles urgent PCP consults. Dr. Andrew (Nachum) Klafter, MD: 10-minute slots; all visits are telehealth (Zoom 899-692-7602) — Sun & Thu at center; refills -> Queue, PSYCHRN; urgent issues: create TE + email/WhatsApp (NO patient name/DOB!) as he does not check ECW TEs regularly. Dr. Rachel Michaels, MD: 10-minute grid (all appts booked on 00 / 20 / 40 min marks; schedules own follow-ups during visit); refills -> Queue, PSYCHRN; does not check ECW TEs on non-Aizer days (always create TE + Outlook email for clinical/urgent matters). Dr. Michael Bliss, DO: 10-minute slots (occasionally 45-min slots for specific patients); available Mon-Fri (weekends -> contact Dr. Schreiber); refills/clinical -> Queue, PSYCHRN first.",
+    "rules": {
+      "refill_nurse": "Norfleet, Shadasha SN (Queue, PSYCHRN)",
+      "schreiber_admin_day": "Tuesday (No Patients)",
+      "klafter_telehealth": "Zoom 899-692-7602 (No Name/DOB in WhatsApp)",
+      "michaels_booking_marks": "00 / 20 / 40 Min Marks",
+      "bliss_weekend_coverage": "Dr. Naalla Schreiber"
+    }
+  },
+  {
+    "id": "bh_counseling_ic_clinicians",
+    "department": "Behavioral Health",
+    "category": "Specialist Provider",
+    "entity": "Psychotherapy, Counseling & Integrative Care (IC) Clinicians Directory",
+    "keywords": ["Malkie Schick", "Marla Schick", "Aliza Grodko", "babies", "toddlers", "0-5", "Tamar Green", "Leah Green", "Basya Greenbaum", "Hadassah Levin", "perinatal", "PMH-C", "Moshe Weiner", "addiction", "Yiddish", "Elimelech Sandel", "OCD", "couples", "Yehudis Gottesman", "C-PTSD", "Rosie Golding", "EMDR", "Jacob Lunger", "Zahava Wexler", "Faigy Ehrman", "phone screens", "Laura Rose"],
+    "content": "Marla (Malkie) Schick, LCSW (Director of Counseling & IC | Ext. 1400): Complex cases, personality & interpersonal challenges, depression, anxiety, trauma, domestic violence, or patients who haven't progressed in past treatments (Psychodynamic, TFP, DBT, CBT, ERP, Trauma, SPACE). Dr. Aliza Grodko, PsyD (IC Team — IC BHC OV/FU): Babies & Toddlers (Ages 0-5) — infancy/early childhood sleeping, eating/feeding, developmental concerns, separation anxiety, sibling rivalry, anger, fussiness, shyness, parent-child bonding (PMT, SPACE, Circle of Security). Tamar (Leah) Green, LCSW & Basya Greenbaum, LCSW (IC Team): Kids, Teens & Parents — ASD, ADHD, ODD, teen anxiety/depression, relationship issues, suicidal ideation (SI), parenting support (Play Therapy, CCPT, DBT, CBT). Hadassah Levin, LCSW, PMH-C (IC Team): Maternal / Perinatal mental health (pregnancy & postpartum), anxiety, depression, bipolar, grief/loss (CBT, DBT, EFT, EMDR trained). Moshe Weiner, LCSW, CASAC-T (IC Team | Ext. 1405): Substance use/addiction, trauma, anxiety, and Yiddish-speaking phone screens (ACT, CBT, MI). Elimelech Sandel, LCSW: Anxiety, OCD, panic disorder, couples therapy, and adolescent challenges (CBT, ACT, EFT, somatic trauma). Yehudis Gottesman, LCSW: Complex PTSD (C-PTSD) and body-based somatic trauma healing (IFS, Somatic Experiencing, EFT). Rosie Golding, LCSW: Sensorimotor psychotherapy, EMDR, perinatal mental health, and somatic therapy. Jacob Lunger, LMSW & Zahava Wexler, MSW: Counseling Clinicians. Faigy Ehrman (SW Intern): Conducts initial BH Phone Screens (COUNS PHONE). Laura Rose (Ext. 1410): BH Clinical Coordinator.",
+    "rules": {
+      "babies_toddlers_0_5": "Dr. Aliza Grodko, PsyD",
+      "perinatal_postpartum": "Hadassah Levin, LCSW / Rosie Golding, LCSW",
+      "addiction_yiddish_screens": "Moshe Weiner, LCSW",
+      "ocd_couples": "Elimelech Sandel, LCSW",
+      "phone_screens": "Faigy Ehrman (SW Intern)"
+    }
+  },
+  {
+    "id": "bh_refill_checklist_afterhours",
+    "department": "Behavioral Health",
+    "category": "Nurse & Lab Services",
+    "entity": "Mandatory 8-Item Refill TE Checklist, 6-Month Rule & After-Hours Escalation",
+    "keywords": ["8-item TE checklist", "6-month follow-up", "after-hours", "UNITE", "NOTIFY MD", "medication change", "Shadasha Norfleet"],
+    "content": "Mandatory 8-Item TE Checklist (Include ALL 8 for Medication/Clinical Calls): (1) Caller Name (first & last); (2) Callback Phone Number; (3) Reason for Call (detailed notes); (4) Date of Last Visit (check chart); (5) Date of Next Visit (note if overdue for 6-month follow-up); (6) Preferred Pharmacy (name, address/cross streets, or phone); (7) Medication Name; (8) Medication Dosage & Instructions. Refill & Follow-Up Rules: Norfleet, Shadasha SN (Queue, PSYCHRN) handles all medication refills for all psychiatry doctors. Check chart for last visit/upcoming follow-up; if overdue, note in TE so BH team can schedule. 6-Month Minimum Follow-Up Policy: If patient refuses follow-up after 6+ months, advise them of the 6-month minimum follow-up policy and inform them the prescriber will decide whether to approve the refill (document everything in TE). Sunday / After-Hours Refills: Confirm if patient has enough medication until next business day -> if yes, send TE to Queue, PSYCHRN; if urgent need -> send TE + email/call psychiatrist directly. Medication Change Requests: Send TE to Queue, PSYCHRN (after hours -> contact prescriber directly or Dr. Schreiber). After-Hours Tiered Escalation: (1) Contact specific treating provider directly via UNITE -> (2) If unreachable, escalate to Department Director (Malkie Schick at 214-734-7565 / Ext. 1400 for Counseling; Dr. Naalla Schreiber at 845-806-1805 / Ext. 1450 for Psychiatry) -> (3) When active, NOTIFY MD follows the on-call tree.",
+    "rules": {
+      "te_checklist_items": 8,
+      "min_followup_months": 6,
+      "after_hours_step_1": "Contact Treating Provider via UNITE"
+    }
+  },
+  {
+    "id": "bh_cancellations_waitlists_language_flow",
+    "department": "Behavioral Health",
+    "category": "Special Operational Policies",
+    "entity": "Cancellations (2-Strike Policy), Waitlists, Yiddish Interpreter & Clinical Flow",
+    "keywords": ["CANC", "N/S", "PROV CANC", "2 no-shows", "Baila Sebrow", "Yiddish interpreter", "Thursday 1:00-3:00 PM", "Propio", "24822", "PARENTS ONLY", "under 18", "12 months gap", "waitlist"],
+    "content": "Cancellation & No-Show Rules: CANC = Patient calls the day BEFORE appointment -> set CANC, document reason, send TE to Portal, BH (or Moamen Ibrahim if Moshe Weiner). N/S = Patient misses without calling OR cancels SAME DAY -> set N/S, send TE to Portal, BH. PROV CANC = Provider cancels -> set PROV CANC (never mark N/S). 2-Strike Policy Script: Advise caller that after 2 no-shows or cancelled visits they may lose their scheduled slot. Confirmations & Privacy: Confirmed day before (Friday for Sunday visits); speak ONLY to patient/guardian; never name BH on voicemails (give main Aizer number and say 'Press 6, then 1'); ensure Emergency Contact is not patient's own number. Referrals & Waitlists: Close referral in Queue, Referrals (BH) only after patient attends FIRST appointment (phone screen does not count). Waitlists (Waitlist, BH-Adult, BH-Child, BH-PRN, Psychiatry): never schedule from first 3 waitlists without Director confirmation. Language Services: Yiddish interpreter is Baila Sebrow (Thu 1:00-3:00 PM reserved for provider + interpreter; Yiddish phone screens go to Moshe Weiner). Spanish & other languages: Propio Language Line (845-478-1090 | Client ID: 24822). Clinical Program Flow: Counseling starts with Phone Screen (COUNS PHONE with Faigy Ehrman) -> Initial SW Evaluation (COUNS Eva — for kids under 18, first visit is PARENTS ONLY) -> 1-hr Routine Follow-Ups (COUNS F/U; new phone screen required if >12 months gap; no routine telehealth without provider approval). IC Hours: Sun 9 AM-5 PM, Mon-Thu 9 AM-8 PM, Fri 9 AM-2 PM (30-min IC F/U up to 8 sessions; no phone screen needed after PCP IC WHO).",
+    "rules": {
+      "no_show_limit": "2 No-Shows / Cancels May Lose Slot",
+      "under_18_first_eval": "PARENTS ONLY",
+      "yiddish_interpreter": "Baila Sebrow (Thu 1-3 PM)",
+      "propio_client_id": "24822"
+    }
+  }
+]

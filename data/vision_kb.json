@@ -1,0 +1,187 @@
+[
+  {
+    "id": "vision_scope_and_optical_directory",
+    "department": "Vision",
+    "category": "Directory & Locations",
+    "entity": "Vision Scope (Optometry Only) & Local Optical Directory",
+    "keywords": ["optometry only", "ophthalmology", "surgery", "Aizer Optical", "Ctrue Optical", "Hoffmans Optical", "845-517-1902", "845-367-6090", "845-250-1155", "Bakertown"],
+    "content": "Scope Reminder: We are an OPTOMETRY ONLY practice and do NOT have Ophthalmology in-house; patients requiring major eye surgery, surgical consults, or advanced/uncontrolled disease management must be referred out to Ophthalmology. Local Optical Stores & Dispensing Directory: Aizer Optical: Phone 845-517-1902 (Located on-site at the Bakertown location). Ctrue Optical: Phone 845-367-6090. Hoffmans Optical: Phone 845-250-1155.",
+    "rules": {
+      "practice_scope": "Optometry Only (No Ophthalmology)",
+      "aizer_optical": "845-517-1902 (Bakertown)",
+      "ctrue_optical": "845-367-6090",
+      "hoffmans_optical": "845-250-1155"
+    }
+  },
+  {
+    "id": "vision_services_offered",
+    "department": "Vision",
+    "category": "Core Scheduling Rules",
+    "entity": "Vision In-House Services vs. Non-Covered / External Services",
+    "keywords": ["routine vision", "DM annual", "eyeglasses", "frames", "prism", "visual field", "contact lenses", "vision therapy", "Ahava Medical", "Rambam"],
+    "content": "In-House Services (YES): Routine Vision Care (comprehensive exams, refraction, mild/routine eye conditions), DM Annual Eye Exams (dilated exams for diabetic patients), Eyeglasses & Frames (full frame dispensing and Prism lenses available), and Visual Field (VF) Exams (dedicated 45-minute diagnostic slots). Not Provided In-House (NO): Contact Lenses (we do NOT fit, evaluate, or dispense contact lenses); Vision Therapy (not provided in-house—recommend/refer patients to Ahava Medical or Rambam Health Care Campus); Ophthalmology / Surgery (must be referred out).",
+    "rules": {
+      "contact_lenses": false,
+      "vision_therapy": false,
+      "ophthalmology_surgery": false,
+      "prism_lenses": true
+    }
+  },
+  {
+    "id": "vision_prov_solomon_klein",
+    "department": "Vision",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Solomon Klein, OD (Director)",
+    "keywords": ["Solomon Klein", "Director", "3 years", "waitlist", "annual routine", "male"],
+    "content": "Role & Gender: Vision Director (Male). Patient Age Criteria: Ages 3 years and older. Special Scheduling Guidelines: Annual Routine Exams are Waitlist Only (do NOT book directly on the active schedule). All Other Visits (follow-ups, emergencies, diagnostic visits) can be scheduled directly on the active schedule.",
+    "rules": {
+      "role": "Director",
+      "min_age": 3,
+      "annual_exams": "Waitlist Only",
+      "other_visits": "Direct Booking Allowed"
+    }
+  },
+  {
+    "id": "vision_prov_sarah_akilov",
+    "department": "Vision",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Sarah Akilov, OD",
+    "keywords": ["Sarah Akilov", "female", "3 years", "optometrist"],
+    "content": "Role & Gender: Optometrist (Female). Patient Age Criteria: Ages 3 years and older. Special Scheduling Guidelines: General optometric care, annual exams, DM annuals, follow-ups, and emergencies.",
+    "rules": {
+      "role": "Optometrist",
+      "gender": "Female",
+      "min_age": 3
+    }
+  },
+  {
+    "id": "vision_prov_joel_goldberg",
+    "department": "Vision",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Joel Goldberg, OD",
+    "keywords": ["Joel Goldberg", "male", "3 years", "optometrist"],
+    "content": "Role & Gender: Optometrist (Male). Patient Age Criteria: Ages 3 years and older. Special Scheduling Guidelines: General optometric care, annual exams, DM annuals, follow-ups, and emergencies.",
+    "rules": {
+      "role": "Optometrist",
+      "gender": "Male",
+      "min_age": 3
+    }
+  },
+  {
+    "id": "vision_prov_zvi_berger",
+    "department": "Vision",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Zvi Berger, OD",
+    "keywords": ["Zvi Berger", "male", "6 years", "under 6", "optometrist"],
+    "content": "Role & Gender: Optometrist (Male). Patient Age Criteria: Ages 6 years and older (does NOT see pediatric patients under 6 years of age). Special Scheduling Guidelines: General optometric care, annual exams, follow-ups, and emergencies for ages 6+.",
+    "rules": {
+      "role": "Optometrist",
+      "gender": "Male",
+      "min_age": 6
+    }
+  },
+  {
+    "id": "vision_prov_max_herbik",
+    "department": "Vision",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Max Herbik, OD",
+    "keywords": ["Max Herbik", "male", "6 years", "under 6", "optometrist"],
+    "content": "Role & Gender: Optometrist (Male). Patient Age Criteria: Ages 6 years and older (does NOT see pediatric patients under 6 years of age). Special Scheduling Guidelines: General optometric care, annual exams, follow-ups, and emergencies for ages 6+.",
+    "rules": {
+      "role": "Optometrist",
+      "gender": "Male",
+      "min_age": 6
+    }
+  },
+  {
+    "id": "vision_prov_shaily_sheth",
+    "department": "Vision",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Shaily Sheth, OD",
+    "keywords": ["Shaily Sheth", "female", "6 years", "under 6", "optometrist"],
+    "content": "Role & Gender: Optometrist (Female). Patient Age Criteria: Ages 6 years and older (does NOT see pediatric patients under 6 years of age). Special Scheduling Guidelines: General optometric care, annual exams, follow-ups, and emergencies for ages 6+.",
+    "rules": {
+      "role": "Optometrist",
+      "gender": "Female",
+      "min_age": 6
+    }
+  },
+  {
+    "id": "vision_tech_kevin_berent",
+    "department": "Vision",
+    "category": "Directory & Locations",
+    "entity": "Kevin Berent (Vision Technician) & Double-Booking Protocol",
+    "keywords": ["Kevin Berent", "technician", "double-booking", "three patients per hour", "schedule questions"],
+    "content": "Vision Technician: Kevin Berent. Mandatory Consultation Rule: Always consult with Kevin first regarding schedule questions or double-booking requests before escalating to doctors. Double-Booking Policy: Strictly prohibited unless explicitly approved by the vision department via Kevin. High-Volume Templates (3 Patients/Hour): Only the designated scheduling person is permitted to book these slots; navigators must reach out to the designated person when these slots need refilling.",
+    "rules": {
+      "first_contact": "Kevin Berent",
+      "double_booking": "Prohibited Without Kevin Approval"
+    }
+  },
+  {
+    "id": "vision_visit_types_protocols",
+    "department": "Vision",
+    "category": "Visit Types",
+    "entity": "Vision Appointment Types, Durations & Booking Protocols",
+    "keywords": ["New Patient", "Annual Eye Exam", "DM Annual", "Visual Field", "VF", "45 minutes", "Follow-Up", "30 minutes", "Emergency Exam", "1 full year", "same doctor"],
+    "content": "New Patient Visit: Strictly for patients who have NEVER been seen by any Aizer vision provider; otherwise book as Annual Exam or Follow-Up (create eCW chart first if new to center). Annual Eye Exam: Comprehensive routine evaluation (verify age 3+ vs 6+); switching providers is only allowed if at least 1 full year has elapsed since their last visit with a different doctor. DM Annual Eye Exam: Reserved exclusively for patients diagnosed with Diabetes Mellitus (DM) for annual retinal/diabetic evaluations. Visual Field (VF) Exam (45 minutes): Schedule in designated VF slots; Hold Rule: slots with two annual exams next to a VF slot should only be filled if the VF slot remains unfilled 1 week prior to the appointment date (avoid booking VF and annual exams simultaneously). Follow-Up Appointment (30 minutes): Must always be booked with the SAME doctor the patient saw previously. Emergency Exam (30 minutes): May be scheduled with any available doctor; do not book within 1 hour of appointment time unless patient confirms they are already close by.",
+    "rules": {
+      "vf_duration_min": 45,
+      "followup_duration_min": 30,
+      "emergency_duration_min": 30,
+      "switch_doctor_min_years": 1
+    }
+  },
+  {
+    "id": "vision_noshow_cancellation_waitlist",
+    "department": "Vision",
+    "category": "Core Scheduling Rules",
+    "entity": "No-Show Sanction (90 Days), Late Rebooking & Waitlist Rules",
+    "keywords": ["no-show", "90-day", "waiting period", "No-Show List", "1 hour", "cancellation", "waitlist", "families"],
+    "content": "No-Show Policy: If a patient fails to show for an appointment, they are subject to a mandatory 90-day waiting period before a new appointment can be booked; navigators must log the patient on the No-Show List (tab on the waitlist). Cancellations & Late Rebooking: Do NOT rebook a canceled appointment slot within 1 hour of the scheduled appointment time. Waitlist Management Guidelines: Add each family member individually with full demographic and contact details; specify exact complaints/symptoms and duration; document date and location of last eye exam (Aizer or outside); create eCW chart first for new patients before adding to waitlist.",
+    "rules": {
+      "no_show_penalty_days": 90,
+      "late_rebook_cutoff_hours": 1
+    }
+  },
+  {
+    "id": "vision_clinical_triage_matrix",
+    "department": "Vision",
+    "category": "Core Scheduling Rules",
+    "entity": "Vision Clinical Triage Matrix: Emergency vs. Routine Care",
+    "keywords": ["triage", "floaters", "cobwebs", "blurred vision", "bubble", "double vision", "diplopia", "headache", "nausea", "red eye", "discharge", "swollen", "eye pain alone", "2 years"],
+    "content": "Mandatory 5 Triage Questions (Ask & document before booking/transferring): 1. What is the specific complaint? 2. Is it in one eye (OD/OS) or both eyes (OU)? 3. When did this start? 4. What may have caused this (trauma, foreign body, exposure)? 5. Is the eye itchy, red, or swollen? True Vision Emergencies (Book 30-Min Emergency Slot): Sudden floaters, black spots, or cobwebs; sudden blurred vision; bubble sensation/appearance in eye; sudden double vision (diplopia); severe sudden headache with nausea, vomiting, or blurry vision; acute red eye or severe pain/itching; active purulent discharge; visible acute periorbital/lid swelling. Non-Emergency Pre-Booking Check: Eye pain alone WITHOUT emergency symptoms above is likely NOT an emergency—schedule a standard annual exam (or add to waitlist if last exam was > 2 years ago).",
+    "rules": {
+      "emergency_slot_min": 30,
+      "eye_pain_alone": "Routine / Annual Exam (Not Emergency)"
+    }
+  },
+  {
+    "id": "vision_insurance_and_self_pay",
+    "department": "Vision",
+    "category": "Core Scheduling Rules",
+    "entity": "Vision Insurance Verification, 2-Year Frequency & $100 Self-Pay",
+    "keywords": ["$100", "self-pay", "MVP", "Fidelis", "Versant", "0.50 diopter", "ABN", "UHC", "Medicaid", "Medicare", "Molina", "Affinity", "Oxford", "Healthfirst", "Hamaspik", "United Refuah", "Cigna"],
+    "content": "Self-Pay Policy: Fixed at $100 per Vision visit. Annual Coverage (Once a Year): Straight Medicaid, Medicare, and Molina (Affinity) cover an eye exam once per year. Every 2 Years Coverage (Fidelis & UHC): Fidelis (verify on Versant website and paste code in eCW General Notes) and United Healthcare (UHC, check Encounters in eCW) cover routine exams once every 2 years; if seen within 2 years, covered ONLY with at least a 0.50 diopter prescription change (otherwise $100 self-pay; document ABN Form in General Notes). Conditional / Medicaid-Required Plans: MVP (NOT ACCEPTED standalone regardless of age—requires active Medicaid secondary); Oxford (accepted ONLY with active Medicaid); Healthfirst (NOT ACCEPTED unless active Medicaid); Hamaspik (requires Medicaid or Medicare secondary); United Refuah Healthshare (requires Medicaid secondary). Cigna: Usually non-covered ($100 self-pay unless patient confirms benefits with Cigna).",
+    "rules": {
+      "self_pay_rate": "$100",
+      "mvp": "Medicaid Secondary Only",
+      "fidelis_uhc": "Every 2 Yrs (or >=0.50 Diopter Change)",
+      "medicaid_medicare_molina": "Once Per Year"
+    }
+  },
+  {
+    "id": "vision_forms_and_te_routing",
+    "department": "Vision",
+    "category": "Telephone Encounter (TE) Routing",
+    "entity": "DMV Renewal Forms, Medical Records & Vision TE Routing",
+    "keywords": ["DMV", "renewal form", "driver's license", "ABN", "APN", "Arwa Adel", "Medical Records", "Doaa El Tahir", "Kevin", "72 hours", "Medicaid transportation", "Teams", "Intermedia", "OD", "OS", "OU"],
+    "content": "DMV Renewal Form (Last exam <= 1 year): Verify exam within past 12 months, collect driver's license details, and send TE to examining doctor to sign. DMV Renewal Form (Last exam > 1 year): Schedule comprehensive eye exam with appointment reason strictly set as 'DMV FORM' (UHC and Fidelis cover this after 1 year under the DMV exception). ABN / APN Form: Document full completion details in eCW General Notes. Medical Records Requests: Create and assign a New Action in the hub to Arwa Adel / Medical Records Department. Medicaid Transportation: Requires active Medicaid and must be requested at least 72 hours (3 business days) prior; send TE directly to Doaa El Tahir or Kevin. Medication Refills & Missing Referrals: Send TE directly to treating doctor. Eyeglass Rx: Fax final reading to fax number in Progress Notes. Clinical Abbreviations: OD = Right Eye, OS = Left Eye, OU = Both Eyes, VF = Visual Field (45m), DM = Diabetic Annual Exam.",
+    "rules": {
+      "dmv_under_1yr": "TE to Examining Doctor",
+      "dmv_over_1yr": "Book Exam (Reason: DMV FORM)",
+      "medical_records": "Arwa Adel",
+      "medicaid_transport": "Doaa El Tahir or Kevin (72h Notice)"
+    }
+  }
+]

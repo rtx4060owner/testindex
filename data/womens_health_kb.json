@@ -1,0 +1,141 @@
+[
+  {
+    "id": "wh_directory_hospitals",
+    "department": "Women's Health",
+    "category": "Directory & Locations",
+    "entity": "Women's Health Department, Hospital & Imaging Directory",
+    "keywords": ["845-782-3242", "Ext. 5", "888-571-5933", "Good Samaritan", "GS Labor", "845-368-5044", "GSH Scheduling", "845-368-5028", "Dr. Rosenberg private office", "845-764-9880", "Surgical Shop", "Aishes Chayil", "Lennox Hill", "Mid Rockland", "Hudson Valley Imaging"],
+    "content": "Department Direct Line: 845-782-3242 (Ext. 5) | Fax: (888) 571-5933. Good Samaritan (GS) Hospital (25 Lafayette Ave, Suffern, NY): General (845) 368-5000; GS Labor & Delivery Phone (845) 368-5044 / Fax (845) 368-5358; GSH Scheduling Phone (845) 368-5028 / Fax (845) 368-5315. Dr. Victor Rosenberg Private Office (625 Rockaway Tpke, Suite 2, Lawrence, NY): Phone 516-501-9840 / Suffern: 845-764-9880 / Fax 516-501-9850 / vrosenberg@rosenbergmfm.com. External Facilities: Surgical Shop Monroe (845) 783-1420; Surgical Shop Monsey (845) 425-2617; Aishes Chayil (845) 783-1800; HVR / Lennox Hill Monroe (845) 783-3444; Mid Rockland Imaging (845) 634-9729; Hudson Valley Imaging (845) 220-2222.",
+    "rules": {
+      "phone": "845-782-3242 (Ext. 5)",
+      "fax": "(888) 571-5933",
+      "gs_labor_delivery": "(845) 368-5044",
+      "rosenberg_suffern": "845-764-9880"
+    }
+  },
+  {
+    "id": "wh_late_and_transfer_policies",
+    "department": "Women's Health",
+    "category": "Core Scheduling Rules",
+    "entity": "Patient Late Policy (15m / 36w Exception), Sonography Late & OB Transfers",
+    "keywords": ["late policy", "15 minutes late", "36 weeks", "9th month", "Taylor", "Miranda", "sonography late", "30 minutes", "Anatomy scan", "transferring prenatal", "prior records", "32 weeks", "Dr. Victor Rosenberg"],
+    "content": "Patient Late Policy (15+ Min Rule): Patients arriving 15 minutes or more late must be rescheduled (message Teams if help is needed). Mandatory 36+ Weeks / Emergency Exception: If a patient is 36 weeks or more pregnant (9th month) or has an emergency, we MUST still see them even if late (remind them of policy for next visit). Calling Ahead Running Late: OB patients move to a later same-day slot or next day; GYN patients check via Teams first. If Taylor or Miranda approves keeping a late visit, document their approval in the Reason field. Notify patients via 4 steps: when scheduling, automated reminders, reading scripted sheet on manual confirmation calls, and front desk pamphlets. Sonography Late Policy: 15-minute cutoff for New OB, Growth, GYN, and Repeated Anatomy scans; 30-minute cutoff for 1-hour Anatomy scans; Urgent/Same-Day sonograms must always be seen regardless of arrival time. Transferring Prenatal (OB) Policy: Must send prior prenatal records FIRST before scheduling; must transfer prior to 32 weeks of pregnancy (exceptions require Dr. Victor Rosenberg's approval).",
+    "rules": {
+      "clinic_late_cutoff_min": 15,
+      "anatomy_sono_late_cutoff_min": 30,
+      "must_see_late": "36+ Weeks Pregnant or Emergency",
+      "ob_transfer_cutoff_weeks": 32,
+      "ob_transfer_prerequisite": "Prior Records Required First"
+    }
+  },
+  {
+    "id": "wh_triage_bleeding_fetal_contractions",
+    "department": "Women's Health",
+    "category": "Core Scheduling Rules",
+    "entity": "Urgent OB Triage: Early Bleeding, Fetal Movement & Contractions",
+    "keywords": ["bleeding in early pregnancy", "under 6 weeks", "OB Urgent channel", "decreased fetal movement", "28-40 weeks", "NST", "BPP", "contractions", "21-32 weeks", "32-36 weeks", "37 weeks", "Portal OB", "Intermedia"],
+    "content": "1. Bleeding in Early Pregnancy: Under 6 weeks requires pregnancy confirmation bloodwork first. Message the OB Urgent channel immediately and ask: (1) How many weeks pregnant? (2) How long bleeding? (3) How heavy? (4) Any pain or blood clots and how bad? 2. Decreased Fetal Movement: 0-27 Weeks -> ask frequency/strength, vaginal bleeding, severe belly pain, cramping, or contractions; send to OB channel and wait for nurse instructions. Third Trimester (28-40 Weeks) -> advise patient to come in right away for evaluation, schedule Non-Stress Test (NST) and Biophysical Profile (BPP), and message OB channel to alert nurse. 3. Contractions by Gestational Age: 21-32 Weeks & 32-36 Weeks -> check frequency/strength, discharge/bleeding, pelvic pressure, or decreased baby movement -> send TE to Portal OB AND message high-priority Intermedia channel. 37+ Weeks -> check if strong/frequent, water breaking, intense pelvic/rectal pressure, bloody show, or mucus plug -> message Intermedia chat AND send TE to Portal OB.",
+    "rules": {
+      "under_6w_bleeding": "Pregnancy Bloodwork Required First",
+      "fetal_movement_28_40w": "Come In Immediately -> Book NST + BPP",
+      "contractions_routing": "Portal OB TE + Intermedia Chat"
+    }
+  },
+  {
+    "id": "wh_triage_breast_gyn_infections",
+    "department": "Women's Health",
+    "category": "Core Scheduling Rules",
+    "entity": "Triage: Mastitis, Breast Lump, Heavy Bleeding, UTI & Vaginitis",
+    "keywords": ["mastitis", "after 3:00 PM", "Acute Care", "engorgement", "breast lump", "heavy periods", "soaking through", "irregular bleeding", "UTI", "vaginitis", "Portal OB"],
+    "content": "Breast Concerns: Mastitis (breast infection) -> ask Left/Right breast, pain, swelling, redness, warmth, fever/chills, breastfeeding/injury; if severe/fever advise immediate care; send TE to Portal OB and book same-day with Women's Health or Adult Med (if after 3:00 PM, send to Acute Care). Engorgement -> ask fullness/swelling/discomfort -> send TE to Portal OB. Breast Lump -> ask location, size, texture, onset, nipple discharge/skin changes -> NOT an emergency; schedule at next available GYN opening. Menstrual / Heavy Bleeding: Red Flag if soaking through a pad/tampon every hour or passing large clots (seek immediate medical attention). For irregular bleeding, bleeding between cycles, or heavy periods -> ask duration/amount, LMP, pregnancy test result, and birth control use -> send TE to Portal OB. UTI vs. Vaginitis: Ask urinary burning/fever/bloody urine (UTI) or odor/yellow-green discharge/itching (Vaginitis) -> send TE to Portal OB.",
+    "rules": {
+      "mastitis_after_3pm": "Send to Acute Care",
+      "breast_lump": "Next Available GYN Opening (Not Emergency)",
+      "heavy_bleeding_red_flag": "Soaking Pad/Tampon Every Hour -> Immediate Care"
+    }
+  },
+  {
+    "id": "wh_te_routing_directory",
+    "department": "Women's Health",
+    "category": "Telephone Encounter (TE) Routing",
+    "entity": "Women's Health TE Queues & Staff Routing Directory",
+    "keywords": ["Portal OB", "Devisha Cooper", "D&C", "Hysteroscopy", "C-section", "IOL", "Rebecca Wood", "MFM", "Taylor Jennings", "Arwa Adel", "medicalrecords@aizerhealth.org"],
+    "content": "1. Portal OB (OB/GYN Nurses): Medication requests & refills (confirm medication + pharmacy), all clinical questions, nurse callbacks, provider questions, LabCorp/Quest inquiries, Induction of Labor (IOL) questions, and lab work requests/appointments (if no lab order in chart). 2. Devisha Cooper (Prevention Coordinator): All surgical/procedure questions (D&C, Hysteroscopy, C-section — EXCEPT IOL), disability forms, and patients requesting their own medical records. 3. Rebecca Wood (MFM Nurse): All established Maternal-Fetal Medicine (MFM) patient questions and MFM referrals. 4. Taylor Jennings (Nursing Team Lead): Outside providers calling to speak with an Aizer provider, scheduling difficulties, patient complaints, and requests for an Annual GYN with Dr. Bank, Dr. Gresseau, or Dr. Allen. 5. Arwa Adel (Medical Records): All external medical records or medical clearance requests -> send TE or email medicalrecords@aizerhealth.org.",
+    "rules": {
+      "portal_ob": "Meds, Clinical Questions, IOL & Lab Orders",
+      "devisha_cooper": "Surgeries (D&C, Hyst, C-Section) & Disability Forms",
+      "rebecca_wood": "MFM Questions & Referrals",
+      "taylor_jennings": "Outside MDs, Complaints & Bank/Gresseau/Allen Annuals",
+      "arwa_adel": "External Medical Records / Clearances"
+    }
+  },
+  {
+    "id": "wh_dr_sema_bank_protocols",
+    "department": "Women's Health",
+    "category": "Core Scheduling Rules",
+    "entity": "Dr. Sema Bank — GYN & Fertility Waitlist Protocols",
+    "keywords": ["Sema Bank", "GYN visits", "Taylor", "45+", "GYN Sonogram first", "Fertility", "Miranda", "3-4 months", "5 answers", "up-to-date Annual"],
+    "content": "GYN Visits with Dr. Sema Bank (30 min — Scheduled by Taylor ONLY via TE): Non-annual GYN requests must be triaged by a nurse for urgency first (if urgent, book next available GYN provider; if non-urgent, send TE to Taylor). Annuals: If no concerns, schedule if open (book as last appointment of the day if uncomplicated); if she has a concern, book the Annual and document it. Age 45+: Schedule a GYN Sonogram FIRST, then the office visit. Postpartum IUD: Book on a GYN day only. Fertility Visits with Dr. Bank (45 min — Scheduled by Miranda ONLY via TE): Current wait time is 3-4 months; patient MUST have an up-to-date Annual first. Include these 5 answers in TE to Miranda: (1) Last 3 menstrual cycles, (2) Has children & how many, (3) Trouble getting pregnant in the past, (4) Past fertility treatments, (5) How long trying to conceive.",
+    "rules": {
+      "non_annual_gyn": "Scheduled by Taylor ONLY via TE",
+      "age_45_plus": "Book GYN Sonogram First",
+      "fertility_booking": "Miranda ONLY (3-4 Mo Waitlist, Annual Required)"
+    }
+  },
+  {
+    "id": "wh_gyn_visit_types",
+    "department": "Women's Health",
+    "category": "Visit Types",
+    "entity": "GYN Visit Types, Procedures & ECW Entry Codes",
+    "keywords": ["ANN GYN", "Depo Shot", "Frieda", "GYN URG", "Confirmation of Pregnancy", "max 5/day", "OB POST", "6-8 weeks", "IUD Insert", "4-6 weeks", "Nexplanon", "Double Nexplanon", "GYN HYST", "Kallah", "3 months prior"],
+    "content": "Annual GYN (30 min, no double book | Type: ANN GYN, Reason: annual exam): Must be >1 year since last Annual; Providers: Frieda, Scott, Weinstein, Lorraine, Herrera. Standard GYN Visit (15 min; 30 min for Frieda/Lorraine | Type: GYN): For irregular bleeding, infections, infertility (Depo Shot -> book with Frieda for 30 min). GYN Urgent (Type: GYN URG): Requires nurse or Teams/Intermedia approval. Confirmation of Pregnancy (15 min, max 5/day | Type: GYN, Reason: confirmation of pregnancy): Book with Frieda or on GYN day between 30-min visits (never back-to-back); if LMP unknown, ask if pregnancy test taken (Yes -> book; No -> TE to nurse). Postpartum Visit (15 min, 1 hr apart | Type: OB POST): Book 6-8 weeks post-delivery; include delivery date, baby weight, delivery type, and delivering provider. IUD Insertion & Check (30 min Frieda/Lorraine, 15 min others | Type: GYN, Reason: IUD Insert): Abstain x2 weeks if not on contraception; book IUD Insert Sono 30 min after GYN visit (Allen, Stanislawski, Herrera do NOT require post-insert sono); all patients get a 30-min IUD check sono 4-6 weeks later. GYN Procedures (D&C, Colposcopy, Nexplanon — 30 min single book | Type: GYN): Providers: Gresseau, Bank, Laborde, Stanislawski, Herrera, Lorraine (if Frieda, book when Herrera is on site); Double Nexplanon removal: Gresseau, Herrera, Lorraine only. Hysteroscopy (45 min | Type: GYN HYST): Scheduled by Taylor ONLY with Dr. Bank or Dr. Herrera. Kallah Visits (Type: GYN, Reason: KALLAH): ONLY Frieda and Dr. Bank; book 3 months prior to wedding; document last 3 LMP dates and wedding date.",
+    "rules": {
+      "depo_shot": "Frieda (30 min)",
+      "preg_confirm_max_day": 5,
+      "postpartum_window": "6-8 Weeks Post-Delivery",
+      "hysteroscopy": "Taylor ONLY (Bank or Herrera)",
+      "kallah_providers": ["Frieda Klein", "Dr. Sema Bank"]
+    }
+  },
+  {
+    "id": "wh_ob_visits_labs_mfm",
+    "department": "Women's Health",
+    "category": "Visit Types",
+    "entity": "OB Prenatal Visits, Lab Schedule & Dr. Rosenberg MFM Protocol",
+    "keywords": ["NEW OB SO", "NEW OB", "OB VER", "8-12 weeks", "Viability Scan", "6-10 weeks", "OB CHK", "GBS", "36-37 weeks", "OB GCT", "Glucose", "24-29 weeks", "no appts after 3 PM", "BPP SONO", "OB CHK NST", "GTT", "MFM", "845-764-9880"],
+    "content": "First / New OB (8-12 weeks | 30m Sono + 30m OB): Step 1 NEW OB SO (Reason: OB ultrasound, Dx: LMP) BEFORE Step 2 NEW OB (Status: OB VER); Reason must include LMP, pregnancy # (including miscarriages), and last delivering doctor. Viability Scan (6-10 weeks, 30m | Type: SONO GYN, Dx: VIABILITY): Schedule 30 min before GYN visit (approval preferred). Routine OB Check / RTO (15m | Type: OB CHK): q4w (<=26w), q2w (>32w), q1w (>36w). Group B Strep / GBS (36-37 weeks, 15m | Type: OB CHK, Reason: GBS). Glucose / Sugar Test / GCT (24-29 weeks, 15m | Type: OB GCT): Book at least 30 min apart (Mon-Thu 8:30 AM-3:00 PM; Fri 8:30 AM-12:00 PM; NO appts after 3 PM); eat 1 carb + 1 protein + 1 fat 3+ hrs before, then fast 2 hours prior (water only). OB Urgent Add-On (15m | Type: OB URG): Document clinical reason + approving nurse/provider. NST & BPP (40+ weeks): Step 1 BPP SONO (30m) FIRST -> Step 2 OB CHK NST (30m, Status: OB VER). OB Labs: Check Patient HUB -> Labs for active orders (order date with no collected date); lab-only visits (15m) go on OB Lab schedule; 2HR/3HR GTT is booked by nurses only (fast from midnight). MFM — Dr. Victor Rosenberg (Mon & Thu, 8 AM-5 PM): Internal established OB patients ONLY (NO direct booking, NO self-referrals/outside patients—direct outside callers to Suffern office 845-764-9880); route TE to Portal MFM or Rebecca Wood (preconception has ~8-week waitlist).",
+    "rules": {
+      "new_ob_timing": "8-12 Weeks (Sono Before OB)",
+      "gct_cutoff": "No Appts After 3:00 PM (Mon-Thu) / 12:00 PM (Fri)",
+      "gtt_2hr_3hr": "Booked by Nurses Only",
+      "mfm_booking": "Internal Established OB Only via Rebecca Wood"
+    }
+  },
+  {
+    "id": "wh_sonogram_types",
+    "department": "Women's Health",
+    "category": "Nurse & Lab Services",
+    "entity": "Sonogram Types, Durations & Timing Rules",
+    "keywords": ["SONO OB", "Follicle", "Miranda", "Growth Scan", "32-34 weeks", "BPP", "Anatomy Scan", "1 hour", "20-24 weeks", "F/U Anatomy", "IUD Insert", "IUD Check"],
+    "content": "SONO OB (30 min): Anything OB-related per provider/nurse. Follicle Scan (30 min): Scheduled by Miranda (sonogram only). OB Urgent Sono (30 min): Requires nurse/provider approval. Growth / BPP Scan (30 min): Scheduled before BPP visit. Growth Scan (Standard): Scheduled between 32-34 weeks (provider visit same day if patient insists). BPP (Standard): Paired with NST or OB Check at 40+ weeks. Anatomy Scan (1 hour): Scheduled at 20-24 weeks + provider visit (late cutoff is 30 min). F/U Anatomy Scan (30 min): 1-2 weeks after original Anatomy Scan (sonogram only, no provider visit). IUD Insert GYN Sono (30 min): Book after provider visit, set status to OB VER. IUD Check GYN Sono (30 min): 4-6 weeks post-insertion (sonogram only). GYN Urgent Sono (30 min): Per nurse/provider approval, schedule before provider visit.",
+    "rules": {
+      "anatomy_scan": "1 Hour at 20-24 Weeks",
+      "growth_scan": "32-34 Weeks",
+      "follicle_scan": "Scheduled by Miranda (30 min)"
+    }
+  },
+  {
+    "id": "wh_providers_and_sonographers",
+    "department": "Women's Health",
+    "category": "Primary Care Provider",
+    "entity": "Women's Health Providers & Sonographers Directory",
+    "keywords": ["Aaron Herrera", "Victor Rosenberg", "Lorraine Lamm", "Sema Bank", "Melissa Weinstein", "Scott Stanislawski", "Freida Klein", "Joel Allen", "Shirley Gresseau", "Michael Abrahams", "Elve Laborde", "Ashley Sullivan", "sonographers"],
+    "content": "OB / GYN / MFM / Midwife Providers: Aaron Herrera, MD (OB — Medical Director, NPI: 136.682.6133); Dr. Victor Rosenberg, MD (MFM — Sonography Director, NPI: 116.440.3457); Lorraine Lamm (Midwife — Director, License: 001710, NPI: 108.308.6896); Sema Bank, MD (OB/GYN — Infertility, License: 240915, NPI: 137.655.3206); Melissa Weinstein, DO (OB/GYN, License: 2151101, NPI: 119.472.7271); Scott Stanislawski, MD (OB/GYN, NPI: 1619307394); Freida Klein, RPA (GYN, License: 005391, NPI: 186.147.0494); Joel Allen, MD (OB/GYN — Per Diem, License: 124962, NPI: 176.055.6955); Shirley Gresseau, MD (OB/GYN — Per Diem, License: 203959, NPI: 150.897.2811); Michael Abrahams, MD (OB/GYN — Per Diem, NPI: 125.532.1121); Elve Laborde, MD (OB/GYN — Per Diem, NPI: 119.496.0351). Sonographers Team: Ashley Sullivan (Team Lead), Mariah Lynch, Svetlana Shmulenson, Amanda Margolis, Stephanie Cifers (Per Diem), Megan Fisher (Per Diem), Tova Neuhauser (Per Diem), Tasha Crump (Per Diem), Stephanie Danielewski (Per Diem), Sheryl Longsworth (Per Diem).",
+    "rules": {
+      "ob_director": "Aaron Herrera, MD",
+      "mfm_sono_director": "Dr. Victor Rosenberg, MD",
+      "midwife_director": "Lorraine Lamm",
+      "sonography_lead": "Ashley Sullivan"
+    }
+  }
+]

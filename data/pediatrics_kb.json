@@ -1,0 +1,432 @@
+[
+  {
+    "id": "peds_core_pe_rule",
+    "department": "Pediatrics",
+    "category": "Core Scheduling Rules",
+    "entity": "Critical Physical Exam (PE) Rule & Vaccine Exception",
+    "keywords": ["physical exam", "past due", "WCV", "referrals", "specialty", "vaccines", "shots", "flu", "RSV", "imaging", "refills"],
+    "content": "Critical Physical Exam (PE) Rule: If the patient's Physical Exam is PAST DUE, they are NOT ENTITLED to referrals, specialty appointments, shots/vaccines, digital imaging, or routine medication refills, and schools may block attendance. Always verify the last Wellness Visit (WCV) date and past-due flag in ECW. Vaccine Exception: Flu and RSV vaccines can be administered by the nurse on the nurse schedule regardless of whether the patient's PE is up to date.",
+    "rules": {
+      "pe_required_for": ["Referrals", "Specialty Appointments", "Routine Vaccines", "Digital Imaging", "Routine Refills"],
+      "exempt_vaccines": ["Flu", "RSV"]
+    }
+  },
+  {
+    "id": "peds_directory_extensions",
+    "department": "Pediatrics",
+    "category": "Directory & Locations",
+    "entity": "Pediatrics Directory, Extensions & Schedule Grid",
+    "keywords": ["fax", "phone", "translation", "Propio", "LabCorp", "Sherri", "1800", "Spanish", "Jeannette Alcantara", "1710", "10-minute slots"],
+    "content": "Pediatrics Fax: 845-782-2145. Propio Translation Phone: 845-478-1090. LabCorp Stat Abnormal Line (Sherri): Ext. 1800 (Immediate phone call required for stat abnormal labs; do NOT send TE). Spanish Bilingual Support (Jeannette Alcantara): Ext. 1710. Standard Schedule Grid: All provider daily schedules are divided into 10-minute slots.",
+    "rules": {
+      "fax": "845-782-2145",
+      "translation_phone": "845-478-1090",
+      "stat_lab_ext": "1800",
+      "spanish_support_ext": "1710",
+      "slot_grid_min": 10
+    }
+  },
+  {
+    "id": "peds_locations_hours",
+    "department": "Pediatrics",
+    "category": "Directory & Locations",
+    "entity": "Pediatrics Clinic Locations & Operational Hours",
+    "keywords": ["Forest", "FR", "49 Forest Rd", "Bakertown", "BKT", "48 Bakertown Rd", "Blooming Grove", "1200 Route 208", "BK prefix", "hours"],
+    "content": "Forest (FR): 49 Forest Rd. (Shopping Center), where most specialists and equipment are based; Open All Days; standard lab names used in ECW. Bakertown (BKT): 48 Bakertown Rd. (Business Center); Closed Friday through Sunday; labs and nurses use 'BK' prefix (e.g., BK Peds Lab). Blooming Grove: 1200 Route 208, Blooming Grove; Closed Friday through Sunday; full Spanish-speaking nursing and lab staff; sole provider is Dr. Dina Faiden.",
+    "rules": {
+      "forest_rd": "Open All Days",
+      "bakertown": "Closed Fri-Sun (BK Prefix)",
+      "blooming_grove": "Closed Fri-Sun (Spanish Staff)"
+    }
+  },
+  {
+    "id": "peds_pcp_adam_polinger",
+    "department": "Pediatrics",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Adam Polinger, MD",
+    "keywords": ["Adam Polinger", "Director of Pediatrics", "Good Samaritan", "newborn", "NB PE", "Wednesday", "new patients", "Sally", "Alyssa", "Yiddish", "Hebrew"],
+    "content": "Credentials & Hospital: MD, Good Samaritan. Languages: English, Yiddish, Hebrew. Role: Director of Pediatrics. Newborn Physicals (NB PE): Wednesdays only in designated NB slots; do not squeeze newborns into regular slots, and escalate clinical concerns or hospital discharge urgency to Sally or Alyssa. PE Duration: 10 minutes if child is under 2 years. Booking Policy: Allows double and triple booking. New Patients / New to Community: Does NOT see new patients unless they are newborns, or unless a newly relocating family has prior approval from Sally; otherwise book with alternate providers.",
+    "rules": {
+      "credentials": "MD (Good Samaritan)",
+      "languages": ["English", "Yiddish", "Hebrew"],
+      "newborn_pe_day": "Wednesday",
+      "new_patients": false,
+      "double_triple_booking": true
+    }
+  },
+  {
+    "id": "peds_pcp_eliezer_frommer",
+    "department": "Pediatrics",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Eliezer Frommer, MD",
+    "keywords": ["Eliezer Frommer", "Good Samaritan", "newborn", "NB PE", "Thursday", "double booking", "sick visits", "Yiddish"],
+    "content": "Credentials & Hospital: MD, Good Samaritan. Languages: English, Yiddish. Newborn Physicals (NB PE): Thursday mornings only. PE Duration: 10 minutes if child is under 1 year. Booking Policy: Double-booking allowed for sick visits only, with a maximum of 8 to 9 patients per hour.",
+    "rules": {
+      "credentials": "MD (Good Samaritan)",
+      "languages": ["English", "Yiddish"],
+      "newborn_pe_day": "Thursday AM",
+      "double_booking": "Sick Visits Only",
+      "max_per_hour": "8-9"
+    }
+  },
+  {
+    "id": "peds_pcp_lazar_khaimov",
+    "department": "Pediatrics",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Lazar Khaimov, DO",
+    "keywords": ["Lazar Khaimov", "DO", "double PE", "triple booking", "Wednesday evening", "family physicals", "Yiddish"],
+    "content": "Credentials: DO. Languages: English, Yiddish. Booking Policy: Double PE booking allowed; double and triple sick-visit booking allowed. Wednesday Evening Family Physicals: Books 5 to 6 family members in sequence where the first 5 slots are PE and remaining slots are sick visits.",
+    "rules": {
+      "credentials": "DO",
+      "languages": ["English", "Yiddish"],
+      "double_pe": true,
+      "wednesday_evening": "5-6 Family Sequence"
+    }
+  },
+  {
+    "id": "peds_pcp_chana_heintz",
+    "department": "Pediatrics",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Chana Heintz, MD",
+    "keywords": ["Chana Heintz", "stitches", "suture", "lactation", "adolescent boys", "double sick", "Yiddish", "Hebrew"],
+    "content": "Credentials: MD. Languages: English, Yiddish, Hebrew. Stitches: The only pediatrician who applies stitches (suture removal can be with any provider as a 20-min OV). Lactation: Performs lactation appointments (30-min OV). Patient Demographics: Prefers NOT to see adolescent boys for physical exams. Booking Policy: Double sick visits allowed; no double PE.",
+    "rules": {
+      "credentials": "MD",
+      "languages": ["English", "Yiddish", "Hebrew"],
+      "applies_stitches": true,
+      "lactation_30m": true,
+      "adolescent_boys_pe": "Prefers Not"
+    }
+  },
+  {
+    "id": "peds_pcp_tamar_dachoh",
+    "department": "Pediatrics",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Tamar Dachoh, MD",
+    "keywords": ["Tamar Dachoh", "lactation", "double appointments", "sibling sick"],
+    "content": "Credentials: MD. Languages: English. Lactation: Performs lactation appointments (30-min OV). Booking Policy: Double appointments permitted only as PE plus sibling sick, or two family-member sick visits.",
+    "rules": {
+      "credentials": "MD",
+      "languages": ["English"],
+      "lactation_30m": true,
+      "double_booking": "Family/Sibling Only"
+    }
+  },
+  {
+    "id": "peds_pcp_robin_aschkenasy",
+    "department": "Pediatrics",
+    "category": "Primary Care Provider",
+    "entity": "Robin Aschkenasy, PA",
+    "keywords": ["Robin Aschkenasy", "PA", "lactation", "sibling sick", "Yiddish"],
+    "content": "Credentials: PA. Languages: English, Yiddish. Lactation: Performs lactation appointments (30-min OV). Booking Policy: Double appointments permitted only as PE plus sibling sick, or two family-member sick visits.",
+    "rules": {
+      "credentials": "PA",
+      "languages": ["English", "Yiddish"],
+      "lactation_30m": true,
+      "double_booking": "Family/Sibling Only"
+    }
+  },
+  {
+    "id": "peds_pcp_lily_namanworth",
+    "department": "Pediatrics",
+    "category": "Primary Care Provider",
+    "entity": "Lily Namanworth, CPNP-PC",
+    "keywords": ["Lily Namanworth", "CPNP", "NP", "Spanish", "adolescent boys", "Yiddish"],
+    "content": "Credentials: CPNP-PC. Languages: English, Spanish, Yiddish. Patient Demographics: Speaks Spanish; prefers NOT to see adolescent boys for physical exams. Booking Policy: Double appointments permitted only as PE plus sibling sick, or two family-member sick visits.",
+    "rules": {
+      "credentials": "CPNP-PC",
+      "languages": ["English", "Spanish", "Yiddish"],
+      "adolescent_boys_pe": "Prefers Not",
+      "double_booking": "Family/Sibling Only"
+    }
+  },
+  {
+    "id": "peds_pcp_lori_lambert",
+    "department": "Pediatrics",
+    "category": "Primary Care Provider",
+    "entity": "Lori Lambert, NP",
+    "keywords": ["Lori Lambert", "NP", "30 patients", "daily maximum", "double PE", "non-Jewish"],
+    "content": "Credentials: NP. Languages: English. Daily Maximum: Maximum of 30 patients per day. Template Rule: Day always begins with a double PE. Only non-Jewish provider.",
+    "rules": {
+      "credentials": "NP",
+      "languages": ["English"],
+      "daily_max": 30,
+      "starts_with_double_pe": true
+    }
+  },
+  {
+    "id": "peds_pcp_dina_faiden",
+    "department": "Pediatrics",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Dina Faiden, MD (Formerly Donna Dick)",
+    "keywords": ["Dina Faiden", "Donna Dick", "Blooming Grove", "1200 Route 208", "Spanish", "30 minutes", "sibling"],
+    "content": "Credentials: MD (Formerly Donna Dick). Languages: English, Spanish. Location: Sole provider based at 1200 Route 208, Blooming Grove. Spanish-Speaking Patients: Primary provider for Spanish-speaking patients; for all Spanish new patient physicals, book 30 minutes (extra 10 min for thorough medical history intake). Booking Policy: Double sick visits for siblings only; no double PE.",
+    "rules": {
+      "credentials": "MD",
+      "location": "Blooming Grove (1200 Route 208)",
+      "languages": ["English", "Spanish"],
+      "spanish_np_pe_min": 30,
+      "double_pe": false
+    }
+  },
+  {
+    "id": "peds_spec_rubin_cooper",
+    "department": "Pediatrics",
+    "category": "Specialist Provider",
+    "entity": "Dr. Rubin S. Cooper (Pediatric Cardiology)",
+    "keywords": ["Rubin Cooper", "Cardiology", "1st Thursday", "49 Forest Rd", "UHC", "United Healthcare", "MVP", "Medicaid"],
+    "content": "Specialty: Pediatric Cardiology. Schedule & Location: 1st Thursday of the month at 49 Forest Rd. (FR). Duration: 30 minutes. Insurance & Special Rules: Does NOT accept United Healthcare (UHC). MVP accepted ONLY with secondary Medicaid. Active referral required and PE must be up to date.",
+    "rules": {
+      "specialty": "Cardiology",
+      "schedule": "1st Thursday / month",
+      "duration_min": 30,
+      "accepts_uhc": false,
+      "mvp_rule": "Secondary Medicaid Only"
+    }
+  },
+  {
+    "id": "peds_spec_sankaran_krishnan",
+    "department": "Pediatrics",
+    "category": "Specialist Provider",
+    "entity": "Dr. Sankaran Krishnan (Pediatric Pulmonology)",
+    "keywords": ["Sankaran Krishnan", "Pulmonology", "Tuesday", "Hayley Newton", "40 min", "30 min"],
+    "content": "Specialty: Pediatric Pulmonology. Schedule: One Tuesday per month. Duration: 40 min New Patient, 30 min Follow-up. Rules: All requests routed via TE to Hayley Newton. PE must be up to date and active referral required.",
+    "rules": {
+      "specialty": "Pulmonology",
+      "schedule": "1 Tuesday / month",
+      "np_duration_min": 40,
+      "fu_duration_min": 30,
+      "route_te": "Hayley Newton"
+    }
+  },
+  {
+    "id": "peds_spec_john_welter",
+    "department": "Pediatrics",
+    "category": "Specialist Provider",
+    "entity": "Dr. John Welter (Pediatric Pulmonology)",
+    "keywords": ["John Welter", "Pulmonology", "2nd Tuesday", "Hayley Newton", "60 min", "40 min"],
+    "content": "Specialty: Pediatric Pulmonology. Schedule: 2nd Tuesday of the month. Duration: 60 min New Patient, 40 min Follow-up. Rules: All requests routed via TE to Hayley Newton. PE must be up to date and active referral required.",
+    "rules": {
+      "specialty": "Pulmonology",
+      "schedule": "2nd Tuesday / month",
+      "np_duration_min": 60,
+      "fu_duration_min": 40,
+      "route_te": "Hayley Newton"
+    }
+  },
+  {
+    "id": "peds_spec_jillian_hochfelder",
+    "department": "Pediatrics",
+    "category": "Specialist Provider",
+    "entity": "Dr. Jillian Hochfelder (Pediatric Allergy)",
+    "keywords": ["Jillian Hochfelder", "Allergy", "Food Challenge", "first hour", "Allyssa", "double booking"],
+    "content": "Specialty: Pediatric Allergy. Schedule: Monthly. Duration: 30 min New & Follow-up. Rules: First hour of day reserved strictly for Food Challenge. No double booking unless requested by MD and approved by Allyssa. Active referral and up-to-date PE required.",
+    "rules": {
+      "specialty": "Allergy",
+      "schedule": "Monthly",
+      "duration_min": 30,
+      "first_hour": "Food Challenge Only",
+      "double_booking": false
+    }
+  },
+  {
+    "id": "peds_spec_subhadra_siegel",
+    "department": "Pediatrics",
+    "category": "Specialist Provider",
+    "entity": "Dr. Subhadra Siegel (Pediatric Allergy)",
+    "keywords": ["Subhadra Siegel", "Allergy", "Food Challenge", "first hour", "Allyssa", "double booking"],
+    "content": "Specialty: Pediatric Allergy. Schedule: Monthly. Duration: 30 min New & Follow-up. Rules: First hour of day reserved strictly for Food Challenge. No double booking unless requested by MD and approved by Allyssa. Active referral and up-to-date PE required.",
+    "rules": {
+      "specialty": "Allergy",
+      "schedule": "Monthly",
+      "duration_min": 30,
+      "first_hour": "Food Challenge Only",
+      "double_booking": false
+    }
+  },
+  {
+    "id": "peds_spec_beth_gottlieb",
+    "department": "Pediatrics",
+    "category": "Specialist Provider",
+    "entity": "Dr. Beth Gottlieb (Pediatric Rheumatology)",
+    "keywords": ["Beth Gottlieb", "Rheumatology", "1st Tuesday", "UHC", "United Healthcare", "40 min", "20 min"],
+    "content": "Specialty: Pediatric Rheumatology. Schedule: 1st Tuesday of the month. Duration: 40 min New Patient, 20 min Follow-up. Rules: Does NOT accept United Healthcare (UHC). Follow-ups prioritized over new patients. Active referral and up-to-date PE required.",
+    "rules": {
+      "specialty": "Rheumatology",
+      "schedule": "1st Tuesday / month",
+      "np_duration_min": 40,
+      "fu_duration_min": 20,
+      "accepts_uhc": false
+    }
+  },
+  {
+    "id": "peds_spec_lianne_deserres",
+    "department": "Pediatrics",
+    "category": "Specialist Provider",
+    "entity": "Dr. Lianne DeSerres (Pediatric ENT)",
+    "keywords": ["Lianne DeSerres", "ENT", "1st Tuesday", "sibling double-booking", "outside referrals", "20 min"],
+    "content": "Specialty: Pediatric ENT. Schedule: 1st Tuesday of the month. Duration: 20 min New & Follow-up. Rules: Sibling double-booking allowed (only specialty permitted). Outside-patient referrals require doctor approval. Active referral and up-to-date PE required.",
+    "rules": {
+      "specialty": "ENT",
+      "schedule": "1st Tuesday / month",
+      "duration_min": 20,
+      "sibling_double_booking": true
+    }
+  },
+  {
+    "id": "peds_spec_tali_lando",
+    "department": "Pediatrics",
+    "category": "Specialist Provider",
+    "entity": "Dr. Tali Lando (Pediatric ENT)",
+    "keywords": ["Tali Lando", "ENT", "3rd Wednesday", "sibling double-booking", "outside referrals", "20 min"],
+    "content": "Specialty: Pediatric ENT. Schedule: 3rd Wednesday of the month. Duration: 20 min New & Follow-up. Rules: Sibling double-booking allowed (only specialty permitted). Outside-patient referrals require doctor approval. Active referral and up-to-date PE required.",
+    "rules": {
+      "specialty": "ENT",
+      "schedule": "3rd Wednesday / month",
+      "duration_min": 20,
+      "sibling_double_booking": true
+    }
+  },
+  {
+    "id": "peds_pe_frequency_milestones",
+    "department": "Pediatrics",
+    "category": "Core Scheduling Rules",
+    "entity": "Physical Exam (PE) Frequency & Billing Milestones",
+    "keywords": ["PE frequency", "milestones", "newborn", "6 weeks", "2 months", "3 months", "Head Start", "30 months", "annually", "managed care", "Dini"],
+    "content": "Never calculate eligibility based on a general number of PEs per year; insurance coverage strictly follows milestone checkpoints: Birth to 6 weeks: Newborn Physical Exam (NB PE) at 3-5 days and 1 month. 6 weeks to 6 months: Every 2 months (2, 4, 6 months). 6 months to 2 years (24 months): Every 3 months (9, 12, 15, 18, 24 months). 2.5 years (30 months): As needed for Head Start program requirements. Age 3 through 21: Annually (once per year). Managed Care Early Exception: May repeat early if patient had a birthday, last PE was >= 6 months ago, and child has managed-care insurance.",
+    "rules": {
+      "age_3_to_21": "Annually",
+      "managed_care_exception": ">= 6 mos + Birthday"
+    }
+  },
+  {
+    "id": "peds_attendance_consent_policy",
+    "department": "Pediatrics",
+    "category": "Core Scheduling Rules",
+    "entity": "Parental & Adult Attendance Policies",
+    "keywords": ["attendance", "parent", "adult sibling", "18+", "12 years", "consent", "immunization", "30-minute observation", "infant", "baby"],
+    "content": "Immunization Appointments: Parent or Adult Sibling (18+) REQUIRED with NO EXCEPTIONS; some vaccines require a mandatory 30-minute post-injection observation period. Sick / Acute Visits: Children 12 years and older may attend alone ONLY if parent gives verbal consent during the scheduling call (must document 'Consent- [Parent First Name]' in ECW comment box, and child must be able to communicate independently); children under 12 must be accompanied by a parent or adult sibling (18+). Infants & Babies: Strict prohibition—a 12-year-old sibling is NEVER permitted to bring an infant or baby; must be accompanied by a parent or adult sibling aged 18 or older.",
+    "rules": {
+      "vaccines_min_age": "18+ / Parent Required",
+      "sick_alone_min_age": 12,
+      "infant_12yo_sibling": false
+    }
+  },
+  {
+    "id": "peds_same_day_pcp_restriction",
+    "department": "Pediatrics",
+    "category": "Core Scheduling Rules",
+    "entity": "Same-Day Primary Provider Restriction & Acute Care Referral",
+    "keywords": ["same-day PCP", "two primary care", "same day", "second doctor", "triage nurse", "Acute Care"],
+    "content": "Same-Day PCP Rule: A patient CANNOT see two primary care providers on the same day because insurance only reimburses one primary care visit per calendar day. If a patient seen earlier today calls wanting to be seen again by a different doctor: DO NOT book another pediatric primary care visit; instead transfer the call to a triage nurse to assess clinical urgency, OR schedule an appointment with Acute Care (which bills under urgent/acute care and is covered).",
+    "rules": {
+      "two_pcps_same_day": false,
+      "alternative": "Triage Nurse or Acute Care"
+    }
+  },
+  {
+    "id": "peds_blocks_arrival_preop",
+    "department": "Pediatrics",
+    "category": "Core Scheduling Rules",
+    "entity": "Schedule Blocks, Arrival Times & Pre-Op Documentation",
+    "keywords": ["DNB block", "holding block", "initials", "arrival time", "pre-op", "Physical UTD", "walk-ins"],
+    "content": "Removing Associated Blocks: When an appointment is moved or canceled, always delete the associated block (especially DNB blocks). Holding Appointment Slots: If placing a temporary block while assisting a caller or building a chart, you MUST add a note stating the reason along with your initials, or it will be deleted immediately. Stipulating Arrival Times: Always document the arrival time instructed to the patient in the ECW comment box. Pre-Op Reason Documentation: Include surgery date, surgery type, surgeon/hospital name, AND explicitly note 'Physical UTD' once verified. Walk-In Policy: Accepted for SICK VISITS ONLY; never accept walk-ins for physical exams, pre-ops, or specialty visits.",
+    "rules": {
+      "walk_ins": "Sick Visits Only",
+      "hold_block_requires": "Reason + Initials",
+      "preop_tag": "Physical UTD"
+    }
+  },
+  {
+    "id": "peds_chart_verification_hipaa",
+    "department": "Pediatrics",
+    "category": "Special Operational Policies",
+    "entity": "New Patient Chart Verification & Phone Etiquette",
+    "keywords": ["new patient chart", "duplicate", "DOB", "two phone numbers", "guarantor", "pharmacy", "3 rings", "etiquette"],
+    "content": "Before creating a chart or adding a sibling to an existing family account: Confirm exact spelling of first/last name and full Date of Birth (DOB); verify current residential address and input at least two contact phone numbers; verify Responsible Party / Guarantor and active insurance; confirm primary local pharmacy. Phone Etiquette Standard: Answer within 3 rings with 'Thank you for calling Aizer Health, this is [Name], how can I help you?' and verify patient name and DOB before accessing ECW charts.",
+    "rules": {
+      "min_phone_numbers": 2,
+      "answer_within_rings": 3
+    }
+  },
+  {
+    "id": "peds_visit_types_specs",
+    "department": "Pediatrics",
+    "category": "Visit Types",
+    "entity": "Pediatrics Visit Types & ECW Codes",
+    "keywords": ["NB PE", "PE", "PE+SHOTS", "SAME DAY", "OV", "PRE OP", "PED HOS FU", "Lactation", "Tongue Tie", "5 weeks", "HEMO", "WIC"],
+    "content": "Newborn Physical (NB PE): Pre-bookable within first 6 weeks of birth; write 'NB PE, #Lab ID number, delivery hospital' in ECW. Physical Exam (PE / PE+SHOTS / PE+fever): Pre-bookable routine preventive exam following age frequencies. Same-Day Sick Visit (SAME DAY): NOT pre-bookable (Same-Day Only); write all symptoms in reason (e.g., FEVER + Cough); walk-ins accepted here only. Office Visit (OV): Pre-bookable follow-up by converting a same-day sick slot; used for Tongue Tie, WIC (reason HEMO), and Lactation. Pre-Operation Visit (PRE OP): Pre-bookable by converting same-day sick slot; document surgery type, date, surgeon, hospital, and Physical UTD. Hospital Follow-Up (PED HOS FU): Pre-bookable by converting same-day sick slot for hospital/ER discharge follow-up. Lactation Support (OV 30 min): Pre-bookable 30-min slot only with Dr. Chana Heintz, Dr. Tamar Dachoh, or Robin Aschkenasy. Tongue Tie Evaluation (OV or SAME DAY): Must be <= 5 weeks from delivery for in-house procedure; if > 5 weeks old, provider only evaluates and refers out.",
+    "rules": {
+      "same_day_prebookable": false,
+      "lactation_duration_min": 30,
+      "tongue_tie_max_weeks": 5
+    }
+  },
+  {
+    "id": "peds_te_routing_directory",
+    "department": "Pediatrics",
+    "category": "Telephone Encounter (TE) Routing",
+    "entity": "Pediatrics TE Routing & Staff Directory",
+    "keywords": ["Marisa Kraft", "Hayley Newton", "Anisa Azeez", "Sally Carilli", "PEDS Encounters", "Black Lock", "HIGH PRIORITY", "Early Intervention", "warm transfer"],
+    "content": "Shots / Immunizations / Vaccines & Digital Imaging Requests: Route TE to PEDS Marisa Kraft (PE required; Flu/RSV on nurse schedule exempt). ENT & Nutritionist Referrals: Route TE to Hayley Newton (PE required). General Specialist Referrals: Route TE to Anisa Azeez (Referral Specialist; PE required). Controlled Substance Follow-Up & Weight Check Requests: Route TE to Sally Carilli (PE required; controlled substances booked in approved slots only). Medication Refill Requests: Route to PEDS Encounters queue (PE required; tag HIGH PRIORITY if completely out). Lab Results Inquiries: Route to PEDS Encounters queue (if Black Lock exists, do NOT discuss results). Medical Questions & Early Intervention (EI): Route to PEDS Encounters / PEDS Telephone Encounter queue. Specialty Care Transfers (Vision, Speech, PT, OT, Podiatry): NO TE required—warm transfer caller directly to the appropriate departmental queue.",
+    "rules": {
+      "vaccines_imaging": "PEDS Marisa Kraft",
+      "ent_nutrition": "Hayley Newton",
+      "general_referrals": "Anisa Azeez",
+      "controlled_weight": "Sally Carilli",
+      "refills_labs_med_q": "PEDS Encounters Queue"
+    }
+  },
+  {
+    "id": "peds_forms_stat_labs",
+    "department": "Pediatrics",
+    "category": "Nurse & Lab Services",
+    "entity": "Clinical Forms, Stat Abnormal Labs & Pediatric Forms Drop-Off",
+    "keywords": ["NYS Medication", "stat abnormal", "LabCorp", "bilirubin", "Ext 1800", "Sherri", "WIC", "Alexa Puccini", "Early Head Start", "48 hours", "west side", "HIPAA"],
+    "content": "Stat Abnormal Lab Results (e.g., LabCorp Bilirubin): DO NOT CREATE A TE—immediately call Sherri in the Lab at Ext. 1800. NYS Medication Authorization Form: Create TE and route to Nursing Team. WIC Form Request: Book OV with reason HEMO or send TE to Peds Telephone Encounter queue. Pediatric Forms Drop-Off: Verify chart/PE/immunizations before advising drop-off; parent must fill out parent sections first; 48-hour turnaround; nurse calls for pickup; walk form directly to designated bin on the west side of the nursing station (never leave unattended). Pediatric PE Forms Routing: Forward standard Pediatric PE forms to Alexa Puccini or Peds TE Inbox; EXCEPTION: Alexa does NOT handle Early Head Start forms (route to Peds TE Inbox / nursing workflow); NEVER send form requests directly to an individual nurse.",
+    "rules": {
+      "stat_lab_action": "Call Ext. 1800 (No TE)",
+      "form_turnaround": "48 Hours",
+      "pe_forms_to": "Alexa Puccini / Peds TE Inbox",
+      "early_head_start": "Peds TE Inbox Only (Not Alexa)"
+    }
+  },
+  {
+    "id": "peds_referral_workflow",
+    "department": "Pediatrics",
+    "category": "Referrals & Prior Authorizations",
+    "entity": "Referral Request Workflow & Podiatry Referral Rule",
+    "keywords": ["referral request", "podiatry referral", "chart check", "discussed with doctor", "schedule physical", "schedule OV"],
+    "content": "Always check the patient's chart first before scheduling an appointment for a referral request. If referral was already discussed and documented by the doctor: follow provider's existing plan (no additional appointment needed). If never discussed and patient is due for a physical (or due for next age-based physical): schedule a physical. If up to date on physical and not due yet: schedule a regular Office Visit (OV). Podiatry Referral Rule: Do NOT automatically assume a podiatrist referral is needed when a parent requests one; the child's pediatrician must evaluate the foot concern first.",
+    "rules": {
+      "podiatry_direct_referral": false,
+      "first_step": "Check Chart & PE Status"
+    }
+  },
+  {
+    "id": "peds_insurance_billing_exceptions",
+    "department": "Pediatrics",
+    "category": "Core Scheduling Rules",
+    "entity": "Insurance Billing Policies, Non-Accepted Plans & $100 Self-Pay",
+    "keywords": ["MVP", "CHP", "Child Health Plus", "Anthem", "JLJ", "HealthFirst", "Medicaid secondary", "self-pay", "$100", "flat rate", "send-out labs"],
+    "content": "MVP Commercial & CHP (Child Health Plus): NOT ACCEPTED as standalone coverage; accepted ONLY if patient has active Medicaid as secondary. Anthem Blue Cross (Prefix JLJ): NOT ACCEPTED for member IDs starting with 'JLJ' unless patient has active Medicaid as secondary. HealthFirst: Standalone commercial plans NOT ACCEPTED unless paired with active Medicaid or managed care. Self-Pay Flat Rate: Without eligible secondary coverage, provider visits are billed at a $100 flat rate (must be communicated upfront before booking); in-house testing is included in the $100 flat rate, while send-out labs / external testing are billed separately by the external lab.",
+    "rules": {
+      "mvp_chp": "Medicaid Secondary Only",
+      "anthem_jlj": "Medicaid Secondary Only",
+      "healthfirst_commercial": "Medicaid / Managed Care Only",
+      "self_pay_flat_rate": "$100 (In-House Tests Included)"
+    }
+  },
+  {
+    "id": "peds_controlled_substances_otc",
+    "department": "Pediatrics",
+    "category": "Nurse & Lab Services",
+    "entity": "Controlled Substances Reference List & OTC Policy",
+    "keywords": ["controlled substances", "Adderall", "Concerta", "Methylphenidate", "Guanfacine", "Strattera", "Intuniv", "Ritalin", "Vyvanse", "Focalin", "Xanax", "Alprazolam", "Tylenol", "Motrin", "OTC"],
+    "content": "Controlled Substances (Routed to Sally Carilli, scheduled in approved time slots only): Adderall, Amphetamine, Concerta, Methylphenidate, Guanfacine, Strattera, Intuniv, Ritalin, Vyvanse, Focalin, Xanax, Alprazolam. OTC / Analgesics Policy: Tylenol and Motrin are only dispensed in-clinic prior to checkout (covered by insurance); once checkout is complete, patients must purchase them over-the-counter (OTC).",
+    "rules": {
+      "routed_to": "Sally Carilli",
+      "tylenol_motrin": "Pre-Checkout Only"
+    }
+  }
+]

@@ -1,0 +1,106 @@
+[
+  {
+    "id": "acute_contact_golden_rule",
+    "department": "Acute Care",
+    "category": "Directory & Locations",
+    "entity": "Acute Care Department Contact & Golden Triage Rule",
+    "keywords": ["Alishia Evan", "golden rule", "emergency red flags", "late at night", "urgent symptoms"],
+    "content": "Department Contact: Alishia Evan (Front Desk / Contact Center). Golden Rule: Never book emergency red flags directly, and never schedule urgent symptoms for hours later or late at night!",
+    "rules": {
+      "contact": "Alishia Evan",
+      "emergency_red_flags": "Never Book Direct",
+      "urgent_symptoms": "Never Delay / Book Late"
+    }
+  },
+  {
+    "id": "acute_triage_stop_red_flags",
+    "department": "Acute Care",
+    "category": "Core Scheduling Rules",
+    "entity": "STOP — Emergency Red Flags (Do NOT Book Direct)",
+    "keywords": ["STOP", "red flags", "chest pain", "shortness of breath", "palpitations", "severe stomach pain", "testicle pain", "vaginal bleeding", "pregnant", "stroke", "neck pain", "head injury", "meningitis", "911", "ER", "EKG"],
+    "content": "Phone Callers: Do NOT put these patients on the schedule right away! Put the caller on hold (or alert staff immediately) and get a triage nurse or doctor on duty to decide if the patient should come in or go straight to the ER / call 911. Walk-In Rule: Bring walk-in patients with red flags straight to the back clinical area immediately for vitals or an EKG—never turn them away at the front counter. Red Flag Symptoms: Chest pain; shortness of breath / trouble breathing; heart fluttering / racing / palpitations (especially with chest pain, dizziness, or fainting); severe stomach / belly pain (nurse/MD must screen for location, pregnancy, fever/vomiting, black/bloody stool, or groin/pelvic pain); testicle pain or discomfort (possible twisted testicle surgical emergency); vaginal bleeding or pelvic pain in pregnant or possibly pregnant women; stroke warning signs (slurred speech, sudden severe headache, confusion, numbness/tingling, one-sided weakness, trouble walking -> ER/911 immediately); neck pain after accident/injury; head injury with loss of consciousness, severe headache, confusion, memory loss, or repeated vomiting; neck pain + severe headache + stiff neck + fever (meningitis -> ER immediately).",
+    "rules": {
+      "direct_booking": false,
+      "phone_action": "Hold & Alert Triage Nurse/MD (or ER/911)",
+      "walkin_action": "Bring Straight to Back Clinical Area"
+    }
+  },
+  {
+    "id": "acute_triage_pause_questions",
+    "department": "Acute Care",
+    "category": "Core Scheduling Rules",
+    "entity": "PAUSE — Mandatory Screening Questions (Allergic Reactions & Headaches)",
+    "keywords": ["PAUSE", "allergic reaction", "rash", "swelling", "EpiPen", "headache", "thunderclap", "stiff neck", "screening questions"],
+    "content": "Allergic Reaction / Rash / Swelling — Ask all 4 questions first: (1) Trouble breathing, wheezing, or throat tightness? (2) Trouble swallowing, or tongue/throat swelling? (3) Dizzy, lightheaded, or feeling like passing out? (4) Recent exposure to a known severe allergy trigger (bee sting, peanuts, shellfish, medication) or already used an EpiPen? If YES to any: Do NOT book; alert nurse/MD immediately (ER/911 for phone callers). If NO to all: Safe to book for mild rash, hives, itching, or minor swelling (if EpiPen was already used, check with nurse/MD first). Headache — Ask all 4 questions first: (1) Hit suddenly like a 'thunderclap' or 'worst headache of your life'? (2) Fever, stiff neck, or new rash? (3) Trouble seeing, talking, walking, or numbness/weakness? (4) Passed out or almost passed out? If YES to any: Do NOT book; alert nurse/MD and instruct ER/911. If NO to all: Safe to book (migraines, tension, sinus pressure, mild ongoing headaches).",
+    "rules": {
+      "screen_before_booking": ["Allergic Reactions / Rash", "Headaches"],
+      "epipen_used": "Check With Nurse/MD Before Booking"
+    }
+  },
+  {
+    "id": "acute_triage_go_safe_conditions",
+    "department": "Acute Care",
+    "category": "Core Scheduling Rules",
+    "entity": "GO — Conditions Safe to Book Directly into Acute Care",
+    "keywords": ["GO", "safe to book", "sore throat", "cough", "sinus", "earache", "pink eye", "UTI", "yeast infection", "thrush", "rash", "bug bite", "tick bite", "boil", "abscess", "splinter", "cut", "laceration", "mastitis", "tooth pain", "fever"],
+    "content": "Once emergency red flags are ruled out, book directly into an open Acute Care slot: ENT & Eyes: Sore throat, cough, sinus pain or stuffy nose, earache or ear swelling, pink eye / red or watery eye (ask Left or Right), mild wheezing (with no trouble breathing). Stomach, Bathroom & Women's Health: Mild or moderate stomach ache, nausea or throwing up, diarrhea (no severe dehydration or blood), constipation, pain or burning when peeing (possible UTI), vaginal discharge or yeast infection, white patches in mouth (thrush). Skin, Pain & Minor Injuries: Rash or diaper rash, bug or tick bite, skin boil or abscess, splinter or foreign body in hand/ear/nose, cuts/lacerations, hurt fingernail, stuck earring, ingrown toenail (same-day only), back/rib/muscle pain, limping, fever, fussy/crying child, tooth pain, breast infection (mastitis), mild dizziness or general tiredness (no stroke signs).",
+    "rules": {
+      "direct_booking": true,
+      "prerequisite": "Red Flags Ruled Out"
+    }
+  },
+  {
+    "id": "acute_visit_lengths_and_exclusions",
+    "department": "Acute Care",
+    "category": "Visit Types",
+    "entity": "Acute Care Slot Lengths, Ingrown Toenails & Non-Covered Services",
+    "keywords": ["15 minutes", "30 minutes", "lacerations", "suturing", "stitch removal", "hemorrhoids", "female chaperone", "ingrown toenails", "same-day only", "yellow note", "Dr. Gildin", "Dr. Lob", "Dr. Zhang", "medication refills", "IV fluids"],
+    "content": "Regular Acute Visit: 15 minutes (default slot length for normal sick visits). Cuts / Stitches (Lacerations / Suturing): 30 minutes (always ask Left vs. Right and exact body part/finger/toe so nurses can prep supply cart). Stitch / Suture Removal: 15 minutes (book into any open slot right away). Hemorrhoids: 30 minutes (for female patients, inform her while booking that the doctor is male and a female nurse will stay in the room as a chaperone). Ingrown Toenails (Procedure Slot): SAME-DAY ONLY (never book for a future date or tomorrow); Max 2 Per Day (check yellow note at top of schedule: '2 same day appt ingrowns'); Strictly 3 Doctors Only: Dr. Gildin, Dr. Lob, or Dr. Zhang (never book with part-time or per diem doctors). What Acute Care Does NOT Do: No Routine Medication Refills (refer to regular PCP in Adult Medicine or Pediatrics); No IV Fluids or IV Medicine (direct patient to Emergency Room).",
+    "rules": {
+      "default_slot_min": 15,
+      "stitches_hemorrhoids_min": 30,
+      "ingrown_toenail_doctors": ["Dr. Gildin", "Dr. Lob", "Dr. Zhang"],
+      "ingrown_max_per_day": "2 (Same-Day Only)",
+      "routine_refills_or_iv": false
+    }
+  },
+  {
+    "id": "acute_dittmeier_and_laterality_rule",
+    "department": "Acute Care",
+    "category": "Core Scheduling Rules",
+    "entity": "Dr. Dittmeier Cell Phone Rule & Left vs. Right Laterality Checklist",
+    "keywords": ["Robert Dittmeier", "cell phone", "Left vs. Right", "laterality", "finger", "toe", "eyelid", "supply cart"],
+    "content": "Dr. Robert Dittmeier's Cell Phone Rule: If ever unsure whether a patient should be booked on Dr. Dittmeier's schedule, call him directly on his cell phone (whether in clinic or at home)—he prefers speaking directly rather than having another doctor or nurse screen his patients (if he doesn't answer, ask nurse/MD on duty). Always Ask Left vs. Right: For cuts, bone/joint injuries, or eye issues, always clarify Left vs. Right and the exact spot (specific finger: Thumb, Index, Middle, Ring, Pinky; specific toe: Big, 2nd, Middle, 4th, Pinky; upper/lower eyelid, eyebrow, etc.) so nurses can open the right template and prep the supply cart.",
+    "rules": {
+      "dittmeier_unsure_booking": "Call Dr. Dittmeier Cell Directly",
+      "laterality_required_for": ["Cuts / Lacerations", "Bone / Joint Injuries", "Eye Issues"]
+    }
+  },
+  {
+    "id": "acute_bakertown_capabilities",
+    "department": "Acute Care",
+    "category": "Directory & Locations",
+    "entity": "Bakertown Clinic On-Site Illnesses & Minor Procedures",
+    "keywords": ["Bakertown", "rapid strep", "COVID", "flu", "otitis media", "otitis externa", "dip + send", "cellulitis", "impetigo", "folliculitis", "I&D", "abscess drainage", "earwax", "cerumen", "staple removal"],
+    "content": "Common Illnesses Treated at Bakertown: Sore throat / Strep (rapid strep swab & throat cultures); COVID-19 & Flu (rapid testing & treatment); Colds & Sinus Infections (URIs & sinusitis); Ear & Eye Infections (otitis media, swimmer's ear / otitis externa, conjunctivitis); UTIs (in-office urine dipstick + send to lab workflow); Skin Infections (cellulitis, impetigo, folliculitis). Minor Hands-On Procedures at Bakertown: Cuts & Stitches (simple/intermediate laceration repair, 30 min); Boil / Abscess Drainage (I&D); Ingrown Toenail Removal (same-day only, max 2/day with Dr. Gildin, Dr. Lob, or Dr. Zhang); Splinter & Surface Foreign Body Removal; Earwax Removal (cerumen removal); Wound Care & Dressing Changes; Stitch & Staple Removal (15 min).",
+    "rules": {
+      "location": "Bakertown",
+      "on_site_testing": ["Rapid Strep", "COVID/Flu", "Urine Dip + Send"],
+      "on_site_procedures": ["Suturing (30m)", "Abscess I&D", "Ingrown Toenail", "Earwax Removal", "Suture/Staple Removal (15m)"]
+    }
+  },
+  {
+    "id": "acute_doctors_directory",
+    "department": "Acute Care",
+    "category": "Primary Care Provider",
+    "entity": "Acute Care Doctors Directory, Roles & Languages",
+    "keywords": ["Joshua Gildin", "Zev Lob", "Zhou Zhang", "Robert Dittmeier", "Daniel Herzog", "Abraham Taub", "Meena Moteelall", "Aaron Grubner", "Dulaya Santikul", "Monica Choksi", "Aron Ramcharitar", "Yitzchak Goldsmith", "Manoranjan Singh", "Yiddish", "Spanish", "Kids Doctor"],
+    "content": "Full-Time & Director Doctors (Authorized for Same-Day Ingrown Toenails, max 2/day): Joshua Gildin, DO (Acute Care Director, Male, English); Zev Lob, DO (Full-Time, Male, English); Zhou Zhang, MD (Full-Time, Male, English). Part-Time Doctor: Robert Dittmeier, MD (Part-Time, Male, English — call cell directly if unsure about booking). Per Diem Doctors: Daniel Herzog, DO (Male, Fluent in Yiddish & Conversational Spanish); Abraham Taub, DO (Male, Fluent in Yiddish); Meena Moteelall, MD (Female, Per Diem Kids Doctor, Fluent in Spanish); Aaron Grubner, MD (Male, Per Diem Kids Doctor, English); Dulaya Santikul, DO (Female, English); Monica Choksi, MD (Female, English); Aron Ramcharitar, MD (Male, English); Yitzchak Goldsmith, DO (Male, English); Manoranjan Singh, MD (Male, English).",
+    "rules": {
+      "ingrown_authorized": ["Joshua Gildin, DO", "Zev Lob, DO", "Zhou Zhang, MD"],
+      "yiddish_speakers": ["Daniel Herzog, DO", "Abraham Taub, DO"],
+      "spanish_speakers": ["Meena Moteelall, MD (Fluent)", "Daniel Herzog, DO (Conversational)"],
+      "peds_focused": ["Meena Moteelall, MD", "Aaron Grubner, MD"]
+    }
+  }
+]

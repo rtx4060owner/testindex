@@ -1,0 +1,118 @@
+[
+  {
+    "id": "pod_location_intake_golden_rule",
+    "department": "Podiatry",
+    "category": "Directory & Locations",
+    "entity": "Podiatry Location, 3-Point Verification & Billing Alert Rule",
+    "keywords": ["49 Forrest Road", "3rd Floor", "Monroe", "10 minutes early", "billing alert", "40-minute patient", "3-point verification", "PE required", "physical exam"],
+    "content": "Golden Rule #1 — Billing Alert Verification: Always check the billing alert in eCW before scheduling to verify whether the caller is designated as a 40-minute patient. Facility Location & Arrival Protocol: Monroe Facility — 49 Forrest Road, 3rd Floor, Monroe, NY; patients must check in on the main floor first, then proceed upstairs to the 3rd floor waiting area. Required Patient Script: 'Please arrive 10 minutes early to your appointment, just in case there is a line or paperwork that needs to be filled out.' 3-Point Secure Verification: Strictly requires exact chart match on Full Patient Name, Date of Birth (DOB), and Phone Number before booking. Intake Prerequisite Rule: Unlike Adult Medicine or Pediatrics, NO up-to-date physical exam (PE) is required to schedule a podiatry appointment.",
+    "rules": {
+      "location": "Monroe — 49 Forrest Rd, 3rd Fl",
+      "arrival_script": "10 Minutes Early (Check-in 1st Fl)",
+      "pe_required": false,
+      "check_first": "eCW Billing Alert (40-min Flag)"
+    }
+  },
+  {
+    "id": "pod_scope_of_care",
+    "department": "Podiatry",
+    "category": "Core Scheduling Rules",
+    "entity": "Podiatry Clinical Scope of Care & Pathologies Managed",
+    "keywords": ["flat feet", "plantar fasciitis", "heel spurs", "overpronation", "diabetic foot", "neuropathy", "ingrown toenails", "fungal nail", "bacterial nail", "foot injury"],
+    "content": "Comprehensive Lower Extremity Care: General podiatric examinations, routine foot and ankle care, biomechanical complaints, flat feet, abnormal walking patterns, foot and ankle pain, plantar fasciitis, overpronation, and heel spurs. Diabetic Foot & Deformity Management: Diabetic foot evaluations, neuropathy screening, numbness or loss of feeling in the feet, diabetic nail care, and structural foot deformities. Trauma, Nails & Infections: Acute foot and ankle injuries, ingrown toenails, bacterial and fungal nail infections, painful or infected toenails, and in-office minor procedures.",
+    "rules": {
+      "scope": ["Lower Extremity", "Diabetic Foot", "Nails & Minor Procedures"]
+    }
+  },
+  {
+    "id": "pod_strict_20_40_minute_rule",
+    "department": "Podiatry",
+    "category": "Visit Types",
+    "entity": "Strict 20 / 40 Minute Scheduling Rule (Zero 30-Min Slots)",
+    "keywords": ["20 minutes", "40 minutes", "30 minutes", "prohibited", "double-booking", "follow-up", "ingrown toenail", "new patient", "same-day", "minor procedure", "hospital procedure"],
+    "content": "Zero 30-Minute Slots — Zero Double-Booking: All podiatry appointments are scheduled strictly in 20-minute or 40-minute blocks. 30-minute slots do NOT exist in podiatry and are strictly prohibited across all providers. Capacity is strictly limited to one patient per time slot (double-booking standard operations is prohibited). 20-Minute Visits: Follow-Up Visit (f/u), Ingrown Toenail (Evaluation / Standard), New Patient Visit, Routine Office Visit (OV), Same-Day Visit, and Former Initial Evaluations (unless flagged on billing alert). 40-Minute Visits: Triggered automatically for Billing Alert 40-Minute Patients, Specific Complex Patient Needs, In-Office Minor Procedures, or Hospital Procedures.",
+    "rules": {
+      "standard_slot_min": 20,
+      "complex_alert_slot_min": 40,
+      "slot_30_min": false,
+      "double_booking": false
+    }
+  },
+  {
+    "id": "pod_financial_insurance_uhc",
+    "department": "Podiatry",
+    "category": "Core Scheduling Rules",
+    "entity": "Podiatry Financial Pathways, $100 Self-Pay & UHC Referral Mandate",
+    "keywords": ["$100", "self-pay", "flat rate", "United Healthcare", "UHC", "referral required", "PE required"],
+    "content": "Standard / Self-Pay (Path A): No referral required and no PE required; billed at a $100 flat rate fee. Mandatory Agent Script: Call center agent MUST communicate this $100 fee to the patient upfront at the time of booking. United Healthcare (UHC) (Path B): REFERRAL STRICTLY REQUIRED (no PE required). United Healthcare strictly requires an active, approved insurance referral for coverage; do NOT finalize the appointment without confirming the active referral status in the chart.",
+    "rules": {
+      "self_pay_rate": "$100 Flat Rate (Upfront Script)",
+      "uhc_referral_required": true,
+      "pe_required": false
+    }
+  },
+  {
+    "id": "pod_prov_susan_chae",
+    "department": "Podiatry",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Susan Chae, DPM — Weekend Emergency & Infection Protocol",
+    "keywords": ["Susan Chae", "DPM", "Friday", "Sunday", "weekend", "ingrown toenail", "infected", "pus", "redness", "swelling"],
+    "content": "Clinical Focus: General foot problems and diabetic foot care; manages routine care alongside critical weekend emergency shifts. Weekend Availability Window: Availability for Dr. Susan Chae is strictly limited to Fridays and Sundays. Ingrown Toenail Emergency Protocol: Can ONLY be booked on Fridays or Sundays if actively infected. Required Script & Triage Question: Always ask the caller directly: 'Is there pus coming out?' Active Pus or Fluid Discharge: CLEAR TO BOOK with Dr. Chae on Friday or Sunday. Redness, Swelling, or Pain ONLY: DO NOT BOOK on Friday or Sunday (does NOT count as infected); book for routine weekday availability.",
+    "rules": {
+      "credentials": "DPM",
+      "schedule": "Fridays & Sundays Only",
+      "weekend_ingrown_rule": "Active Pus/Discharge Only"
+    }
+  },
+  {
+    "id": "pod_prov_alex_mand",
+    "department": "Podiatry",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Alex Mand, DPM — Orthotics, Arches & Insoles Protocol",
+    "keywords": ["Alex Mand", "DPM", "Kingsbrook Jewish", "orthotics", "arches", "insoles", "deformity", "disability", "bunions", "flat feet"],
+    "content": "Clinical Focus & Background: 10+ years experience (Residency: Kingsbrook Jewish); foot and ankle surgeries, minor foot procedures, foot pain, structural foot deformities (flat feet, bunions, abnormal alignment), and orthotic evaluations. Standard General Policy: None of our Aizer Health podiatrists write standard, generic prescriptions for custom arches, orthotics, or insoles. The Deformity Exception: Navigators may book arches, orthotics, or insoles with Dr. Alex Mand ONLY IF the patient has a confirmed foot deformity or disability on file. Patient Script for Standard Orthotic Inquiries: 'Our doctors no longer write generic prescriptions due to complex insurance paperwork which makes the process difficult. Please contact local podiatry offices for standard orthotics.' Do not recommend or endorse any specific outside podiatry practices.",
+    "rules": {
+      "credentials": "DPM",
+      "generic_orthotics": false,
+      "orthotics_exception": "Confirmed Foot Deformity / Disability Only"
+    }
+  },
+  {
+    "id": "pod_prov_richard_shanin",
+    "department": "Podiatry",
+    "category": "Primary Care Provider",
+    "entity": "Dr. Richard Shanin, DPM — Permanent Procedure Routing & Double-Booking",
+    "keywords": ["Richard Shanin", "DPM", "permanent procedure", "Podiatry MA", "TE", "bypass double-booking", "doctor approval"],
+    "content": "Clinical Focus: Routine foot care, toenail care, and general foot health. Regular Appointments: Book directly (20-min or 40-min alert). Permanent Procedure Inbox Routing: All permanent procedures for Dr. Richard Shanin are strictly doctor-controlled; call center agents must NEVER directly book permanent procedures on Dr. Shanin's schedule. Action Required: Create and route a Telephone Encounter (TE) to the Podiatry MA queue for the doctor to review and book. Bypass Double-Booking Rule: The ONLY double-booking exception permitted for Dr. Shanin requires BOTH conditions simultaneously: (1) No 40-minute exam is required for the patient, AND (2) Direct, explicit doctor approval from Dr. Shanin is obtained.",
+    "rules": {
+      "credentials": "DPM",
+      "permanent_procedures": "Route TE to Podiatry MA (Never Book Direct)",
+      "double_booking": "Dr. Shanin Approval + Non-40m Patient Only"
+    }
+  },
+  {
+    "id": "pod_minors_guardianship_policy",
+    "department": "Podiatry",
+    "category": "Special Operational Policies",
+    "entity": "Minors (<18 Years Old) Guardianship & Sibling Prohibition",
+    "keywords": ["minors", "under 18", "parent", "legal guardian", "exam room", "sibling", "older brother", "older sister"],
+    "content": "Strict Guardianship Mandate: When scheduling patients under 18 years of age, a parent or verified legal guardian MUST be physically present in the examination room during the entire appointment. Sibling Prohibition: An older brother or older sister does NOT qualify as a legal guardian; do NOT book or confirm an appointment if only an older sibling will accompany the minor. Violation Sanction: Any appointment booked without verified parent/guardian presence will be canceled upon arrival and subject to disciplinary action.",
+    "rules": {
+      "under_18_requires": "Parent / Legal Guardian in Exam Room",
+      "older_sibling_allowed": false
+    }
+  },
+  {
+    "id": "pod_permanent_procedure_lifecycle",
+    "department": "Podiatry",
+    "category": "Telephone Encounter (TE) Routing",
+    "entity": "Consultation Lifecycle & 1-Month Validity for Permanent Procedures",
+    "keywords": ["consultation lifecycle", "1-month validity", "switched podiatrists", "reset rule", "Encounters tab", "Podiatry MA"],
+    "content": "Permanent procedures require an unbroken chain of clinical care with a single treating provider. Phase 1 (Initial Consult): Must be completed first; ask 'Have you completed your consultation?' and verify under the Encounters tab in eCW (if no prior consult, schedule consultation first). Phase 2 (1-Month Validity Window): Consultation is valid for 1 month from the consult date; if older than 1 month, verify exact validity with the doctor before booking. Phase 3 (Scheduling): Once verified within active window with same provider, schedule procedure (or route TE to Podiatry MA for Dr. Shanin). The Reset Rule: If a patient switches podiatrists, the consultation loop resets entirely—a NEW consultation is strictly required with the new doctor before any procedure can be scheduled.",
+    "rules": {
+      "consult_validity": "1 Month",
+      "switch_doctor_rule": "Resets Loop (New Consult Required)",
+      "shanin_routing": "TE to Podiatry MA"
+    }
+  }
+]
