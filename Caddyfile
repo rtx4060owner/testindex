@@ -1,0 +1,12 @@
+# Replace {$PORTAL_DOMAIN} with your domain (e.g. kb.aizerhealth.org)
+{$PORTAL_DOMAIN:localhost} {
+	encode gzip zstd
+
+	reverse_proxy 127.0.0.1:8000 {
+		header_up X-Forwarded-Proto {scheme}
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	}
+}

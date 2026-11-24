@@ -223,19 +223,12 @@
     <!-- SECTION 1: KNOWLEDGE BASE -->
     <section id="section-kb" class="content-section hidden space-y-6">
       <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <h2 class="text-lg font-bold text-slate-900">All Departments</h2>
-          <span id="totalIndexedBadge" class="text-xs font-mono text-slate-500"></span>
-        </div>
+        <h2 class="text-lg font-bold text-slate-900">All Departments</h2>
         <div id="homeDepartmentsRail" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3.5"></div>
       </div>
 
       <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-200">
-        <div class="flex flex-wrap items-center gap-3">
-          <h1 id="kbHeading" class="text-2xl font-bold text-slate-900 tracking-tight">Internal Medicine Knowledge Base</h1>
-          <span id="kbCountBadge"
-            class="text-xs font-mono font-medium px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600"></span>
-        </div>
+        <h1 id="kbHeading" class="text-2xl font-bold text-slate-900 tracking-tight">Internal Medicine Knowledge Base</h1>
 
         <div class="inline-flex p-1 bg-slate-200/70 rounded-xl gap-1">
           <button id="kbTabBtn-rules" onclick="switchKbTab('rules')"
@@ -296,18 +289,12 @@
         </div>
 
         <div class="space-y-3">
-          <div class="flex items-center gap-2">
-            <h2 id="pcpSectionTitle" class="text-xs font-bold uppercase tracking-wider text-slate-500">Primary Care Providers</h2>
-            <span id="pcpCount" class="text-xs font-mono text-slate-400"></span>
-          </div>
+          <h2 id="pcpSectionTitle" class="text-xs font-bold uppercase tracking-wider text-slate-500">Primary Care Providers</h2>
           <div id="pcpCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
 
         <div id="specSectionWrapper" class="space-y-3 pt-2">
-          <div class="flex items-center gap-2">
-            <h2 id="specSectionTitle" class="text-xs font-bold uppercase tracking-wider text-slate-500">Specialty Providers</h2>
-            <span id="specCount" class="text-xs font-mono text-slate-400"></span>
-          </div>
+          <h2 id="specSectionTitle" class="text-xs font-bold uppercase tracking-wider text-slate-500">Specialty Providers</h2>
           <div id="specCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
       </div>
@@ -477,7 +464,6 @@
         const isSelected = dept.id === selectedKbDept;
         const cardBorder = isSelected ? 'border-2 border-[#1565C0]' : 'border border-slate-200 hover:border-slate-300';
         const stateClass = isSelected ? 'dept-card--active' : 'dept-card--inactive';
-        const count = kbRecords.filter(r => (r.department || 'Internal Medicine') === dept.dbName).length;
 
         return `
           <article onclick="selectKbDepartment('${dept.id}')" class="dept-card ${stateClass} ${cardBorder}">
@@ -489,7 +475,6 @@
             </div>
             <div class="px-3.5 py-3 text-center">
               <h2 class="text-sm font-bold text-slate-900">${escapeHtml(dept.title)}</h2>
-              ${count ? `<p class="text-[11px] font-mono text-slate-400 mt-0.5">${count} guidelines</p>` : ''}
             </div>
           </article>`;
       }).join('');
@@ -558,7 +543,6 @@
         const data = await res.json();
         kbRecords = data.items || [];
         document.getElementById('loadingIndicator').classList.add('hidden');
-        document.getElementById('totalIndexedBadge').innerText = `${kbRecords.length} total guidelines indexed`;
         renderHomeDepartments();
         renderKB('ALL');
         renderProviders('ALL');
@@ -612,7 +596,6 @@
         r => (r.department || 'Internal Medicine') === activeDeptName && kbCategories.includes(r.category)
       );
       if (category !== 'ALL') list = list.filter(r => r.category === category);
-      document.getElementById('kbCountBadge').innerText = `${list.length} rules`;
       document.getElementById('kbCardsContainer').innerHTML = list.length
         ? list.map(item => renderGuidelineCard(item)).join('')
         : '<div class="col-span-full text-sm text-slate-500 py-4">No rules in this category for this department.</div>';
@@ -656,9 +639,6 @@
       document.getElementById('specSectionTitle').innerText =
         activeDeptName === 'Behavioral Health' ? 'Counseling & Integrative Care Clinicians' : 'Specialty Providers';
 
-      document.getElementById('pcpCount').innerText = `(${pcps.length})`;
-      document.getElementById('specCount').innerText = `(${specs.length})`;
-
       document.getElementById('pcpCardsContainer').innerHTML = pcps.length
         ? pcps.map(p => renderGuidelineCard(p, getRole(p))).join('')
         : '<p class="text-sm text-slate-500">No providers listed for this filter.</p>';
@@ -684,8 +664,35 @@
       const visits = kbRecords.filter(
         r => (r.department || 'Internal Medicine') === activeDeptName && r.category === 'Visit Types'
       );
-      document.getElementById('visitsGridContainer').innerHTML = visits.length
-        ? visits.map(v => renderGuidelineCard(v, '')).join('')
+
+      const cards = [];
+      for (const v of visits) {
+        const bullets = extractBulletLines(v.content);
+        const titledBullets = bullets.filter(b => /^[^:]{2,55}:\s+/.test(b));
+        if (titledBullets.length >= 2) {
+          for (const b of bullets) {
+            const idx = b.indexOf(':');
+            if (idx > 1 && idx < 55) {
+              const title = b.slice(0, idx).trim();
+              const body = b.slice(idx + 1).trim();
+              const durMatch = body.match(/\b(\d{1,2}\s*min(?:utes?)?|Same-Day Only)\b/i);
+              cards.push(renderGuidelineCard({
+                entity: title,
+                category: 'Visit Types',
+                content: body,
+                rules: durMatch ? { duration: durMatch[1] } : {},
+              }, durMatch ? durMatch[1] : ''));
+            } else {
+              cards.push(renderGuidelineCard({ entity: v.entity, category: 'Visit Types', content: b, rules: {} }, ''));
+            }
+          }
+        } else {
+          cards.push(renderGuidelineCard(v, ''));
+        }
+      }
+
+      document.getElementById('visitsGridContainer').innerHTML = cards.length
+        ? cards.join('')
         : '<p class="text-sm text-slate-500">Visit type rules for this department are listed under Rules &amp; SOPs.</p>';
     }
 
@@ -757,13 +764,12 @@
         let primaryCardHtml = '';
 
         if (data.mode === 'fact_lookup' && data.direct_fact) {
-          const safeAns = data.direct_fact.answer.replace(/'/g, "\\'");
           primaryCardHtml = `
             <div class="flex items-center justify-between gap-4 bg-[#E8F2FC] border border-[#C5DCF5] rounded-2xl px-5 py-4 shadow-sm">
               <div class="text-xl font-bold text-slate-900 font-mono break-words">${escapeHtml(data.direct_fact.answer)}</div>
               <div class="flex items-center gap-2.5 shrink-0">
                 <span class="text-xs font-mono font-medium px-2.5 py-1 rounded-lg bg-white/90 text-[#0F2A4A]">Confidence: ${formatPct(data.direct_fact.confidence)}</span>
-                <button onclick="copyText('${safeAns}', this)" class="bg-[#0F2A4A] hover:bg-[#173B66] text-white text-xs font-medium px-3.5 py-1.5 rounded-lg transition">Copy</button>
+                <button data-copy="${escapeHtml(data.direct_fact.answer)}" onclick="copyText(this.dataset.copy, this)" class="bg-[#0F2A4A] hover:bg-[#173B66] text-white text-xs font-medium px-3.5 py-1.5 rounded-lg transition">Copy</button>
               </div>
             </div>`;
         } else if (data.mode === 'yes_no_gate' && data.yes_no_gate) {

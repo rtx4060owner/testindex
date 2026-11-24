@@ -1,34 +1,66 @@
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+const baseHeaders = {
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "no-referrer",
 };
 
-const json = (data, status = 200) => Response.json(data, { status, headers: corsHeaders });
+const json = (data, status = 200, env = {}) => {
+  const headers = { ...baseHeaders };
+  if (env.ALLOWED_ORIGIN) {
+    headers["Access-Control-Allow-Origin"] = env.ALLOWED_ORIGIN;
+    headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS";
+    headers["Access-Control-Allow-Headers"] = "Content-Type, X-Worker-Key";
+  }
+  return Response.json(data, { status, headers });
+};
+
+function timingSafeEqualStr(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const encoder = new TextEncoder();
+  const aBytes = encoder.encode(a);
+  const bBytes = encoder.encode(b);
+  const maxLen = Math.max(aBytes.length, bBytes.length);
+  let diff = aBytes.length ^ bBytes.length;
+  for (let i = 0; i < maxLen; i++) {
+    diff |= (aBytes[i] ?? 0) ^ (bBytes[i] ?? 0);
+  }
+  return diff === 0;
+}
+
+function isAuthorized(request, env) {
+  if (!env.WORKER_API_KEY) return true;
+  return timingSafeEqualStr(request.headers.get("X-Worker-Key") || "", env.WORKER_API_KEY);
+}
 
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
+      const headers = { ...baseHeaders };
+      if (env.ALLOWED_ORIGIN) {
+        headers["Access-Control-Allow-Origin"] = env.ALLOWED_ORIGIN;
+        headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS";
+        headers["Access-Control-Allow-Headers"] = "Content-Type, X-Worker-Key";
+      }
+      return new Response(null, { status: 204, headers });
     }
 
     const url = new URL(request.url);
 
     // 1. Ingest/Sync Endpoint (supports ?append=true for batched ingestion)
     if (url.pathname === "/ingest" && request.method === "POST") {
-      const authHeader = request.headers.get("Authorization");
-      if (authHeader !== `Bearer ${env.INGEST_SECRET}`) {
-        return new Response("Unauthorized", { status: 401 });
+      const authHeader = request.headers.get("Authorization") || "";
+      if (!env.INGEST_SECRET || !timingSafeEqualStr(authHeader, `Bearer ${env.INGEST_SECRET}`)) {
+        return new Response("Unauthorized", { status: 401, headers: baseHeaders });
       }
 
       const append = url.searchParams.get("append") === "true";
       const chunks = await request.json();
       await ingestData(chunks, env, append);
-      return json({ status: "success", indexed: chunks.length, append });
+      return json({ status: "success", indexed: chunks.length, append }, 200, env);
     }
 
     // 2. Fetch all structured KB items (with optional ?department= filter)
     if (url.pathname === "/kb" && request.method === "GET") {
+      if (!isAuthorized(request, env)) return new Response("Unauthorized", { status: 401, headers: baseHeaders });
       const deptFilter = url.searchParams.get("department");
       let stmt;
       if (deptFilter && deptFilter !== "ALL") {
@@ -47,18 +79,22 @@ export default {
         content: r.content,
         rules: JSON.parse(r.rules),
       }));
-      return json({ items: formatted });
+      return json({ items: formatted }, 200, env);
     }
 
     // 3. Hybrid Search Endpoint (D1 FTS5 + Vectorize + RRF + Department Scope)
     if (url.pathname === "/search" && request.method === "POST") {
-      const { query, topK = 5, department = null } = await request.json();
-      if (!query || !query.trim()) {
-        return json({ error: "Query is required" }, 400);
+      if (!isAuthorized(request, env)) return new Response("Unauthorized", { status: 401, headers: baseHeaders });
+      const body = await request.json();
+      const query = typeof body?.query === "string" ? body.query.trim() : "";
+      if (!query || query.length > 500) {
+        return json({ error: "Valid query (1-500 chars) is required" }, 400, env);
       }
+      const topK = Math.min(20, Math.max(1, Number.parseInt(body?.topK ?? 5, 10) || 5));
+      const department = typeof body?.department === "string" ? body.department.trim().slice(0, 64) : null;
 
-      const results = await hybridSearch(query.trim(), topK, department, env);
-      return json({ query: query.trim(), department, results });
+      const results = await hybridSearch(query, topK, department, env);
+      return json({ query, department, results }, 200, env);
     }
 
     // 4. Serve Frontend UI from ./public
@@ -66,7 +102,7 @@ export default {
       return env.ASSETS.fetch(request);
     }
 
-    return new Response("Aizer Health KB Engine Active", { headers: corsHeaders });
+    return new Response("Aizer Health KB Engine Active", { headers: baseHeaders });
   },
 };
 
