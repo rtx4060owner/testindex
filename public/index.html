@@ -149,6 +149,14 @@
             </svg>
             <span>Ask Jewel</span>
           </button>
+          <button id="nav-tree" onclick="switchSection('tree')"
+            class="nav-item flex items-center gap-2 px-4 py-2 rounded-xl text-[15px] font-medium text-white/90 hover:text-white hover:bg-white/10 transition whitespace-nowrap shrink-0">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+            </svg>
+            <span>Decision Tree</span>
+          </button>
           <button id="nav-admin" onclick="switchSection('admin')"
             class="nav-item flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[15px] font-medium text-white/75 hover:text-white hover:bg-white/10 transition whitespace-nowrap shrink-0">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -203,6 +211,10 @@
           <button onclick="switchSection('assistant')"
             class="px-6 py-3 rounded-full bg-[#0F2A4A] hover:bg-[#173B66] text-white font-semibold text-sm transition shadow-sm flex items-center gap-2">
             <span>Ask Jewel</span>
+          </button>
+          <button onclick="switchSection('tree')"
+            class="px-6 py-3 rounded-full bg-[#1565C0] hover:bg-[#0F2A4A] text-white font-semibold text-sm transition shadow-sm">
+            Decision Tree
           </button>
           <button onclick="switchSection('kb'); switchKbTab('rules');"
             class="px-6 py-3 rounded-full bg-white hover:bg-slate-50 text-[#0F2A4A] font-semibold text-sm border border-slate-200 transition shadow-sm">
@@ -348,6 +360,27 @@
       </div>
 
       <div id="decisionOutputContainer" class="transition-all duration-300 ease-out opacity-0 translate-y-3"></div>
+    </section>
+
+    <!-- SECTION: SINGLE-SCREEN DECISION TREE (VISION) -->
+    <section id="section-tree" class="content-section hidden max-w-6xl mx-auto space-y-4">
+      <!-- Compact Header -->
+      <div class="cloud-surface border border-white/15 rounded-2xl px-5 py-4 text-white shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <span class="px-2.5 py-1 rounded-lg bg-white/15 text-xs font-bold tracking-wide">Vision</span>
+          <div>
+            <h1 class="text-lg font-bold leading-tight">Live Appointment Decision Cockpit</h1>
+            <p class="text-xs text-sky-100/80">Tap patient &amp; visit chips below — rules, doctors, billing &amp; eCW notes update instantly.</p>
+          </div>
+        </div>
+        <button onclick="resetDecisionTree()"
+          class="px-3.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 text-xs font-semibold text-white transition">
+          Reset All
+        </button>
+      </div>
+
+      <!-- Top Intake Grid + Bottom Live Result -->
+      <div id="treeCockpitContainer" class="space-y-4"></div>
     </section>
 
     <!-- SECTION 5: ADMIN PANEL -->
@@ -655,6 +688,7 @@
       document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
       document.getElementById(`section-${section}`).classList.remove('hidden');
       if (section === 'admin') renderAdminList();
+      if (section === 'tree') initDecisionTree();
     }
 
     function switchKbTab(tab) {
@@ -924,6 +958,310 @@
         btn.disabled = false;
         btn.innerHTML = '<span>Jewel it</span>';
       }
+    }
+
+    // --- SINGLE-SCREEN LIVE DECISION COCKPIT ---
+    let treeConfig = null;
+    const DEFAULT_SELECTIONS = {
+      age: '6plus',
+      history: 'new',
+      noshow: 'clear',
+      insurance: 'annual_cov',
+      visit: 'annual',
+      complaint: 'emergency',
+      conditional: 'no_medicaid',
+      two_yr_cov: 'eligible_2yr'
+    };
+    let cockpitState = { ...DEFAULT_SELECTIONS };
+
+    async function initDecisionTree() {
+      const container = document.getElementById('treeCockpitContainer');
+      if (!treeConfig) {
+        container.innerHTML = '<div class="text-sm text-slate-500 py-6">Loading decision rules...</div>';
+        try {
+          const res = await fetch('/data/vision_decision_tree.json');
+          if (!res.ok) throw new Error('Failed to load JSON');
+          treeConfig = await res.json();
+        } catch {
+          container.innerHTML = '<div class="text-sm text-rose-600 py-4">Unable to load /data/vision_decision_tree.json.</div>';
+          return;
+        }
+      }
+      renderDecisionCockpit();
+    }
+
+    function resetDecisionTree() {
+      cockpitState = { ...DEFAULT_SELECTIONS };
+      renderDecisionCockpit();
+    }
+
+    function setCockpitChoice(groupId, optionId) {
+      cockpitState[groupId] = optionId;
+      renderDecisionCockpit();
+    }
+
+    function evaluateVisionCockpit(s) {
+      // 1. Immediate Hard Stops (No-Show, Under 3, Excluded Services, Optical Only)
+      if (s.noshow === 'blocked') {
+        return {
+          status: 'STOP',
+          tag: 'DO NOT BOOK · NO-SHOW SANCTION',
+          title: 'Booking Blocked — Mandatory 90-Day Waiting Period',
+          summary: 'Patient missed a Vision appointment within the last 90 days.',
+          checklist: [
+            'Count 90 full days from the missed appointment date and inform the patient when they become eligible.',
+            'Verify patient is logged on the No-Show List (tab on the Vision Waitlist).'
+          ],
+          ecwNote: 'Vision Scheduling: Caller requested visit within 90-day no-show waiting period. Declined per policy.'
+        };
+      }
+
+      if (s.visit === 'excluded') {
+        return {
+          status: 'STOP',
+          tag: 'DO NOT BOOK · OUT OF SCOPE',
+          title: 'Service Not Provided In-House (Optometry Only)',
+          summary: 'We do NOT provide Contact Lenses, Vision Therapy, or Ophthalmology / Surgery in-house.',
+          checklist: [
+            'Contact Lenses: Not fitted, evaluated, or dispensed in-house.',
+            'Vision Therapy: Refer/recommend Ahava Medical or Rambam Health Care Campus.',
+            'Ophthalmology / Surgery: Must be referred out (if established patient, send TE to treating Vision doctor).'
+          ],
+          ecwNote: 'Vision Inquiry: Requested non-covered service (Contact Lenses / Vision Therapy / Surgery). Advised Optometry-only scope.'
+        };
+      }
+
+      if (s.visit === 'optical') {
+        return {
+          status: 'DIRECT',
+          tag: 'NO DOCTOR SLOT · OPTICAL DISPENSARY',
+          title: 'Refer Directly to Optical Dispensary',
+          summary: 'Eyeglasses, frames, and prism lenses are dispensed directly if patient has a valid Rx.',
+          checklist: [
+            'Aizer Optical (Bakertown on-site): 845-517-1902',
+            'Ctrue Optical: 845-367-6090',
+            'Hoffmans Optical: 845-250-1155'
+          ],
+          ecwNote: 'Vision Inquiry: Eyeglasses/frames/prism dispensing. Provided Optical directory numbers.'
+        };
+      }
+
+      if (s.age === 'under3') {
+        return {
+          status: 'STOP',
+          tag: 'DO NOT BOOK · AGE RESTRICTION',
+          title: 'Minimum Patient Age is 3 Years Old',
+          summary: 'None of our optometrists see infants or toddlers under 3 years of age.',
+          checklist: [
+            'Inform caller that Aizer Vision sees patients aged 3+ only.',
+            'Advise consulting Pediatrician or external Pediatric Ophthalmology.'
+          ],
+          ecwNote: 'Vision Inquiry: Patient under age 3. Advised minimum age is 3+.'
+        };
+      }
+
+      // 2. DMV Shortcut (< 1 Year since last exam)
+      if (s.visit === 'dmv' && (s.history === 'under1yr')) {
+        return {
+          status: 'DIRECT',
+          tag: 'NO VISIT NEEDED · ROUTE TE TO DOCTOR',
+          title: 'Send Telephone Encounter (TE) to Examining Doctor',
+          summary: 'Last comprehensive Vision exam was within the past 12 months—no new visit required.',
+          checklist: [
+            'Verify exam date in eCW is within the past 12 months.',
+            'Collect patient Driver’s License details (ID #, expiration).',
+            'Route TE directly to the examining doctor to sign the DMV renewal form.'
+          ],
+          ecwNote: 'DMV Renewal Request: Verified exam within 12 months. Collected DL details & routed TE to examining doctor.'
+        };
+      }
+
+      // 3. Visit Type & Clinical Triage Resolution
+      let visitTitle = '';
+      const rulesList = [];
+
+      if (s.visit === 'annual') {
+        visitTitle = s.history === 'new' ? 'New Patient Comprehensive Exam' : 'Routine Annual Eye Exam';
+        if (s.history === 'under1yr') {
+          rulesList.push('Doctor Switch Rule: Switching Vision providers for an Annual Exam is ONLY allowed if >= 1 full year has passed since last visit with a different doctor.');
+        }
+      } else if (s.visit === 'dm') {
+        visitTitle = 'Diabetic (DM) Annual Eye Exam';
+        rulesList.push('Reserved for patients diagnosed with Diabetes Mellitus for annual retinal evaluation.');
+      } else if (s.visit === 'followup') {
+        visitTitle = 'Follow-Up Appointment (30 Minutes)';
+        rulesList.push('Continuity Rule: MUST be booked with the SAME doctor the patient saw previously.');
+      } else if (s.visit === 'vf') {
+        visitTitle = 'Visual Field (VF) Diagnostic Exam (45 Minutes)';
+        rulesList.push('VF Hold Rule: Book in designated 45-min VF slots. Avoid booking VF and annual exams simultaneously unless VF remains unfilled 1 week prior.');
+      } else if (s.visit === 'dmv') {
+        visitTitle = 'Comprehensive Eye Exam — Reason: DMV FORM';
+        rulesList.push('DMV Rule: Set appointment reason strictly to "DMV FORM" (covered by UHC & Fidelis after 1 year under DMV exception).');
+      } else if (s.visit === 'complaint') {
+        if (s.complaint === 'emergency') {
+          visitTitle = 'Emergency Eye Exam (30 Minutes) — Any Available Doctor';
+          rulesList.push('Emergency Timing Rule: Do NOT book within 1 hour of appointment time unless patient confirms they are already close by.');
+        } else {
+          if (s.history === 'over2yrs') {
+            visitTitle = 'Add to Vision Waitlist (Eye Pain Alone + Last Exam > 2 Years Ago)';
+            rulesList.push('Eye pain alone without emergency symptoms is NOT an emergency. Since last exam was > 2 years ago, add to Waitlist (document symptoms, duration & last exam location).');
+          } else {
+            visitTitle = 'Standard Annual Eye Exam (Eye Pain Alone — Not Emergency)';
+            rulesList.push('Eye pain alone without emergency red flags is scheduled as a standard Annual Exam.');
+          }
+        }
+      }
+
+      // 4. Doctor Eligibility by Age & Visit
+      let doctorText = '';
+      if (s.age === '3to5') {
+        doctorText = 'Dr. Solomon Klein, Dr. Sarah Akilov, or Dr. Joel Goldberg ONLY (Dr. Berger, Dr. Herbik, and Dr. Sheth do NOT see under age 6).';
+      } else {
+        doctorText = 'All 6 Vision Doctors eligible (Dr. Klein*, Dr. Akilov, Dr. Goldberg, Dr. Berger, Dr. Herbik, Dr. Sheth).';
+      }
+      if (s.visit === 'annual' || (s.visit === 'complaint' && s.complaint === 'pain_alone')) {
+        doctorText += ' *Dr. Solomon Klein Annual Exams are Waitlist Only.';
+      }
+
+      // 5. Insurance & Billing Resolution
+      let billingText = '';
+      if (s.insurance === 'annual_cov') {
+        billingText = 'Covered Once Per Year (Medicaid / Medicare / Molina). Verify active eligibility.';
+      } else if (s.insurance === 'two_yr_cov') {
+        if (s.visit === 'dmv') {
+          billingText = 'Covered under DMV Exception (Fidelis / UHC cover after 1 year when reason is DMV FORM).';
+        } else if (s.two_yr_cov === 'eligible_2yr') {
+          billingText = 'Covered (2-year interval met). Fidelis: verify on Versant & paste code in eCW General Notes. UHC: verify in eCW Encounters.';
+        } else if (s.two_yr_cov === 'diopter_change') {
+          billingText = 'Covered (< 2 years exception met via >= 0.50 diopter Rx change). Document in eCW General Notes.';
+        } else {
+          billingText = '$100 Self-Pay + ABN Form required (Fidelis/UHC seen within 2 years without >= 0.50 diopter change). Document ABN in eCW General Notes.';
+        }
+      } else if (s.insurance === 'conditional') {
+        if (s.conditional === 'has_medicaid') {
+          billingText = 'Accepted via Active Medicaid Secondary (or Medicare secondary for Hamaspik). Verify both active.';
+        } else {
+          billingText = '$100 Self-Pay + ABN Form required (MVP, Oxford, Healthfirst, Hamaspik & United Refuah are NOT accepted standalone without active Medicaid secondary).';
+        }
+      } else {
+        billingText = '$100 Flat Self-Pay + ABN Form in eCW General Notes (unless Cigna member verifies out-of-network benefits directly with Cigna).';
+      }
+
+      const checklist = [
+        `Eligible Providers: ${doctorText}`,
+        `Insurance & Billing: ${billingText}`,
+        ...rulesList,
+        ...(s.history === 'new' ? ['New Patient Chart: Create eCW chart first before booking or adding to waitlist.'] : []),
+        'Reminders: Never double-book without Kevin Berent approval. Medicaid transportation requires 72h notice (TE to Doaa El Tahir or Kevin).'
+      ];
+
+      return {
+        status: 'BOOK',
+        tag: 'ELIGIBLE TO SCHEDULE',
+        title: visitTitle,
+        summary: `Age: ${s.age === '3to5' ? '3–5 yrs' : '6+ yrs'} · History: ${s.history} · Insurance verified`,
+        checklist,
+        ecwNote: `Vision Scheduling: ${visitTitle} | Age: ${s.age === '3to5' ? '3-5' : '6+'} | Billing: ${billingText}`
+      };
+    }
+
+    function renderDecisionCockpit() {
+      const container = document.getElementById('treeCockpitContainer');
+      if (!container || !treeConfig) return;
+
+      const filtersHtml = treeConfig.filters.map(group => {
+        const activeId = cockpitState[group.id];
+        return `
+          <div class="space-y-1.5">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">${escapeHtml(group.label)}</div>
+            <div class="flex flex-wrap gap-1.5">
+              ${group.options.map(opt => {
+                const isSelected = opt.id === activeId;
+                const cls = isSelected
+                  ? 'bg-[#0F2A4A] text-white border-[#0F2A4A] shadow-sm font-semibold'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 font-medium';
+                return `
+                  <button type="button" onclick="setCockpitChoice('${group.id}', '${opt.id}')"
+                    class="px-3 py-1.5 rounded-xl border text-xs transition ${cls}">
+                    ${escapeHtml(opt.label)}
+                  </button>`;
+              }).join('')}
+            </div>
+          </div>`;
+      }).join('');
+
+      // Conditional Follow-up Row (appears inline on the same screen when needed)
+      let subRowHtml = '';
+      const activeSubKey = cockpitState.visit === 'complaint'
+        ? 'complaint'
+        : (cockpitState.insurance === 'conditional' || cockpitState.insurance === 'two_yr_cov')
+          ? cockpitState.insurance
+          : null;
+
+      if (activeSubKey && treeConfig.subQuestions?.[activeSubKey]) {
+        const sub = treeConfig.subQuestions[activeSubKey];
+        const activeSubId = cockpitState[activeSubKey];
+        subRowHtml = `
+          <div class="pt-3 border-t border-slate-200/80 space-y-2">
+            <div class="text-xs font-semibold text-[#1565C0]">${escapeHtml(sub.label)}</div>
+            <div class="flex flex-wrap gap-2">
+              ${sub.options.map(opt => {
+                const isSelected = opt.id === activeSubId;
+                const cls = isSelected
+                  ? 'bg-[#1565C0] text-white border-[#1565C0] font-semibold'
+                  : 'bg-[#E8F2FC]/60 hover:bg-[#E8F2FC] text-[#0F2A4A] border-[#C5DCF5] font-medium';
+                return `
+                  <button type="button" onclick="setCockpitChoice('${activeSubKey}', '${opt.id}')"
+                    class="px-3 py-1.5 rounded-xl border text-xs text-left transition ${cls}">
+                    ${escapeHtml(opt.label)}
+                  </button>`;
+              }).join('')}
+            </div>
+          </div>`;
+      }
+
+      const outcome = evaluateVisionCockpit(cockpitState);
+      const styles = outcome.status === 'STOP'
+        ? { box: 'bg-rose-50 border-rose-200 text-rose-950', pill: 'bg-rose-100 text-rose-800' }
+        : outcome.status === 'DIRECT'
+          ? { box: 'bg-amber-50 border-amber-200 text-amber-950', pill: 'bg-amber-100 text-amber-800' }
+          : { box: 'bg-emerald-50 border-emerald-200 text-emerald-950', pill: 'bg-emerald-100 text-emerald-800' };
+
+      container.innerHTML = `
+        <!-- Top: All Intake Controls in One Compact Card -->
+        <div class="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${filtersHtml}
+          </div>
+          ${subRowHtml}
+        </div>
+
+        <!-- Bottom: Live Decision Output -->
+        <div class="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="p-4 rounded-xl border ${styles.box}">
+            <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md ${styles.pill} mb-1.5">${escapeHtml(outcome.tag)}</span>
+            <h2 class="text-lg sm:text-xl font-bold">${escapeHtml(outcome.title)}</h2>
+            <p class="text-xs sm:text-sm mt-0.5 opacity-90">${escapeHtml(outcome.summary)}</p>
+          </div>
+
+          <ul class="space-y-1.5 text-xs sm:text-sm text-slate-700 bg-slate-50 border border-slate-200/80 rounded-xl p-4">
+            ${outcome.checklist.map(item => `
+              <li class="flex items-start gap-2 leading-relaxed">
+                <span class="text-[#1565C0] font-bold mt-0.5">&#10003;</span>
+                <span>${escapeHtml(item)}</span>
+              </li>
+            `).join('')}
+          </ul>
+
+          <div class="bg-[#E8F2FC] border border-[#C5DCF5] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="text-xs text-[#0F2A4A] font-mono break-words">${escapeHtml(outcome.ecwNote)}</div>
+            <button data-copy="${escapeHtml(outcome.ecwNote)}" onclick="copyText(this.dataset.copy, this)"
+              class="bg-[#0F2A4A] hover:bg-[#173B66] text-white text-xs font-semibold px-4 py-2 rounded-lg transition shrink-0">
+              Copy eCW Note
+            </button>
+          </div>
+        </div>
+      `;
     }
 
     document.getElementById('searchInput').addEventListener('keydown', (e) => {

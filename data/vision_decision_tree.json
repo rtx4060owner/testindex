@@ -1,0 +1,82 @@
+{
+  "department": "Vision",
+  "title": "Vision Appointment Decision Cockpit",
+  "subtitle": "Select patient profile & visit details from eCW — decision updates live below.",
+  "filters": [
+    {
+      "id": "age",
+      "label": "1. Patient Age",
+      "options": [
+        { "id": "6plus", "label": "6+ Years" },
+        { "id": "3to5", "label": "3 – 5 Years" },
+        { "id": "under3", "label": "Under 3 Years" }
+      ]
+    },
+    {
+      "id": "history",
+      "label": "2. Last Vision Exam (eCW)",
+      "options": [
+        { "id": "new", "label": "New Patient" },
+        { "id": "under1yr", "label": "< 1 Year Ago" },
+        { "id": "1to2yrs", "label": "1 – 2 Years Ago" },
+        { "id": "over2yrs", "label": "> 2 Years Ago" }
+      ]
+    },
+    {
+      "id": "noshow",
+      "label": "3. No-Show (< 90 Days)",
+      "options": [
+        { "id": "clear", "label": "No (Clear)" },
+        { "id": "blocked", "label": "Yes (No-Show < 90d)" }
+      ]
+    },
+    {
+      "id": "insurance",
+      "label": "4. Insurance Plan",
+      "options": [
+        { "id": "annual_cov", "label": "Medicaid / Medicare / Molina" },
+        { "id": "two_yr_cov", "label": "Fidelis / UHC" },
+        { "id": "conditional", "label": "MVP / Oxford / Healthfirst / Hamaspik / Refuah" },
+        { "id": "self_pay", "label": "Cigna / Self-Pay ($100)" }
+      ]
+    },
+    {
+      "id": "visit",
+      "label": "5. Service / Visit Purpose",
+      "options": [
+        { "id": "annual", "label": "Routine Annual / New Exam" },
+        { "id": "dm", "label": "Diabetic (DM) Annual" },
+        { "id": "followup", "label": "Follow-Up (30m)" },
+        { "id": "vf", "label": "Visual Field (45m)" },
+        { "id": "dmv", "label": "DMV Renewal Form" },
+        { "id": "complaint", "label": "Eye Complaint / Pain" },
+        { "id": "optical", "label": "Glasses / Frames / Prism" },
+        { "id": "excluded", "label": "Contacts / Vision Therapy / Surgery" }
+      ]
+    }
+  ],
+  "subQuestions": {
+    "complaint": {
+      "label": "Mandatory 5 Triage Questions: (1) Specific complaint? (2) OD/OS/OU? (3) When started? (4) Possible cause? (5) Itchy/red/swollen?",
+      "options": [
+        { "id": "emergency", "label": "True Emergency (Sudden floaters/blur/double vision, bubble, headache+nausea, pus, acute red/swollen eye)" },
+        { "id": "pain_alone", "label": "Eye Pain ALONE (No emergency symptoms above)" }
+      ]
+    },
+    "conditional": {
+      "label": "Does patient have active Medicaid secondary (or Medicare for Hamaspik)?",
+      "options": [
+        { "id": "has_medicaid", "label": "Yes — Active Medicaid / Medicare Secondary" },
+        { "id": "no_medicaid", "label": "No Secondary Medicaid" }
+      ]
+    },
+    "two_yr_cov": {
+      "label": "Fidelis (Versant) / UHC (eCW): Was patient already covered within the last 2 years?",
+      "options": [
+        { "id": "eligible_2yr", "label": "No — Eligible Now (> 2 yrs or DMV Form)" },
+        { "id": "diopter_change", "label": "Seen < 2 yrs, WITH >= 0.50 Diopter Rx Change" },
+        { "id": "ineligible_2yr", "label": "Seen < 2 yrs, NO >= 0.50 Diopter Change" }
+      ]
+    }
+  }
+}
