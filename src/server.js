@@ -66,6 +66,24 @@ const SECURITY_HEADERS = {
 };
 
 const rateBuckets = new Map();
+const sseClients = new Set();
+const changelog = [];
+const MAX_CHANGELOG = 25;
+
+function recordAndBroadcast(entry) {
+  const item = { ...entry, timestamp: new Date().toISOString() };
+  changelog.unshift(item);
+  if (changelog.length > MAX_CHANGELOG) changelog.length = MAX_CHANGELOG;
+
+  const frame = `event: kb_update\ndata: ${JSON.stringify(item)}\n\n`;
+  for (const client of sseClients) {
+    try {
+      client.write(frame);
+    } catch {
+      sseClients.delete(client);
+    }
+  }
+}
 
 function getClientIp(req) {
   if (TRUST_PROXY) {
@@ -330,6 +348,36 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, { status: "ok" }, req);
     }
 
+    if (reqPath === "/changelog" && req.method === "GET") {
+      return sendJson(res, 200, { entries: changelog }, req);
+    }
+
+    if (reqPath === "/events" && req.method === "GET") {
+      req.setTimeout(0);
+      res.setTimeout(0);
+      res.writeHead(200, {
+        ...getSecurityHeaders(req),
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+      });
+      res.write(": connected\n\n");
+      sseClients.add(res);
+      const ping = setInterval(() => {
+        try {
+          res.write(": ping\n\n");
+        } catch {
+          clearInterval(ping);
+          sseClients.delete(res);
+        }
+      }, 25_000);
+      req.on("close", () => {
+        clearInterval(ping);
+        sseClients.delete(res);
+      });
+      return;
+    }
+
     if (reqPath === "/kb" && req.method === "GET") {
       return sendJson(res, 200, await fetchWorkerJson(`/kb${parsedUrl.search}`), req);
     }
@@ -368,6 +416,13 @@ const server = http.createServer(async (req, res) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      recordAndBroadcast({
+        id: body?.id,
+        action: body?.isNew ? "Added" : "Updated",
+        entity: body?.entity || body?.id,
+        department: body?.department || "Internal Medicine",
+        category: body?.category || "",
+      });
       return sendJson(res, 200, data, req);
     }
 
@@ -378,6 +433,13 @@ const server = http.createServer(async (req, res) => {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: body?.id }),
+      });
+      recordAndBroadcast({
+        id: body?.id,
+        action: "Deleted",
+        entity: body?.entity || body?.id,
+        department: body?.department || "Internal Medicine",
+        category: body?.category || "",
       });
       return sendJson(res, 200, data, req);
     }

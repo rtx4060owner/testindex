@@ -209,6 +209,18 @@
             Knowledge Base
           </button>
         </div>
+
+        <!-- Live Changelog -->
+        <div id="homeChangelogPanel" class="hidden max-w-2xl mx-auto mt-8 bg-white border border-slate-200/90 rounded-2xl p-5 text-left shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-600">Recent Policy Updates</h2>
+            </div>
+            <span class="text-[11px] font-mono text-slate-400">Live</span>
+          </div>
+          <ul id="homeChangelogList" class="divide-y divide-slate-100 text-xs"></ul>
+        </div>
       </div>
     </section>
 
@@ -437,6 +449,8 @@
       </div>
     </section>
   </main>
+
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 max-w-sm pointer-events-none"></div>
 
   <script>
     let kbRecords = [];
@@ -998,6 +1012,7 @@
       form.classList.remove('hidden');
 
       const item = id ? kbRecords.find(r => r.id === id) : null;
+      form.dataset.isNew = item ? 'false' : 'true';
       document.getElementById('adminFormTitle').innerText = item ? `Edit: ${item.entity}` : 'New Guideline';
       const idInput = document.getElementById('admId');
       idInput.value = item ? item.id : `kb_${Date.now()}`;
@@ -1050,6 +1065,7 @@
           },
           body: JSON.stringify({
             id: document.getElementById('admId').value.trim(),
+            isNew: document.getElementById('adminEditorForm').dataset.isNew === 'true',
             department: document.getElementById('admDept').value,
             category: document.getElementById('admCategory').value.trim(),
             entity: document.getElementById('admEntity').value.trim(),
@@ -1071,18 +1087,89 @@
 
     async function deleteAdminItem(id) {
       if (!confirm(`Delete guideline "${id}"?`)) return;
+      const item = kbRecords.find(r => r.id === id);
       const res = await fetch('/admin/item', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${getAdminToken()}`,
         },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, entity: item?.entity, department: item?.department, category: item?.category }),
       });
       if (res.ok) await refreshKbData();
     }
 
+    let changelogEntries = [];
+
+    function renderChangelog() {
+      const panel = document.getElementById('homeChangelogPanel');
+      const list = document.getElementById('homeChangelogList');
+      if (!changelogEntries.length) {
+        panel.classList.add('hidden');
+        return;
+      }
+      panel.classList.remove('hidden');
+      list.innerHTML = changelogEntries.slice(0, 8).map(e => {
+        const badgeCls = e.action === 'Deleted'
+          ? 'bg-rose-50 text-rose-700'
+          : e.action === 'Added'
+            ? 'bg-emerald-50 text-emerald-700'
+            : 'bg-[#E8F2FC] text-[#1565C0]';
+        const timeStr = new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return `
+          <li class="py-2 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="px-2 py-0.5 rounded-md font-semibold text-[11px] shrink-0 ${badgeCls}">${escapeHtml(e.action)}</span>
+              <span class="font-medium text-slate-800 truncate">${escapeHtml(e.entity)}</span>
+              <span class="text-slate-400 shrink-0">&middot; ${escapeHtml(e.department)}</span>
+            </div>
+            <span class="font-mono text-[11px] text-slate-400 shrink-0">${escapeHtml(timeStr)}</span>
+          </li>`;
+      }).join('');
+    }
+
+    function showUpdateToast(entry) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'pointer-events-auto bg-[#0F2A4A] text-white border border-white/15 rounded-2xl px-4 py-3 shadow-lg text-xs flex items-start gap-2.5 transition-opacity duration-300';
+      toast.innerHTML = `
+        <span class="w-2 h-2 rounded-full bg-emerald-400 mt-1 shrink-0"></span>
+        <div>
+          <div class="font-semibold">Policy ${escapeHtml(entry.action)}</div>
+          <div class="text-sky-100/90 mt-0.5">${escapeHtml(entry.entity)} (${escapeHtml(entry.department)})</div>
+        </div>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
+    }
+
+    async function loadChangelog() {
+      try {
+        const res = await fetch('/changelog');
+        const data = await res.json();
+        changelogEntries = data.entries || [];
+        renderChangelog();
+      } catch {}
+    }
+
+    function initLiveNotifications() {
+      const es = new EventSource('/events');
+      es.addEventListener('kb_update', async (ev) => {
+        try {
+          const entry = JSON.parse(ev.data);
+          changelogEntries.unshift(entry);
+          renderChangelog();
+          showUpdateToast(entry);
+          await refreshKbData();
+        } catch {}
+      });
+    }
+
     loadKB();
+    loadChangelog();
+    initLiveNotifications();
   </script>
 </body>
 
