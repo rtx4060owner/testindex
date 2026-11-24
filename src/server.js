@@ -19,7 +19,6 @@ const PORT = Number(process.env.PORT || 8000);
 const HOST = process.env.HOST || "0.0.0.0";
 const CF_WORKER_URL = process.env.CF_WORKER_URL || "https://aizer-health-kb.aizer-im-kb.workers.dev";
 const WORKER_API_KEY = process.env.WORKER_API_KEY || "";
-const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "";
 const TRUST_PROXY = process.env.TRUST_PROXY === "true";
 
 const MAX_BODY_BYTES = 16 * 1024;
@@ -161,17 +160,44 @@ function getSecurityHeaders(req) {
 }
 
 function sendJson(res, status, data, req = null) {
-  const headers = {
+  res.writeHead(status, {
     ...getSecurityHeaders(req),
     "Content-Type": "application/json; charset=utf-8",
-  };
-  if (ALLOWED_ORIGIN) {
-    headers["Access-Control-Allow-Origin"] = ALLOWED_ORIGIN;
-    headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS";
-    headers["Access-Control-Allow-Headers"] = "Content-Type";
-  }
-  res.writeHead(status, headers);
+  });
   res.end(JSON.stringify(data));
+}
+
+function buildNliHypothesis(query, proposedAnswer) {
+  const cleanedQ = query.trim().replace(/\?+$/, "");
+  const factMatch = cleanedQ.match(/^(?:what|where|when|who)\s+(?:is|are)\s+(.+)$/i);
+  if (factMatch) return `${factMatch[1]} is ${proposedAnswer}`;
+  return `${proposedAnswer} (${cleanedQ})`;
+}
+
+async function verifyAnswerWithNli(query, proposedAnswer, chunks, detReason = null) {
+  const topChunks = chunks.slice(0, 3);
+  const hypothesis = buildNliHypothesis(query, proposedAnswer);
+  const scored = await Promise.all(
+    topChunks.map(async (c) => {
+      const out = await classifier(`${c.entity}. ${c.content}`, [hypothesis], {
+        multi_label: true,
+        hypothesis_template: "{}",
+      });
+      return { chunk: c, score: out.scores?.[0] ?? 0 };
+    }),
+  );
+  scored.sort((a, b) => b.score - a.score);
+  const best = scored[0];
+  const score = Number(best.score.toFixed(4));
+  const supported = score >= 0.45;
+  return {
+    supported,
+    verdict: supported ? "Verified" : "Needs Review",
+    confidence: score,
+    reason: detReason || (supported
+      ? `Based on ${best.chunk.entity}: ${best.chunk.content}`
+      : `Could not confirm automatically against ${best.chunk.entity}. Please check the guideline below.`),
+  };
 }
 
 async function handleDecide(body) {
@@ -262,21 +288,24 @@ async function handleDecide(body) {
     };
   }
 
+  const proposedAnswer = payload.yes_no_gate
+    ? `${payload.yes_no_gate.decision} (${payload.yes_no_gate.explanation})`
+    : payload.routing_classification
+      ? payload.routing_classification.action
+      : payload.direct_fact.answer;
+
+  payload.answer_verification = await verifyAnswerWithNli(
+    query,
+    proposedAnswer,
+    chunks,
+    detCheck?.reason || null,
+  );
+  payload.detected_intent.confidence = payload.answer_verification.confidence;
+
   return payload;
 }
 
 const server = http.createServer(async (req, res) => {
-  if (req.method === "OPTIONS") {
-    const headers = { ...SECURITY_HEADERS };
-    if (ALLOWED_ORIGIN) {
-      headers["Access-Control-Allow-Origin"] = ALLOWED_ORIGIN;
-      headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS";
-      headers["Access-Control-Allow-Headers"] = "Content-Type";
-    }
-    res.writeHead(204, headers);
-    return res.end();
-  }
-
   const parsedUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   const reqPath = parsedUrl.pathname;
   const clientIp = getClientIp(req);
