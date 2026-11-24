@@ -149,6 +149,13 @@
             </svg>
             <span>Ask Jewel</span>
           </button>
+          <button id="nav-admin" onclick="switchSection('admin')"
+            class="nav-item flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[15px] font-medium text-white/75 hover:text-white hover:bg-white/10 transition whitespace-nowrap shrink-0">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span>Admin</span>
+          </button>
         </nav>
 
         <!-- Right: Unified Frosted Search Capsule -->
@@ -329,6 +336,105 @@
       </div>
 
       <div id="decisionOutputContainer" class="transition-all duration-300 ease-out opacity-0 translate-y-3"></div>
+    </section>
+
+    <!-- SECTION 5: ADMIN PANEL -->
+    <section id="section-admin" class="content-section hidden max-w-5xl mx-auto space-y-6">
+      <div id="adminLockScreen" class="max-w-md mx-auto mt-16 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+        <div>
+          <h1 class="text-xl font-bold text-slate-900">Admin Panel</h1>
+          <p class="text-xs text-slate-500 mt-1">Enter your admin passkey to add, edit, or delete guidelines.</p>
+        </div>
+        <div class="space-y-3">
+          <input id="adminPasskeyInput" type="password" placeholder="Admin passkey..."
+            class="w-full h-11 px-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30" />
+          <div id="adminAuthError" class="hidden text-xs text-rose-600 font-medium"></div>
+          <button onclick="unlockAdmin()" class="w-full h-11 rounded-xl bg-[#0F2A4A] hover:bg-[#173B66] text-white text-sm font-semibold transition">
+            Unlock Admin
+          </button>
+        </div>
+      </div>
+
+      <div id="adminWorkspace" class="hidden space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h1 class="text-2xl font-bold text-slate-900">KB Admin Editor</h1>
+          <div class="flex items-center gap-2">
+            <button onclick="openAdminEditor(null)" class="px-4 py-2 rounded-xl bg-[#0F2A4A] hover:bg-[#173B66] text-white text-xs font-semibold transition">+ New Guideline</button>
+            <button onclick="lockAdmin()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-medium text-slate-600 hover:text-slate-900 transition">Lock</button>
+          </div>
+        </div>
+
+        <!-- Inline Editor Form -->
+        <div id="adminEditorForm" class="hidden bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <h2 id="adminFormTitle" class="text-base font-bold text-slate-900">Edit Guideline</h2>
+            <button onclick="closeAdminEditor()" class="text-xs text-slate-500 hover:text-slate-900">Cancel</button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">ID</label>
+              <input id="admId" type="text" placeholder="e.g. imed_new_rule" class="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Department</label>
+              <select id="admDept" class="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                <option>Internal Medicine</option>
+                <option>Acute Care</option>
+                <option>Behavioral Health</option>
+                <option>Pediatrics</option>
+                <option>Podiatry</option>
+                <option>Vision</option>
+                <option>Women's Health</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Category</label>
+              <input id="admCategory" type="text" placeholder="Core Scheduling Rules" class="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs" />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Title / Entity</label>
+              <input id="admEntity" type="text" class="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Keywords (comma-separated)</label>
+              <input id="admKeywords" type="text" class="w-full h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Content</label>
+            <textarea id="admContent" rows="4" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Structured Rules (JSON)</label>
+            <textarea id="admRules" rows="2" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono">{}</textarea>
+          </div>
+          <div id="adminFormStatus" class="text-xs font-medium"></div>
+          <div class="flex justify-end gap-2">
+            <button onclick="closeAdminEditor()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold">Cancel</button>
+            <button id="admSaveBtn" onclick="saveAdminItem()" class="px-5 py-2 rounded-xl bg-[#0F2A4A] hover:bg-[#173B66] text-white text-xs font-semibold">Save &amp; Sync</button>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex flex-wrap gap-3">
+          <select id="adminDeptFilter" onchange="renderAdminList()" class="h-10 px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium">
+            <option value="ALL">All Departments</option>
+            <option>Internal Medicine</option>
+            <option>Acute Care</option>
+            <option>Behavioral Health</option>
+            <option>Pediatrics</option>
+            <option>Podiatry</option>
+            <option>Vision</option>
+            <option>Women's Health</option>
+          </select>
+          <input id="adminSearchInput" oninput="renderAdminList()" type="text" placeholder="Filter guidelines..."
+            class="flex-1 min-w-[200px] h-10 px-3.5 bg-white border border-slate-200 rounded-xl text-sm" />
+        </div>
+
+        <div id="adminListContainer" class="space-y-2.5"></div>
+      </div>
     </section>
   </main>
 
@@ -534,6 +640,7 @@
       }
       document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
       document.getElementById(`section-${section}`).classList.remove('hidden');
+      if (section === 'admin') renderAdminList();
     }
 
     function switchKbTab(tab) {
@@ -811,12 +918,169 @@
     document.getElementById('askInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') executeDecision();
     });
+    document.getElementById('adminPasskeyInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') unlockAdmin();
+    });
     document.addEventListener('keydown', (e) => {
-      if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+      if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
         e.preventDefault();
         document.getElementById('searchInput').focus();
       }
     });
+
+    function getAdminToken() {
+      return sessionStorage.getItem('aizer_admin_key') || '';
+    }
+
+    async function unlockAdmin() {
+      const key = document.getElementById('adminPasskeyInput').value.trim();
+      const errEl = document.getElementById('adminAuthError');
+      errEl.classList.add('hidden');
+      if (!key) return;
+      const res = await fetch('/admin/verify', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${key}` },
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        errEl.innerText = d.error || 'Invalid passkey';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      sessionStorage.setItem('aizer_admin_key', key);
+      document.getElementById('adminLockScreen').classList.add('hidden');
+      document.getElementById('adminWorkspace').classList.remove('hidden');
+      renderAdminList();
+    }
+
+    function lockAdmin() {
+      sessionStorage.removeItem('aizer_admin_key');
+      document.getElementById('adminPasskeyInput').value = '';
+      document.getElementById('adminWorkspace').classList.add('hidden');
+      document.getElementById('adminLockScreen').classList.remove('hidden');
+    }
+
+    function renderAdminList() {
+      if (!getAdminToken()) return;
+      document.getElementById('adminLockScreen').classList.add('hidden');
+      document.getElementById('adminWorkspace').classList.remove('hidden');
+
+      const dept = document.getElementById('adminDeptFilter').value;
+      const q = document.getElementById('adminSearchInput').value.trim().toLowerCase();
+      const items = kbRecords.filter(r => {
+        if (dept !== 'ALL' && (r.department || 'Internal Medicine') !== dept) return false;
+        if (q && !(`${r.entity} ${r.category} ${r.content} ${r.id}`).toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      document.getElementById('adminListContainer').innerHTML = items.map(item => `
+        <div class="bg-white border border-slate-200 rounded-xl p-4 flex items-start justify-between gap-4">
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-sm font-bold text-slate-900">${escapeHtml(item.entity)}</span>
+              <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">${escapeHtml(item.department || 'Internal Medicine')}</span>
+              <span class="text-[11px] px-2 py-0.5 rounded-full bg-[#E8F2FC] text-[#1565C0]">${escapeHtml(item.category)}</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1 line-clamp-2">${escapeHtml(item.content)}</p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button data-id="${escapeHtml(item.id)}" onclick="openAdminEditor(this.dataset.id)" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold">Edit</button>
+            <button data-id="${escapeHtml(item.id)}" onclick="deleteAdminItem(this.dataset.id)" class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openAdminEditor(id) {
+      const form = document.getElementById('adminEditorForm');
+      const status = document.getElementById('adminFormStatus');
+      status.innerText = '';
+      form.classList.remove('hidden');
+
+      const item = id ? kbRecords.find(r => r.id === id) : null;
+      document.getElementById('adminFormTitle').innerText = item ? `Edit: ${item.entity}` : 'New Guideline';
+      const idInput = document.getElementById('admId');
+      idInput.value = item ? item.id : `kb_${Date.now()}`;
+      idInput.readOnly = Boolean(item);
+      document.getElementById('admDept').value = item?.department || 'Internal Medicine';
+      document.getElementById('admCategory').value = item?.category || 'Core Scheduling Rules';
+      document.getElementById('admEntity').value = item?.entity || '';
+      document.getElementById('admKeywords').value = Array.isArray(item?.keywords) ? item.keywords.join(', ') : (item?.keywords || '');
+      document.getElementById('admContent').value = item?.content || '';
+      document.getElementById('admRules').value = JSON.stringify(item?.rules || {}, null, 2);
+      form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function closeAdminEditor() {
+      document.getElementById('adminEditorForm').classList.add('hidden');
+    }
+
+    async function refreshKbData() {
+      const res = await fetch('/kb');
+      const data = await res.json();
+      kbRecords = data.items || [];
+      renderKB(currentRuleCategory);
+      renderProviders(currentProviderLocation);
+      renderVisits();
+      renderAdminList();
+    }
+
+    async function saveAdminItem() {
+      const status = document.getElementById('adminFormStatus');
+      const btn = document.getElementById('admSaveBtn');
+      let parsedRules = {};
+      try {
+        parsedRules = JSON.parse(document.getElementById('admRules').value || '{}');
+      } catch {
+        status.className = 'text-xs font-medium text-rose-600';
+        status.innerText = 'Structured Rules must be valid JSON.';
+        return;
+      }
+
+      btn.disabled = true;
+      status.className = 'text-xs font-medium text-slate-500';
+      status.innerText = 'Saving & updating search index...';
+
+      try {
+        const res = await fetch('/admin/item', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getAdminToken()}`,
+          },
+          body: JSON.stringify({
+            id: document.getElementById('admId').value.trim(),
+            department: document.getElementById('admDept').value,
+            category: document.getElementById('admCategory').value.trim(),
+            entity: document.getElementById('admEntity').value.trim(),
+            keywords: document.getElementById('admKeywords').value,
+            content: document.getElementById('admContent').value.trim(),
+            rules: parsedRules,
+          }),
+        });
+        if (!res.ok) throw new Error('Save failed');
+        await refreshKbData();
+        closeAdminEditor();
+      } catch {
+        status.className = 'text-xs font-medium text-rose-600';
+        status.innerText = 'Failed to save item (check passkey or fields).';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function deleteAdminItem(id) {
+      if (!confirm(`Delete guideline "${id}"?`)) return;
+      const res = await fetch('/admin/item', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getAdminToken()}`,
+        },
+        body: JSON.stringify({ id }),
+      });
+      if (res.ok) await refreshKbData();
+    }
 
     loadKB();
   </script>

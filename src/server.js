@@ -1,6 +1,7 @@
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { env, pipeline } from "@huggingface/transformers";
 import {
@@ -19,9 +20,10 @@ const PORT = Number(process.env.PORT || 8000);
 const HOST = process.env.HOST || "0.0.0.0";
 const CF_WORKER_URL = process.env.CF_WORKER_URL || "https://aizer-health-kb.aizer-im-kb.workers.dev";
 const WORKER_API_KEY = process.env.WORKER_API_KEY || "";
+const ADMIN_SECRET = process.env.ADMIN_SECRET || "";
 const TRUST_PROXY = process.env.TRUST_PROXY === "true";
 
-const MAX_BODY_BYTES = 16 * 1024;
+const MAX_BODY_BYTES = 32 * 1024;
 const MAX_QUERY_LEN = 500;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 60;
@@ -148,6 +150,19 @@ function validateQuery(raw) {
     throw new HttpError(400, `Query must be ${MAX_QUERY_LEN} characters or fewer`);
   }
   return q;
+}
+
+function requireAdmin(req) {
+  if (!ADMIN_SECRET) {
+    throw new HttpError(503, "Admin panel is disabled (ADMIN_SECRET not configured)");
+  }
+  const auth = req.headers.authorization || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  const a = Buffer.from(token);
+  const b = Buffer.from(ADMIN_SECRET);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+    throw new HttpError(401, "Invalid admin passkey");
+  }
 }
 
 function getSecurityHeaders(req) {
@@ -338,6 +353,33 @@ const server = http.createServer(async (req, res) => {
       if (isRateLimited(clientIp)) throw new HttpError(429, "Too many requests");
       const body = await readJsonBody(req);
       return sendJson(res, 200, await handleDecide(body), req);
+    }
+
+    if (reqPath === "/admin/verify" && req.method === "POST") {
+      requireAdmin(req);
+      return sendJson(res, 200, { status: "ok" }, req);
+    }
+
+    if (reqPath === "/admin/item" && req.method === "POST") {
+      requireAdmin(req);
+      const body = await readJsonBody(req);
+      const data = await fetchWorkerJson("/kb/item", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      return sendJson(res, 200, data, req);
+    }
+
+    if (reqPath === "/admin/item" && req.method === "DELETE") {
+      requireAdmin(req);
+      const body = await readJsonBody(req);
+      const data = await fetchWorkerJson("/kb/item", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: body?.id }),
+      });
+      return sendJson(res, 200, data, req);
     }
 
     if (req.method === "GET") {

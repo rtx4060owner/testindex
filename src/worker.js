@@ -76,6 +76,59 @@ export default {
       return json({ query, department, results });
     }
 
+    // 4. Upsert a single KB item (Admin)
+    if (url.pathname === "/kb/item" && request.method === "POST") {
+      if (!isAuthorized(request, env)) return new Response("Unauthorized", { status: 401, headers: baseHeaders });
+      const item = await request.json();
+      if (!item?.id || !item?.entity || !item?.content) {
+        return json({ error: "id, entity, and content are required" }, 400);
+      }
+      const dept = item.department || "Internal Medicine";
+      const category = item.category || "Special Operational Policies";
+      const keywordsArr = Array.isArray(item.keywords)
+        ? item.keywords
+        : String(item.keywords || "").split(",").map((k) => k.trim()).filter(Boolean);
+      const keywordsStr = keywordsArr.join(", ");
+      const rulesStr = JSON.stringify(item.rules && typeof item.rules === "object" ? item.rules : {});
+
+      await env.DB.batch([
+        env.DB.prepare("DELETE FROM kb_chunks WHERE id = ?").bind(item.id),
+        env.DB.prepare("DELETE FROM kb_fts WHERE id = ?").bind(item.id),
+        env.DB.prepare(
+          "INSERT INTO kb_chunks (id, department, category, entity, keywords, content, rules) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        ).bind(item.id, dept, category, item.entity, keywordsStr, item.content, rulesStr),
+        env.DB.prepare(
+          "INSERT INTO kb_fts (id, department, category, entity, keywords, content) VALUES (?, ?, ?, ?, ?, ?)"
+        ).bind(item.id, dept, category, item.entity, keywordsStr, item.content),
+      ]);
+
+      const textToEmbed = `[${dept}] ${category} - ${item.entity}. Keywords: ${keywordsStr}. ${item.content}`;
+      const emb = await env.AI.run("@cf/baai/bge-small-en-v1.5", { text: [textToEmbed] });
+      await env.VECTORIZE.upsert([{
+        id: item.id,
+        values: emb.data[0],
+        metadata: { department: dept, category, entity: item.entity },
+      }]);
+
+      return json({ status: "saved", id: item.id });
+    }
+
+    // 5. Delete a single KB item (Admin)
+    if (url.pathname === "/kb/item" && request.method === "DELETE") {
+      if (!isAuthorized(request, env)) return new Response("Unauthorized", { status: 401, headers: baseHeaders });
+      const body = await request.json();
+      const id = typeof body?.id === "string" ? body.id.trim() : "";
+      if (!id) return json({ error: "id is required" }, 400);
+
+      await env.DB.batch([
+        env.DB.prepare("DELETE FROM kb_chunks WHERE id = ?").bind(id),
+        env.DB.prepare("DELETE FROM kb_fts WHERE id = ?").bind(id),
+      ]);
+      await env.VECTORIZE.deleteByIds([id]);
+
+      return json({ status: "deleted", id });
+    }
+
     return new Response("Aizer Health KB Engine Active", { headers: baseHeaders });
   },
 };
