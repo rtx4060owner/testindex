@@ -415,7 +415,7 @@
     </section>
 
     <!-- SECTION: STEP HELP ("HOW TO GET THIS INFO") -->
-    <section id="section-step-help" class="content-section hidden max-w-4xl mx-auto space-y-5">
+    <section id="section-step-help" class="content-section hidden max-w-5xl mx-auto space-y-5">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
           <button type="button" onclick="switchSection('tree')"
@@ -425,13 +425,155 @@
           </button>
           <span id="stepHelpBadge" class="px-2.5 py-1 rounded-lg bg-[#E8F2FC] text-[#1565C0] text-xs font-bold"></span>
         </div>
+
+        <div class="flex items-center gap-2">
+          <button id="simToggleEditBtn" type="button" onclick="toggleSimEditor()"
+            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 transition shadow-sm">
+            <span>Edit Sim</span>
+          </button>
+        </div>
       </div>
 
-      <div class="bg-white border border-slate-200/90 rounded-2xl p-8 shadow-sm text-center space-y-2.5">
-        <div class="w-11 h-11 rounded-full bg-[#E8F2FC] text-[#1565C0] font-extrabold text-lg flex items-center justify-center mx-auto">?</div>
-        <h2 id="stepHelpTitle" class="text-xl font-bold text-slate-900">How to Get This Info</h2>
-        <p class="text-sm font-semibold text-slate-600">To be done</p>
-        <p class="text-xs text-slate-400">Instructions for finding this information will be added here.</p>
+      <!-- PLAY MODE -->
+      <div id="simPlayView" class="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div>
+            <h2 id="stepHelpTitle" class="text-xl font-bold text-slate-900">How to Get This Info</h2>
+            <p id="simPlayInstruction" class="text-sm text-slate-600 mt-0.5"></p>
+          </div>
+          <div id="simPlayControls" class="hidden flex items-center gap-2 flex-wrap">
+            <span id="simStepCounter" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">Step 1 / 1</span>
+            <button type="button" onclick="toggleSimSpotlight()" id="simSpotlightBtn"
+              class="px-2.5 py-1.5 rounded-lg bg-[#0F2A4A] text-white text-xs font-semibold transition">Spotlight: On</button>
+            <button type="button" onclick="toggleSimZoom()" id="simZoomBtn"
+              class="px-2.5 py-1.5 rounded-lg bg-[#0F2A4A] text-white text-xs font-semibold transition">Zoom: On</button>
+            <button type="button" onclick="simPrevStep()" id="simPrevBtn"
+              class="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 transition">Prev</button>
+            <button type="button" onclick="simNextStep()" id="simNextBtn"
+              class="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 transition">Next</button>
+            <button type="button" onclick="simRestart()"
+              class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700 transition">Restart</button>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="simEmptyState" class="py-10 text-center space-y-3">
+          <div class="w-11 h-11 rounded-full bg-[#E8F2FC] text-[#1565C0] font-extrabold text-lg flex items-center justify-center mx-auto">?</div>
+          <p class="text-sm font-semibold text-slate-600">No interactive simulation added yet</p>
+          <p class="text-xs text-slate-400">Upload screenshots and select clickable areas to build a step-by-step walkthrough.</p>
+          <button type="button" onclick="toggleSimEditor(true)"
+            class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0F2A4A] hover:bg-[#173B66] text-white text-xs font-semibold transition">
+            <span>Build Interactive Sim</span>
+          </button>
+        </div>
+
+        <!-- Interactive Stage -->
+        <div id="simStageWrap" class="hidden flex flex-col items-center space-y-3">
+          <div id="simStageContainer" onclick="handleSimStageClick(event)"
+            class="relative inline-block max-w-full rounded-xl overflow-hidden border border-slate-200 bg-slate-900/5 select-none shadow-sm">
+            <div id="simZoomLayer" class="relative inline-block origin-top-left transition-transform duration-300 ease-out">
+              <img id="simStageImg" src="" alt="Guide step" class="block max-w-full max-h-[68vh] object-contain pointer-events-none" draggable="false" />
+              <div id="simHotspotOverlay" onclick="handleSimHotspotClick(event)"
+                class="hidden absolute cursor-pointer transition-all duration-150 rounded-md border-2 border-[#38BDF8] bg-transparent hover:bg-white/10">
+                <span id="simHotspotBadge" class="absolute -top-6 left-0 px-2 py-0.5 rounded-md bg-[#1565C0] text-white text-[11px] font-bold shadow-sm whitespace-nowrap pointer-events-none origin-bottom-left">Click here</span>
+              </div>
+            </div>
+          </div>
+          <div id="simFeedbackBar" class="hidden px-3.5 py-2 rounded-xl text-xs font-semibold"></div>
+        </div>
+
+        <!-- Completed State -->
+        <div id="simCompleteState" class="hidden py-10 text-center space-y-3">
+          <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 font-extrabold text-xl flex items-center justify-center mx-auto">&#10003;</div>
+          <h3 class="text-lg font-bold text-slate-900">Walkthrough Complete</h3>
+          <p class="text-xs text-slate-500">You reached the end of this step-by-step guide.</p>
+          <div class="flex items-center justify-center gap-2.5 pt-1">
+            <button type="button" onclick="simRestart()"
+              class="px-4 py-2 rounded-xl bg-[#0F2A4A] hover:bg-[#173B66] text-white text-xs font-semibold transition">View Again</button>
+            <button type="button" onclick="switchSection('tree')"
+              class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">Back to Decision Tree</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- EDITOR MODE -->
+      <div id="simEditorView" class="hidden bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Interactive Sim Editor</h2>
+            <p class="text-xs text-slate-500">Add photos (or paste with Ctrl+V), then click &amp; drag on each photo to select the clickable area.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <label class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition">
+              <span>+ Add Photo(s)</span>
+              <input id="simPhotoUploadInput" type="file" accept="image/*" multiple class="hidden" onchange="handleSimPhotoFiles(this.files); this.value='';" />
+            </label>
+            <button type="button" onclick="saveCurrentSim()" id="simSaveBtn"
+              class="px-4 py-2 rounded-xl bg-[#0F2A4A] hover:bg-[#173B66] text-white text-xs font-semibold transition">Save Sim</button>
+            <button type="button" onclick="toggleSimEditor(false)"
+              class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 transition">Done / Preview</button>
+          </div>
+        </div>
+
+        <div id="simEditorStatus" class="hidden text-xs font-medium px-3 py-2 rounded-xl"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Step List -->
+          <div class="lg:col-span-4 space-y-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Steps</div>
+            <div id="simEditorStepList" class="space-y-2 max-h-[520px] overflow-y-auto pr-1"></div>
+          </div>
+
+          <!-- Hotspot Canvas & Step Details -->
+          <div class="lg:col-span-8 space-y-4">
+            <div id="simEditorNoStep" class="py-14 text-center border-2 border-dashed border-slate-200 rounded-2xl text-xs text-slate-400">
+              Upload a photo or press <kbd class="px-1.5 py-0.5 bg-slate-100 rounded border border-slate-200 text-slate-600">Ctrl+V</kbd> to paste a screenshot and start building.
+            </div>
+
+            <div id="simEditorCanvasWrap" class="hidden space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span id="simEditorStepBadge" class="text-xs font-bold text-slate-700">Editing Step 1</span>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span id="simHotspotCoordsLabel" class="text-[11px] font-mono text-slate-500">Drag on image to select click area</span>
+                  <button type="button" id="simEditorModeBtn" onclick="toggleEditorToolMode()"
+                    class="px-2.5 py-1 rounded-lg bg-[#0F2A4A] text-white text-xs font-semibold transition">Tool: Draw Area</button>
+                  <button type="button" id="simEditorZoomResetBtn" onclick="resetEditorZoom()"
+                    class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">Zoom: 1.0x</button>
+                  <button type="button" onclick="clearEditorHotspot()"
+                    class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition">Clear Area</button>
+                </div>
+              </div>
+
+              <div class="flex justify-center bg-slate-50 border border-slate-200 rounded-xl p-2">
+                <div id="simEditorViewport" class="relative inline-block max-w-full overflow-hidden rounded-lg">
+                  <div id="simEditorCanvas" class="relative inline-block max-w-full select-none cursor-crosshair origin-top-left">
+                    <img id="simEditorImg" src="" alt="Editor step" class="block max-w-full max-h-[55vh] object-contain pointer-events-none" draggable="false" />
+                    <div id="simEditorBox"
+                      class="hidden absolute border-2 border-[#38BDF8] bg-transparent pointer-events-none rounded-sm"
+                      style="box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.55);">
+                      <span id="simEditorBoxBadge" class="absolute -top-5 left-0 px-1.5 py-0.5 rounded bg-[#1565C0] text-white text-[10px] font-bold whitespace-nowrap origin-bottom-left">Click Target</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Step Instruction</label>
+                  <input id="simStepInstructionInput" type="text" placeholder="e.g., Click on Patient Demographics..."
+                    oninput="updateEditorStepField('instruction', this.value)"
+                    class="w-full h-9 px-3 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Hint (optional)</label>
+                  <input id="simStepHintInput" type="text" placeholder="e.g., Top-left menu bar"
+                    oninput="updateEditorStepField('hint', this.value)"
+                    class="w-full h-9 px-3 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1071,15 +1213,649 @@
       renderDecisionCockpit();
     }
 
-    function openStepHelp(groupId) {
+    let currentSimId = null;
+    let currentSimTitle = '';
+    let currentSimSteps = [];
+    let simPlayIndex = 0;
+    let simCompleted = false;
+    let simMissCount = 0;
+    let simEditMode = false;
+    let simEditIndex = 0;
+    let simDragState = null;
+    let simSpotlightEnabled = true;
+    let simZoomEnabled = true;
+    let playZoomState = { scale: 1, tx: 0, ty: 0 };
+    let editorZoomState = { scale: 1, tx: 0, ty: 0 };
+    let editorToolMode = 'draw'; // 'draw' | 'pan'
+    let playDidPan = false;
+
+    function clampZoomState(scale, tx, ty) {
+      const s = Math.max(1, Math.min(6, scale));
+      if (s <= 1.02) return { scale: 1, tx: 0, ty: 0 };
+      const minT = 100 - 100 * s;
+      return {
+        scale: s,
+        tx: Math.max(minT, Math.min(0, tx)),
+        ty: Math.max(minT, Math.min(0, ty)),
+      };
+    }
+
+    function applyZoomTransform(layerEl, badgeEl, state) {
+      if (!layerEl) return;
+      layerEl.style.transform = `translate(${state.tx}%, ${state.ty}%) scale(${state.scale})`;
+      if (badgeEl) badgeEl.style.transform = `scale(${1 / state.scale})`;
+    }
+
+    function computeWheelZoom(state, viewportEl, clientX, clientY, deltaY) {
+      const rect = viewportEl.getBoundingClientRect();
+      if (!rect.width || !rect.height) return state;
+      const px = ((clientX - rect.left) / rect.width) * 100;
+      const py = ((clientY - rect.top) / rect.height) * 100;
+      const ix = (px - state.tx) / state.scale;
+      const iy = (py - state.ty) / state.scale;
+      const factor = deltaY < 0 ? 1.18 : 1 / 1.18;
+      const newScale = Math.max(1, Math.min(6, state.scale * factor));
+      const newTx = px - ix * newScale;
+      const newTy = py - iy * newScale;
+      return clampZoomState(newScale, newTx, newTy);
+    }
+
+    function getAdminAuthHeaders() {
+      const key = sessionStorage.getItem('aizer_admin_key');
+      return key ? { 'Authorization': `Bearer ${key}` } : {};
+    }
+
+    async function fetchWithSimAuth(url, options = {}) {
+      const headers = { ...(options.headers || {}), ...getAdminAuthHeaders() };
+      let res = await fetch(url, { ...options, headers });
+      if (res.status === 401) {
+        const entered = window.prompt('Enter Admin Passkey to save changes:');
+        if (!entered) return res;
+        sessionStorage.setItem('aizer_admin_key', entered.trim());
+        res = await fetch(url, {
+          ...options,
+          headers: { ...(options.headers || {}), 'Authorization': `Bearer ${entered.trim()}` },
+        });
+      }
+      return res;
+    }
+
+    async function openStepHelp(groupId) {
       const group = treeConfig?.filters?.find(g => g.id === groupId);
       const cleanLabel = group ? group.label.replace(/^\d+\.\s*/, '') : 'Step Info';
+      currentSimId = groupId || 'default';
+      currentSimTitle = cleanLabel;
+      simPlayIndex = 0;
+      simCompleted = false;
+      simMissCount = 0;
+      simEditMode = false;
+      simEditIndex = 0;
+
       const badgeEl = document.getElementById('stepHelpBadge');
       const titleEl = document.getElementById('stepHelpTitle');
       if (badgeEl) badgeEl.textContent = cleanLabel;
       if (titleEl) titleEl.textContent = `How to Get: ${cleanLabel}`;
       switchSection('step-help');
+
+      try {
+        const res = await fetch(`/api/step-sim?id=${encodeURIComponent(currentSimId)}`);
+        const data = res.ok ? await res.json() : { steps: [] };
+        currentSimSteps = Array.isArray(data.steps) ? data.steps : [];
+      } catch {
+        currentSimSteps = [];
+      }
+      renderSimView();
     }
+
+    function toggleSimEditor(forceState) {
+      simEditMode = typeof forceState === 'boolean' ? forceState : !simEditMode;
+      if (simEditMode && simEditIndex >= currentSimSteps.length) {
+        simEditIndex = Math.max(0, currentSimSteps.length - 1);
+      }
+      renderSimView();
+    }
+
+    function renderSimView() {
+      const playView = document.getElementById('simPlayView');
+      const editorView = document.getElementById('simEditorView');
+      const toggleBtn = document.getElementById('simToggleEditBtn');
+      if (simEditMode) {
+        playView.classList.add('hidden');
+        editorView.classList.remove('hidden');
+        if (toggleBtn) toggleBtn.textContent = 'Preview Sim';
+        renderSimEditor();
+      } else {
+        editorView.classList.add('hidden');
+        playView.classList.remove('hidden');
+        if (toggleBtn) toggleBtn.textContent = 'Edit Sim';
+        renderSimPlay();
+      }
+    }
+
+    function renderSimPlay() {
+      const emptyEl = document.getElementById('simEmptyState');
+      const stageWrap = document.getElementById('simStageWrap');
+      const completeEl = document.getElementById('simCompleteState');
+      const controlsEl = document.getElementById('simPlayControls');
+      const instrEl = document.getElementById('simPlayInstruction');
+      const counterEl = document.getElementById('simStepCounter');
+      const prevBtn = document.getElementById('simPrevBtn');
+      const feedbackEl = document.getElementById('simFeedbackBar');
+      const hotspotEl = document.getElementById('simHotspotOverlay');
+
+      feedbackEl.classList.add('hidden');
+      hotspotEl.classList.remove('ring-4', 'ring-amber-400', 'bg-amber-300/30', 'border-2', 'border-amber-500', 'animate-pulse', 'bg-emerald-400/40', 'border-emerald-500');
+
+      if (!currentSimSteps.length) {
+        emptyEl.classList.remove('hidden');
+        stageWrap.classList.add('hidden');
+        completeEl.classList.add('hidden');
+        controlsEl.classList.add('hidden');
+        if (instrEl) instrEl.textContent = 'To be done';
+        return;
+      }
+
+      emptyEl.classList.add('hidden');
+      controlsEl.classList.remove('hidden');
+
+      if (simCompleted) {
+        stageWrap.classList.add('hidden');
+        completeEl.classList.remove('hidden');
+        counterEl.textContent = `Done (${currentSimSteps.length} / ${currentSimSteps.length})`;
+        if (instrEl) instrEl.textContent = 'All steps completed.';
+        return;
+      }
+
+      completeEl.classList.add('hidden');
+      stageWrap.classList.remove('hidden');
+
+      const step = currentSimSteps[simPlayIndex];
+      counterEl.textContent = `Step ${simPlayIndex + 1} / ${currentSimSteps.length}`;
+      prevBtn.disabled = simPlayIndex === 0;
+      prevBtn.classList.toggle('opacity-40', simPlayIndex === 0);
+      if (instrEl) {
+        instrEl.textContent = step.instruction || 'Click the target area on the screen to continue.';
+      }
+
+      const imgEl = document.getElementById('simStageImg');
+      imgEl.src = step.imageUrl || '';
+
+      const zoomLayer = document.getElementById('simZoomLayer');
+      const badgeEl = document.getElementById('simHotspotBadge');
+      const spotBtn = document.getElementById('simSpotlightBtn');
+      const zoomBtn = document.getElementById('simZoomBtn');
+
+      if (spotBtn) {
+        spotBtn.textContent = simSpotlightEnabled ? 'Spotlight: On' : 'Spotlight: Off';
+        spotBtn.className = simSpotlightEnabled
+          ? 'px-2.5 py-1.5 rounded-lg bg-[#0F2A4A] text-white text-xs font-semibold transition'
+          : 'px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold transition';
+      }
+      if (zoomBtn) {
+        zoomBtn.textContent = simZoomEnabled ? 'Zoom: On' : 'Zoom: Off';
+        zoomBtn.className = simZoomEnabled
+          ? 'px-2.5 py-1.5 rounded-lg bg-[#0F2A4A] text-white text-xs font-semibold transition'
+          : 'px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold transition';
+      }
+
+      if (step.hotspot) {
+        hotspotEl.style.left = `${step.hotspot.x}%`;
+        hotspotEl.style.top = `${step.hotspot.y}%`;
+        hotspotEl.style.width = `${step.hotspot.w}%`;
+        hotspotEl.style.height = `${step.hotspot.h}%`;
+        hotspotEl.style.boxShadow = simSpotlightEnabled ? '0 0 0 9999px rgba(15, 23, 42, 0.65)' : 'none';
+        hotspotEl.classList.remove('hidden');
+
+        if (simZoomEnabled) {
+          const cx = step.hotspot.x + step.hotspot.w / 2;
+          const cy = step.hotspot.y + step.hotspot.h / 2;
+          const scale = Math.max(1.4, Math.min(2.8, Math.min(48 / Math.max(step.hotspot.w, 10), 48 / Math.max(step.hotspot.h, 10))));
+          playZoomState = clampZoomState(scale, 50 - cx * scale, 50 - cy * scale);
+        } else {
+          playZoomState = { scale: 1, tx: 0, ty: 0 };
+        }
+      } else {
+        hotspotEl.style.boxShadow = 'none';
+        hotspotEl.classList.add('hidden');
+        playZoomState = { scale: 1, tx: 0, ty: 0 };
+      }
+      applyZoomTransform(zoomLayer, badgeEl, playZoomState);
+
+      if (step.hint) {
+        feedbackEl.className = 'px-3.5 py-2 rounded-xl text-xs font-medium bg-[#E8F2FC] text-[#0F2A4A] border border-[#1565C0]/20';
+        feedbackEl.textContent = step.hint;
+        feedbackEl.classList.remove('hidden');
+      }
+    }
+
+    function toggleSimSpotlight() {
+      simSpotlightEnabled = !simSpotlightEnabled;
+      renderSimPlay();
+    }
+
+    function toggleSimZoom() {
+      simZoomEnabled = !simZoomEnabled;
+      renderSimPlay();
+    }
+
+    function handleSimHotspotClick(event) {
+      event.stopPropagation();
+      if (playDidPan) { playDidPan = false; return; }
+      if (simCompleted || !currentSimSteps.length) return;
+      const hotspotEl = document.getElementById('simHotspotOverlay');
+      hotspotEl.classList.add('bg-emerald-400/40', 'border-emerald-500');
+      simMissCount = 0;
+
+      setTimeout(() => {
+        simNextStep();
+      }, 150);
+    }
+
+    function handleSimStageClick(event) {
+      if (playDidPan) { playDidPan = false; return; }
+      if (simCompleted || !currentSimSteps.length) return;
+      const step = currentSimSteps[simPlayIndex];
+      if (!step.hotspot) {
+        simNextStep();
+        return;
+      }
+      // Gently pulse the highlighted area so the agent sees where to click
+      const hotspotEl = document.getElementById('simHotspotOverlay');
+      hotspotEl.classList.add('animate-pulse');
+      setTimeout(() => hotspotEl.classList.remove('animate-pulse'), 900);
+    }
+
+    function simNextStep() {
+      if (simCompleted || !currentSimSteps.length) return;
+      if (simPlayIndex + 1 < currentSimSteps.length) {
+        simPlayIndex += 1;
+      } else {
+        simCompleted = true;
+      }
+      simMissCount = 0;
+      renderSimPlay();
+    }
+
+    function simPrevStep() {
+      if (simCompleted) {
+        simCompleted = false;
+        simPlayIndex = Math.max(0, currentSimSteps.length - 1);
+      } else if (simPlayIndex > 0) {
+        simPlayIndex -= 1;
+      }
+      simMissCount = 0;
+      renderSimPlay();
+    }
+
+    function simRestart() {
+      simPlayIndex = 0;
+      simCompleted = false;
+      simMissCount = 0;
+      renderSimPlay();
+    }
+
+    function setSimEditorStatus(msg, isError = false) {
+      const el = document.getElementById('simEditorStatus');
+      if (!el) return;
+      if (!msg) {
+        el.classList.add('hidden');
+        return;
+      }
+      el.className = isError
+        ? 'text-xs font-medium px-3 py-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-200'
+        : 'text-xs font-medium px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200';
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+
+    function renderSimEditor() {
+      const listEl = document.getElementById('simEditorStepList');
+      const noStepEl = document.getElementById('simEditorNoStep');
+      const canvasWrap = document.getElementById('simEditorCanvasWrap');
+
+      listEl.innerHTML = currentSimSteps.map((s, idx) => {
+        const active = idx === simEditIndex;
+        const hasHotspot = Boolean(s.hotspot);
+        return `
+          <div onclick="selectEditorStep(${idx})"
+            class="flex items-center gap-2.5 p-2 rounded-xl border cursor-pointer transition ${active ? 'border-[#1565C0] bg-[#E8F2FC]/50' : 'border-slate-200 bg-white hover:bg-slate-50'}">
+            <img src="${s.imageUrl}" alt="Step ${idx + 1}" class="w-14 h-10 object-cover rounded-lg border border-slate-200 bg-slate-100 shrink-0" />
+            <div class="min-w-0 flex-1">
+              <div class="text-xs font-bold text-slate-800 truncate">Step ${idx + 1}</div>
+              <div class="text-[11px] ${hasHotspot ? 'text-emerald-600' : 'text-amber-600'} font-medium">
+                ${hasHotspot ? 'Click area set' : 'No click area'}
+              </div>
+            </div>
+            <div class="flex flex-col gap-0.5 shrink-0" onclick="event.stopPropagation()">
+              <button type="button" onclick="moveEditorStep(${idx}, -1)" class="px-1.5 py-0.5 text-[10px] rounded bg-slate-100 hover:bg-slate-200 text-slate-600" title="Move up">&uarr;</button>
+              <button type="button" onclick="moveEditorStep(${idx}, 1)" class="px-1.5 py-0.5 text-[10px] rounded bg-slate-100 hover:bg-slate-200 text-slate-600" title="Move down">&darr;</button>
+            </div>
+            <button type="button" onclick="event.stopPropagation(); deleteEditorStep(${idx})"
+              class="px-1.5 py-1 text-xs rounded-lg hover:bg-rose-100 text-rose-600 shrink-0" title="Delete step">&times;</button>
+          </div>
+        `;
+      }).join('');
+
+      if (!currentSimSteps.length) {
+        noStepEl.classList.remove('hidden');
+        canvasWrap.classList.add('hidden');
+        return;
+      }
+
+      noStepEl.classList.add('hidden');
+      canvasWrap.classList.remove('hidden');
+      if (simEditIndex >= currentSimSteps.length) simEditIndex = currentSimSteps.length - 1;
+      const step = currentSimSteps[simEditIndex];
+
+      document.getElementById('simEditorStepBadge').textContent = `Editing Step ${simEditIndex + 1} of ${currentSimSteps.length}`;
+      document.getElementById('simEditorImg').src = step.imageUrl || '';
+      document.getElementById('simStepInstructionInput').value = step.instruction || '';
+      document.getElementById('simStepHintInput').value = step.hint || '';
+      renderEditorHotspotBox(step.hotspot);
+    }
+
+    function renderEditorHotspotBox(hotspot) {
+      const box = document.getElementById('simEditorBox');
+      const label = document.getElementById('simHotspotCoordsLabel');
+      if (!hotspot || hotspot.w <= 0 || hotspot.h <= 0) {
+        box.classList.add('hidden');
+        label.textContent = 'Drag on image to select click area';
+        return;
+      }
+      box.style.left = `${hotspot.x}%`;
+      box.style.top = `${hotspot.y}%`;
+      box.style.width = `${hotspot.w}%`;
+      box.style.height = `${hotspot.h}%`;
+      box.classList.remove('hidden');
+      label.textContent = `Area: x=${hotspot.x.toFixed(1)}% y=${hotspot.y.toFixed(1)}% w=${hotspot.w.toFixed(1)}% h=${hotspot.h.toFixed(1)}%`;
+    }
+
+    function selectEditorStep(idx) {
+      simEditIndex = idx;
+      resetEditorZoom();
+      renderSimEditor();
+    }
+
+    function updateEditorStepField(field, value) {
+      if (!currentSimSteps[simEditIndex]) return;
+      currentSimSteps[simEditIndex][field] = value;
+    }
+
+    function clearEditorHotspot() {
+      if (!currentSimSteps[simEditIndex]) return;
+      currentSimSteps[simEditIndex].hotspot = null;
+      renderSimEditor();
+    }
+
+    function moveEditorStep(idx, delta) {
+      const target = idx + delta;
+      if (target < 0 || target >= currentSimSteps.length) return;
+      const [item] = currentSimSteps.splice(idx, 1);
+      currentSimSteps.splice(target, 0, item);
+      if (simEditIndex === idx) simEditIndex = target;
+      renderSimEditor();
+    }
+
+    function deleteEditorStep(idx) {
+      currentSimSteps.splice(idx, 1);
+      if (simEditIndex >= currentSimSteps.length) {
+        simEditIndex = Math.max(0, currentSimSteps.length - 1);
+      }
+      renderSimEditor();
+    }
+
+    async function uploadSimImageFile(file) {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const res = await fetchWithSimAuth('/api/step-sim/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: currentSimId,
+          filename: file.name || 'screenshot.png',
+          dataUrl,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Image upload failed');
+      }
+      return res.json();
+    }
+
+    async function handleSimPhotoFiles(fileList) {
+      const files = Array.from(fileList || []).filter(f => f.type.startsWith('image/'));
+      if (!files.length) return;
+      setSimEditorStatus(`Uploading ${files.length} image(s)...`);
+      try {
+        for (const file of files) {
+          const { imageUrl } = await uploadSimImageFile(file);
+          currentSimSteps.push({
+            id: `step-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            imageUrl,
+            instruction: '',
+            hint: '',
+            hotspot: null,
+          });
+        }
+        simEditIndex = currentSimSteps.length - 1;
+        setSimEditorStatus('Image(s) added. Drag on the photo to select the click area, then click Save Sim.');
+        renderSimEditor();
+      } catch (err) {
+        setSimEditorStatus(err.message || 'Upload failed', true);
+      }
+    }
+
+    async function saveCurrentSim() {
+      const btn = document.getElementById('simSaveBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      try {
+        const res = await fetchWithSimAuth('/api/step-sim', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: currentSimId,
+            title: currentSimTitle,
+            steps: currentSimSteps,
+          }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || 'Failed to save simulation');
+        }
+        const saved = await res.json();
+        currentSimSteps = saved.steps || [];
+        setSimEditorStatus('Simulation saved!');
+      } catch (err) {
+        setSimEditorStatus(err.message || 'Save failed', true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Sim';
+      }
+    }
+
+    function applyEditorZoom() {
+      const canvas = document.getElementById('simEditorCanvas');
+      const badge = document.getElementById('simEditorBoxBadge');
+      const resetBtn = document.getElementById('simEditorZoomResetBtn');
+      applyZoomTransform(canvas, badge, editorZoomState);
+      if (resetBtn) resetBtn.textContent = `Zoom: ${editorZoomState.scale.toFixed(1)}x`;
+    }
+
+    function resetEditorZoom() {
+      editorZoomState = { scale: 1, tx: 0, ty: 0 };
+      applyEditorZoom();
+    }
+
+    function toggleEditorToolMode() {
+      editorToolMode = editorToolMode === 'draw' ? 'pan' : 'draw';
+      const btn = document.getElementById('simEditorModeBtn');
+      const canvas = document.getElementById('simEditorCanvas');
+      if (btn) {
+        btn.textContent = editorToolMode === 'draw' ? 'Tool: Draw Area' : 'Tool: Pan / Move';
+        btn.className = editorToolMode === 'draw'
+          ? 'px-2.5 py-1 rounded-lg bg-[#0F2A4A] text-white text-xs font-semibold transition'
+          : 'px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-semibold transition';
+      }
+      if (canvas) {
+        canvas.classList.toggle('cursor-crosshair', editorToolMode === 'draw');
+        canvas.classList.toggle('cursor-grab', editorToolMode === 'pan');
+      }
+    }
+
+    // Play mode wheel zoom + drag-pan
+    (function initSimPlayZoomPan() {
+      const container = document.getElementById('simStageContainer');
+      if (!container) return;
+      let panStart = null;
+
+      container.addEventListener('wheel', (e) => {
+        if (simEditMode || simCompleted || !currentSimSteps.length) return;
+        e.preventDefault();
+        playZoomState = computeWheelZoom(playZoomState, container, e.clientX, e.clientY, e.deltaY);
+        const zoomLayer = document.getElementById('simZoomLayer');
+        const badgeEl = document.getElementById('simHotspotBadge');
+        applyZoomTransform(zoomLayer, badgeEl, playZoomState);
+      }, { passive: false });
+
+      container.addEventListener('pointerdown', (e) => {
+        if (playZoomState.scale <= 1 || e.button !== 0) return;
+        panStart = { x: e.clientX, y: e.clientY, tx: playZoomState.tx, ty: playZoomState.ty, moved: false };
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (!panStart) return;
+        const dx = e.clientX - panStart.x;
+        const dy = e.clientY - panStart.y;
+        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) panStart.moved = true;
+        if (!panStart.moved) return;
+        const rect = container.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        playZoomState = clampZoomState(
+          playZoomState.scale,
+          panStart.tx + (dx / rect.width) * 100,
+          panStart.ty + (dy / rect.height) * 100
+        );
+        const zoomLayer = document.getElementById('simZoomLayer');
+        const badgeEl = document.getElementById('simHotspotBadge');
+        applyZoomTransform(zoomLayer, badgeEl, playZoomState);
+      });
+
+      window.addEventListener('pointerup', () => {
+        if (panStart && panStart.moved) playDidPan = true;
+        panStart = null;
+      });
+    })();
+
+    // Editor mode wheel zoom, pan, and drag-to-select hotspot rectangle
+    (function initSimHotspotDrawing() {
+      const viewport = document.getElementById('simEditorViewport');
+      const canvas = document.getElementById('simEditorCanvas');
+      if (!canvas || !viewport) return;
+      let editorPanStart = null;
+
+      viewport.addEventListener('wheel', (e) => {
+        if (!simEditMode || !currentSimSteps[simEditIndex]) return;
+        e.preventDefault();
+        editorZoomState = computeWheelZoom(editorZoomState, viewport, e.clientX, e.clientY, e.deltaY);
+        applyEditorZoom();
+      }, { passive: false });
+
+      viewport.addEventListener('contextmenu', (e) => {
+        if (simEditMode && editorZoomState.scale > 1) e.preventDefault();
+      });
+
+      function getPctCoords(e) {
+        const rect = canvas.getBoundingClientRect();
+        const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+        const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+        return { x, y };
+      }
+
+      canvas.addEventListener('pointerdown', (e) => {
+        if (!simEditMode || !currentSimSteps[simEditIndex]) return;
+        const wantsPan = editorToolMode === 'pan' || e.button === 1 || e.button === 2 || e.altKey;
+        if (wantsPan) {
+          e.preventDefault();
+          canvas.setPointerCapture(e.pointerId);
+          editorPanStart = { x: e.clientX, y: e.clientY, tx: editorZoomState.tx, ty: editorZoomState.ty };
+          return;
+        }
+        if (e.button !== 0) return;
+        e.preventDefault();
+        canvas.setPointerCapture(e.pointerId);
+        const start = getPctCoords(e);
+        simDragState = { startX: start.x, startY: start.y };
+        renderEditorHotspotBox({ x: start.x, y: start.y, w: 0.5, h: 0.5 });
+      });
+
+      canvas.addEventListener('pointermove', (e) => {
+        if (editorPanStart) {
+          const rect = viewport.getBoundingClientRect();
+          if (!rect.width || !rect.height) return;
+          const dx = ((e.clientX - editorPanStart.x) / rect.width) * 100;
+          const dy = ((e.clientY - editorPanStart.y) / rect.height) * 100;
+          editorZoomState = clampZoomState(editorZoomState.scale, editorPanStart.tx + dx, editorPanStart.ty + dy);
+          applyEditorZoom();
+          return;
+        }
+        if (!simDragState) return;
+        const cur = getPctCoords(e);
+        const x = Math.min(simDragState.startX, cur.x);
+        const y = Math.min(simDragState.startY, cur.y);
+        const w = Math.abs(cur.x - simDragState.startX);
+        const h = Math.abs(cur.y - simDragState.startY);
+        renderEditorHotspotBox({ x, y, w, h });
+      });
+
+      function finishDrag(e) {
+        if (editorPanStart) {
+          editorPanStart = null;
+          return;
+        }
+        if (!simDragState) return;
+        const cur = getPctCoords(e);
+        const x = Math.min(simDragState.startX, cur.x);
+        const y = Math.min(simDragState.startY, cur.y);
+        const w = Math.abs(cur.x - simDragState.startX);
+        const h = Math.abs(cur.y - simDragState.startY);
+        simDragState = null;
+
+        if (w >= 1 && h >= 1 && currentSimSteps[simEditIndex]) {
+          currentSimSteps[simEditIndex].hotspot = {
+            x: Math.round(x * 100) / 100,
+            y: Math.round(y * 100) / 100,
+            w: Math.round(w * 100) / 100,
+            h: Math.round(h * 100) / 100,
+          };
+        }
+        renderSimEditor();
+      }
+
+      canvas.addEventListener('pointerup', finishDrag);
+      canvas.addEventListener('pointercancel', finishDrag);
+    })();
+
+    // Allow pasting screenshots with Ctrl+V while in Sim Editor mode
+    document.addEventListener('paste', (e) => {
+      if (!simEditMode) return;
+      const activeTag = document.activeElement?.tagName;
+      if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
+      const items = Array.from(e.clipboardData?.items || []);
+      const imgFiles = items
+        .filter(item => item.type.startsWith('image/'))
+        .map(item => item.getAsFile())
+        .filter(Boolean);
+      if (imgFiles.length) {
+        e.preventDefault();
+        handleSimPhotoFiles(imgFiles);
+      }
+    });
 
     function evaluateVisionCockpit(s) {
       // 1. Immediate Hard Stops (No-Show, Under 3, Excluded Services, Optical Only)

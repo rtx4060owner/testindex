@@ -1,4 +1,5 @@
 node_modules/
+.portable/
 models/
 .vscode/
 .wrangler/

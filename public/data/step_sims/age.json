@@ -1,0 +1,55 @@
+{
+  "id": "age",
+  "title": "Patient Age",
+  "updatedAt": "2026-11-25T15:34:39.046Z",
+  "steps": [
+    {
+      "id": "step-1795620108281-4mek",
+      "imageUrl": "/data/step_sims/images/age/1795620108268-bc30c7-1.png",
+      "instruction": "click here",
+      "hint": "",
+      "hotspot": {
+        "x": 16.11,
+        "y": 2.85,
+        "w": 1.71,
+        "h": 2.56
+      }
+    },
+    {
+      "id": "step-1795620132261-ab9i",
+      "imageUrl": "/data/step_sims/images/age/1795620132255-c7bfa7-2.png",
+      "instruction": "type DOB",
+      "hint": "",
+      "hotspot": {
+        "x": 33.42,
+        "y": 24.62,
+        "w": 12.17,
+        "h": 5.21
+      }
+    },
+    {
+      "id": "step-1795620816590-7erx",
+      "imageUrl": "/data/step_sims/images/age/1795620816583-685ee0-2.png",
+      "instruction": "select the P",
+      "hint": "",
+      "hotspot": {
+        "x": 27.3,
+        "y": 33.41,
+        "w": 7.51,
+        "h": 7
+      }
+    },
+    {
+      "id": "step-1795620851118-jd2i",
+      "imageUrl": "/data/step_sims/images/age/1795620851113-00c2bb-3.png",
+      "instruction": "you can find P age here",
+      "hint": "",
+      "hotspot": {
+        "x": 30.54,
+        "y": 21.93,
+        "w": 2.59,
+        "h": 2.78
+      }
+    }
+  ]
+}

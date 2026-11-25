@@ -142,12 +142,12 @@ async function fetchWorkerJson(endpoint, options = {}) {
   return res.json();
 }
 
-async function readJsonBody(req) {
+async function readJsonBody(req, maxBytes = MAX_BODY_BYTES) {
   let bytes = 0;
   const chunks = [];
   for await (const chunk of req) {
     bytes += chunk.length;
-    if (bytes > MAX_BODY_BYTES) throw new HttpError(413, "Payload too large");
+    if (bytes > maxBytes) throw new HttpError(413, "Payload too large");
     chunks.push(chunk);
   }
   const raw = Buffer.concat(chunks).toString("utf8");
@@ -190,6 +190,49 @@ function getSecurityHeaders(req) {
     headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
   }
   return headers;
+}
+
+const STEP_SIMS_DIR = path.join(PUBLIC_DIR, "data", "step_sims");
+const STEP_SIM_IMG_EXTS = new Set(["png", "jpg", "jpeg", "webp", "gif", "avif"]);
+
+function sanitizeSimId(raw) {
+  if (typeof raw !== "string" || !/^[a-zA-Z0-9_-]{1,64}$/.test(raw.trim())) {
+    throw new HttpError(400, "Invalid simulation id");
+  }
+  return raw.trim();
+}
+
+function requireSimEditAuth(req) {
+  if (ADMIN_SECRET) {
+    requireAdmin(req);
+  }
+}
+
+function clampPct(n) {
+  const num = Number(n);
+  if (!Number.isFinite(num)) return 0;
+  return Math.max(0, Math.min(100, Math.round(num * 100) / 100));
+}
+
+function sanitizeSimSteps(steps) {
+  if (!Array.isArray(steps)) return [];
+  return steps.slice(0, 50).map((s, idx) => {
+    const hotspot = s?.hotspot && typeof s.hotspot === "object"
+      ? {
+          x: clampPct(s.hotspot.x),
+          y: clampPct(s.hotspot.y),
+          w: clampPct(s.hotspot.w),
+          h: clampPct(s.hotspot.h),
+        }
+      : null;
+    return {
+      id: typeof s?.id === "string" && s.id.trim() ? s.id.trim().slice(0, 64) : `step-${idx + 1}`,
+      imageUrl: typeof s?.imageUrl === "string" ? s.imageUrl.trim().slice(0, 512) : "",
+      instruction: typeof s?.instruction === "string" ? s.instruction.trim().slice(0, 500) : "",
+      hint: typeof s?.hint === "string" ? s.hint.trim().slice(0, 300) : "",
+      hotspot: hotspot && hotspot.w > 0 && hotspot.h > 0 ? hotspot : null,
+    };
+  });
 }
 
 function sendJson(res, status, data, req = null) {
@@ -401,6 +444,60 @@ const server = http.createServer(async (req, res) => {
       if (isRateLimited(clientIp)) throw new HttpError(429, "Too many requests");
       const body = await readJsonBody(req);
       return sendJson(res, 200, await handleDecide(body), req);
+    }
+
+    if (reqPath === "/api/step-sim" && req.method === "GET") {
+      const simId = sanitizeSimId(parsedUrl.searchParams.get("id") || "");
+      const simPath = path.join(STEP_SIMS_DIR, `${simId}.json`);
+      if (!fs.existsSync(simPath)) {
+        return sendJson(res, 200, { id: simId, title: "", steps: [] }, req);
+      }
+      const raw = fs.readFileSync(simPath, "utf8");
+      return sendJson(res, 200, JSON.parse(raw), req);
+    }
+
+    if (reqPath === "/api/step-sim" && req.method === "POST") {
+      requireSimEditAuth(req);
+      const body = await readJsonBody(req, 256 * 1024);
+      const simId = sanitizeSimId(body?.id || "");
+      const payload = {
+        id: simId,
+        title: typeof body?.title === "string" ? body.title.trim().slice(0, 120) : "",
+        updatedAt: new Date().toISOString(),
+        steps: sanitizeSimSteps(body?.steps),
+      };
+      fs.mkdirSync(STEP_SIMS_DIR, { recursive: true });
+      fs.writeFileSync(path.join(STEP_SIMS_DIR, `${simId}.json`), JSON.stringify(payload, null, 2), "utf8");
+      return sendJson(res, 200, payload, req);
+    }
+
+    if (reqPath === "/api/step-sim/upload" && req.method === "POST") {
+      requireSimEditAuth(req);
+      const body = await readJsonBody(req, 12 * 1024 * 1024);
+      const simId = sanitizeSimId(body?.id || "");
+      const dataUrl = typeof body?.dataUrl === "string" ? body.dataUrl : "";
+      const match = dataUrl.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,([A-Za-z0-9+/=]+)$/);
+      if (!match) {
+        throw new HttpError(400, "Invalid image data URL");
+      }
+      let ext = match[1].toLowerCase().replace("jpeg", "jpg");
+      if (ext === "svg+xml") throw new HttpError(400, "SVG uploads are not supported");
+      if (!STEP_SIM_IMG_EXTS.has(ext)) {
+        throw new HttpError(400, "Unsupported image format");
+      }
+      const buffer = Buffer.from(match[2], "base64");
+      if (buffer.length > 8 * 1024 * 1024) {
+        throw new HttpError(413, "Image exceeds 8MB limit");
+      }
+      const safeStem = (typeof body?.filename === "string" ? body.filename : "step")
+        .replace(/\.[^.]+$/, "")
+        .replace(/[^a-zA-Z0-9_-]/g, "_")
+        .slice(0, 40) || "step";
+      const fileName = `${Date.now()}-${crypto.randomBytes(3).toString("hex")}-${safeStem}.${ext}`;
+      const imgDir = path.join(STEP_SIMS_DIR, "images", simId);
+      fs.mkdirSync(imgDir, { recursive: true });
+      fs.writeFileSync(path.join(imgDir, fileName), buffer);
+      return sendJson(res, 200, { imageUrl: `/data/step_sims/images/${simId}/${fileName}` }, req);
     }
 
     if (reqPath === "/admin/verify" && req.method === "POST") {
