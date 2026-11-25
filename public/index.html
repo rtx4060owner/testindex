@@ -101,6 +101,42 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+
+    @keyframes cockpitFadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes cockpitSubIn {
+      from { opacity: 0; transform: translateY(-6px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes cockpitOutcomePop {
+      from { opacity: 0.55; transform: translateY(4px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .cockpit-fade-up { animation: cockpitFadeUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+    .cockpit-drawer {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      margin-top: 0;
+      transition: grid-template-rows 0.26s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, margin-top 0.26s ease;
+    }
+    .cockpit-drawer.is-open {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      margin-top: 12px;
+    }
+    .cockpit-drawer.cockpit-step.is-open {
+      margin-top: 0;
+    }
+    .cockpit-drawer-inner {
+      overflow: hidden;
+    }
   </style>
 </head>
 
@@ -363,24 +399,40 @@
     </section>
 
     <!-- SECTION: SINGLE-SCREEN DECISION TREE (VISION) -->
-    <section id="section-tree" class="content-section hidden max-w-6xl mx-auto space-y-4">
-      <!-- Compact Header -->
-      <div class="cloud-surface border border-white/15 rounded-2xl px-5 py-4 text-white shadow-sm flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <span class="px-2.5 py-1 rounded-lg bg-white/15 text-xs font-bold tracking-wide">Vision</span>
-          <div>
-            <h1 class="text-lg font-bold leading-tight">Live Appointment Decision Cockpit</h1>
-            <p class="text-xs text-sky-100/80">Tap patient &amp; visit chips below — rules, doctors, billing &amp; eCW notes update instantly.</p>
-          </div>
+    <section id="section-tree" class="content-section hidden max-w-[1440px] mx-auto space-y-4 cockpit-fade-up">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <span class="px-2.5 py-1 rounded-lg bg-[#0F2A4A] text-white text-xs font-bold tracking-wide">Vision</span>
+          <h1 class="text-xl font-bold text-slate-900 tracking-tight">Appointment Decision Cockpit</h1>
         </div>
         <button onclick="resetDecisionTree()"
-          class="px-3.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 text-xs font-semibold text-white transition">
+          class="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 transition shadow-sm">
           Reset All
         </button>
       </div>
 
-      <!-- Top Intake Grid + Bottom Live Result -->
-      <div id="treeCockpitContainer" class="space-y-4"></div>
+      <div id="treeCockpitContainer"></div>
+    </section>
+
+    <!-- SECTION: STEP HELP ("HOW TO GET THIS INFO") -->
+    <section id="section-step-help" class="content-section hidden max-w-4xl mx-auto space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <button type="button" onclick="switchSection('tree')"
+            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 transition shadow-sm">
+            <span>&larr;</span>
+            <span>Back to Decision Tree</span>
+          </button>
+          <span id="stepHelpBadge" class="px-2.5 py-1 rounded-lg bg-[#E8F2FC] text-[#1565C0] text-xs font-bold"></span>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200/90 rounded-2xl p-8 shadow-sm text-center space-y-2.5">
+        <div class="w-11 h-11 rounded-full bg-[#E8F2FC] text-[#1565C0] font-extrabold text-lg flex items-center justify-center mx-auto">?</div>
+        <h2 id="stepHelpTitle" class="text-xl font-bold text-slate-900">How to Get This Info</h2>
+        <p class="text-sm font-semibold text-slate-600">To be done</p>
+        <p class="text-xs text-slate-400">Instructions for finding this information will be added here.</p>
+      </div>
     </section>
 
     <!-- SECTION 5: ADMIN PANEL -->
@@ -963,16 +1015,34 @@
     // --- SINGLE-SCREEN LIVE DECISION COCKPIT ---
     let treeConfig = null;
     const DEFAULT_SELECTIONS = {
-      age: '6plus',
-      history: 'new',
-      noshow: 'clear',
-      insurance: 'annual_cov',
-      visit: 'annual',
-      complaint: 'emergency',
-      conditional: 'no_medicaid',
-      two_yr_cov: 'eligible_2yr'
+      age: null,
+      history: null,
+      noshow: null,
+      insurance: null,
+      visit: null,
+      complaint: null,
+      conditional: null,
+      two_yr_cov: null
     };
     let cockpitState = { ...DEFAULT_SELECTIONS };
+    let selectedCockpitDoctor = null;
+
+    function toggleCockpitDoctor(matchKey) {
+      selectedCockpitDoctor = selectedCockpitDoctor === matchKey ? null : matchKey;
+      renderDecisionCockpit();
+    }
+
+    function findVisionDoctorRecord(matchKey) {
+      if (!matchKey || !Array.isArray(kbRecords)) return null;
+      const needle = matchKey.toLowerCase();
+      return kbRecords.find(item =>
+        item.department === 'Vision' &&
+        item.category === 'Providers' &&
+        (item.entity || '').toLowerCase().includes(needle)
+      ) || kbRecords.find(item =>
+        (item.entity || '').toLowerCase().includes(needle)
+      ) || null;
+    }
 
     async function initDecisionTree() {
       const container = document.getElementById('treeCockpitContainer');
@@ -992,12 +1062,23 @@
 
     function resetDecisionTree() {
       cockpitState = { ...DEFAULT_SELECTIONS };
+      selectedCockpitDoctor = null;
       renderDecisionCockpit();
     }
 
     function setCockpitChoice(groupId, optionId) {
       cockpitState[groupId] = optionId;
       renderDecisionCockpit();
+    }
+
+    function openStepHelp(groupId) {
+      const group = treeConfig?.filters?.find(g => g.id === groupId);
+      const cleanLabel = group ? group.label.replace(/^\d+\.\s*/, '') : 'Step Info';
+      const badgeEl = document.getElementById('stepHelpBadge');
+      const titleEl = document.getElementById('stepHelpTitle');
+      if (badgeEl) badgeEl.textContent = cleanLabel;
+      if (titleEl) titleEl.textContent = `How to Get: ${cleanLabel}`;
+      switchSection('step-help');
     }
 
     function evaluateVisionCockpit(s) {
@@ -1169,96 +1250,321 @@
       const container = document.getElementById('treeCockpitContainer');
       if (!container || !treeConfig) return;
 
-      const filtersHtml = treeConfig.filters.map(group => {
+      if (!document.getElementById('cockpitOutcomePanel')) {
+        const rowsHtml = treeConfig.filters.map((group, idx) => {
+          const cleanLabel = group.label.replace(/^\d+\.\s*/, '');
+          const hasDrawer = group.id === 'insurance' || group.id === 'visit';
+          return `
+            <div id="cockpitStep-${group.id}" class="cockpit-drawer cockpit-step ${idx === 0 ? 'is-open' : ''}">
+              <div class="cockpit-drawer-inner">
+                <div class="grid grid-cols-1 md:grid-cols-[210px_1fr_auto] gap-3 py-4 border-b border-slate-100 items-start">
+                  <div class="flex items-center gap-2.5 pt-1">
+                    <span id="cockpitBadge-${group.id}" class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 text-xs font-bold flex items-center justify-center shrink-0 transition-colors duration-200">${idx + 1}</span>
+                    <span class="text-xs font-semibold text-slate-700">${escapeHtml(cleanLabel)}</span>
+                  </div>
+                  <div>
+                    <div class="flex flex-wrap gap-2">
+                      ${group.options.map(opt => `
+                        <button type="button" data-cockpit-group="${group.id}" data-cockpit-opt="${opt.id}"
+                          onclick="setCockpitChoice('${group.id}', '${opt.id}')"
+                          class="px-3.5 py-2 rounded-xl border text-xs transition-all duration-200 active:scale-95"></button>
+                      `).join('')}
+                    </div>
+                    ${hasDrawer ? `<div id="cockpitDrawer-${group.id}" class="cockpit-drawer"><div class="cockpit-drawer-inner"></div></div>` : ''}
+                  </div>
+                  <button type="button" onclick="openStepHelp('${group.id}')" title="How to get this info"
+                    aria-label="How to get ${escapeHtml(cleanLabel)} info"
+                    class="w-6 h-6 mt-1 rounded-full border border-slate-200 bg-slate-50 hover:bg-[#E8F2FC] hover:border-[#1565C0] text-slate-500 hover:text-[#1565C0] text-xs font-bold flex items-center justify-center shrink-0 justify-self-end transition cursor-pointer">
+                    ?
+                  </button>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+
+        container.innerHTML = `
+          <div class="grid grid-cols-1 lg:grid-cols-[1.65fr_1fr] gap-5 items-start">
+            <div class="bg-white border border-slate-200/90 rounded-2xl px-6 py-4 shadow-sm">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <span class="text-xs font-semibold text-slate-500">Patient &amp; visit</span>
+                <span id="cockpitStepCounter" class="text-[11px] font-semibold text-[#1565C0]"></span>
+              </div>
+              <div>${rowsHtml}</div>
+            </div>
+            <div id="cockpitOutcomePanel" class="space-y-4 lg:sticky lg:top-24"></div>
+          </div>`;
+
+        treeConfig.filters.forEach(group => {
+          group.options.forEach(opt => {
+            const btn = container.querySelector(`[data-cockpit-group="${group.id}"][data-cockpit-opt="${opt.id}"]`);
+            if (btn) btn.textContent = opt.label;
+          });
+        });
+      }
+
+      const isStepComplete = (id) => {
+        if (!cockpitState[id]) return false;
+        if (id === 'insurance' && (cockpitState.insurance === 'two_yr_cov' || cockpitState.insurance === 'conditional')) {
+          return Boolean(cockpitState[cockpitState.insurance]);
+        }
+        if (id === 'visit' && cockpitState.visit === 'complaint') {
+          return Boolean(cockpitState.complaint);
+        }
+        return true;
+      };
+
+      const hardStopAt = cockpitState.age === 'under3' ? 0 : (cockpitState.noshow === 'blocked' ? 2 : -1);
+      let visibleUpTo = 0;
+      if (hardStopAt !== -1) {
+        visibleUpTo = hardStopAt;
+      } else {
+        for (let i = 0; i < treeConfig.filters.length - 1; i++) {
+          if (isStepComplete(treeConfig.filters[i].id)) visibleUpTo = i + 1;
+          else break;
+        }
+      }
+
+      const allComplete = hardStopAt !== -1 || treeConfig.filters.every(g => isStepComplete(g.id));
+      const completedCount = treeConfig.filters.filter(g => isStepComplete(g.id)).length;
+      const counterEl = document.getElementById('cockpitStepCounter');
+      if (counterEl) {
+        counterEl.textContent = allComplete
+          ? (hardStopAt !== -1 ? 'Stopped — Eligibility Check' : 'All steps complete')
+          : `Step ${visibleUpTo + 1} of ${treeConfig.filters.length}`;
+      }
+
+      // 1. Reveal/hide step rows, update step badges, and update pill active styles in-place
+      treeConfig.filters.forEach((group, idx) => {
+        const stepEl = document.getElementById(`cockpitStep-${group.id}`);
+        if (stepEl) {
+          stepEl.classList.toggle('is-open', idx <= visibleUpTo);
+        }
+
+        const badgeEl = document.getElementById(`cockpitBadge-${group.id}`);
+        const done = isStepComplete(group.id);
+        if (badgeEl) {
+          if (done) {
+            badgeEl.className = 'w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shrink-0 transition-colors duration-200';
+            badgeEl.textContent = '✓';
+          } else if (idx === visibleUpTo) {
+            badgeEl.className = 'w-6 h-6 rounded-full bg-[#1565C0] text-white text-xs font-bold flex items-center justify-center shrink-0 transition-colors duration-200';
+            badgeEl.textContent = String(idx + 1);
+          } else {
+            badgeEl.className = 'w-6 h-6 rounded-full bg-slate-100 text-slate-600 text-xs font-bold flex items-center justify-center shrink-0 transition-colors duration-200';
+            badgeEl.textContent = String(idx + 1);
+          }
+        }
+
         const activeId = cockpitState[group.id];
-        return `
-          <div class="space-y-1.5">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">${escapeHtml(group.label)}</div>
-            <div class="flex flex-wrap gap-1.5">
-              ${group.options.map(opt => {
-                const isSelected = opt.id === activeId;
-                const cls = isSelected
-                  ? 'bg-[#0F2A4A] text-white border-[#0F2A4A] shadow-sm font-semibold'
-                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 font-medium';
-                return `
-                  <button type="button" onclick="setCockpitChoice('${group.id}', '${opt.id}')"
-                    class="px-3 py-1.5 rounded-xl border text-xs transition ${cls}">
-                    ${escapeHtml(opt.label)}
-                  </button>`;
-              }).join('')}
+        group.options.forEach(opt => {
+          const btn = container.querySelector(`[data-cockpit-group="${group.id}"][data-cockpit-opt="${opt.id}"]`);
+          if (!btn) return;
+          const isSelected = opt.id === activeId;
+          btn.className = `px-3.5 py-2 rounded-xl border text-xs transition-all duration-200 active:scale-95 ${
+            isSelected
+              ? 'bg-[#0F2A4A] text-white border-[#0F2A4A] shadow-sm font-semibold'
+              : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 font-medium'
+          }`;
+        });
+      });
+
+      // 2. Smoothly expand/collapse conditional sub-question drawers
+      const updateDrawer = (groupId, subKey) => {
+        const drawer = document.getElementById(`cockpitDrawer-${groupId}`);
+        if (!drawer) return;
+        const inner = drawer.firstElementChild;
+        const sub = subKey ? treeConfig.subQuestions?.[subKey] : null;
+        if (sub) {
+          const activeSubId = cockpitState[subKey];
+          inner.innerHTML = `
+            <div class="p-3.5 rounded-xl bg-[#E8F2FC] border border-[#C5DCF5] space-y-2.5">
+              <div class="text-xs font-semibold text-[#1565C0]">${escapeHtml(sub.label)}</div>
+              <div class="flex flex-wrap gap-2">
+                ${sub.options.map(opt => {
+                  const isSelected = opt.id === activeSubId;
+                  const cls = isSelected
+                    ? 'bg-[#1565C0] text-white border-[#1565C0] font-semibold shadow-sm'
+                    : 'bg-white hover:bg-slate-50 text-[#0F2A4A] border-[#C5DCF5] font-medium';
+                  return `
+                    <button type="button" onclick="setCockpitChoice('${subKey}', '${opt.id}')"
+                      class="px-3.5 py-2 rounded-xl border text-xs text-left transition-all duration-200 active:scale-95 ${cls}">
+                      ${escapeHtml(opt.label)}
+                    </button>`;
+                }).join('')}
+              </div>
+            </div>`;
+          drawer.classList.add('is-open');
+        } else {
+          drawer.classList.remove('is-open');
+        }
+      };
+
+      const insSubKey = (cockpitState.insurance === 'conditional' || cockpitState.insurance === 'two_yr_cov')
+        ? cockpitState.insurance
+        : null;
+      const visitSubKey = cockpitState.visit === 'complaint' ? 'complaint' : null;
+      updateDrawer('insurance', insSubKey);
+      updateDrawer('visit', visitSubKey);
+
+      // 3. Update right outcome panel in-place
+      const outcomeEl = document.getElementById('cockpitOutcomePanel');
+      const providers = !cockpitState.age || cockpitState.age === 'under3' || cockpitState.noshow === 'blocked' || (allComplete && evaluateVisionCockpit(cockpitState).status === 'STOP')
+        ? []
+        : cockpitState.age === '3to5'
+          ? [
+              { init: 'K', name: 'Dr. Klein*', match: 'Klein' },
+              { init: 'A', name: 'Dr. Akilov', match: 'Akilov' },
+              { init: 'G', name: 'Dr. Goldberg', match: 'Goldberg' },
+            ]
+          : [
+              { init: 'K', name: 'Dr. Klein*', match: 'Klein' },
+              { init: 'A', name: 'Dr. Akilov', match: 'Akilov' },
+              { init: 'G', name: 'Dr. Goldberg', match: 'Goldberg' },
+              { init: 'B', name: 'Dr. Berger', match: 'Berger' },
+              { init: 'H', name: 'Dr. Herbik', match: 'Herbik' },
+              { init: 'S', name: 'Dr. Sheth', match: 'Sheth' },
+            ];
+
+      if (selectedCockpitDoctor && !providers.some(p => p.match === selectedCockpitDoctor)) {
+        selectedCockpitDoctor = null;
+      }
+
+      const activeDocRecord = selectedCockpitDoctor ? findVisionDoctorRecord(selectedCockpitDoctor) : null;
+      const docCardHtml = activeDocRecord
+        ? `<div class="relative">
+            <button type="button" onclick="toggleCockpitDoctor('${selectedCockpitDoctor}')" title="Close doctor details"
+              class="absolute top-3.5 right-3.5 w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold flex items-center justify-center transition z-10">&times;</button>
+            ${renderGuidelineCard(activeDocRecord, activeDocRecord.rules?.specialty || 'Optometrist')}
+          </div>`
+        : '';
+
+      const providersHtml = providers.length
+        ? `<div class="flex flex-wrap gap-2">
+            ${providers.map(p => {
+              const isSelected = selectedCockpitDoctor === p.match;
+              return `
+              <button type="button" onclick="toggleCockpitDoctor('${p.match}')"
+                class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all duration-200 active:scale-95 cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#0F2A4A] text-white border-[#0F2A4A] shadow-sm'
+                    : 'bg-slate-50 hover:bg-[#E8F2FC] text-slate-800 border-slate-200 hover:border-[#1565C0]'
+                }">
+                <span class="w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center ${
+                  isSelected ? 'bg-[#1565C0] text-white' : 'bg-[#0F2A4A] text-white'
+                }">${p.init}</span>
+                <span>${p.name}</span>
+              </button>`;
+            }).join('')}
+           </div>
+           <div class="cockpit-drawer ${activeDocRecord ? 'is-open' : ''}">
+             <div class="cockpit-drawer-inner">${docCardHtml}</div>
+           </div>`
+        : `<p class="text-xs text-slate-500">${!cockpitState.age ? 'Select Patient Age (Step 1) to see eligible providers.' : 'No eligible in-house providers for current selection.'}</p>`;
+
+      if (!allComplete) {
+        const currentGroup = treeConfig.filters[visibleUpTo];
+        const currentTitle = currentGroup ? currentGroup.label.replace(/^\d+\.\s*/, '') : 'Next Step';
+        const needsSub = Boolean(cockpitState[currentGroup?.id]);
+        const pct = Math.round((completedCount / treeConfig.filters.length) * 100);
+        const selectedSummary = treeConfig.filters.slice(0, visibleUpTo + 1).map(g => {
+          const sel = g.options.find(o => o.id === cockpitState[g.id]);
+          if (!sel) return null;
+          return `${g.label.replace(/^\d+\.\s*/, '')}: ${sel.label}`;
+        }).filter(Boolean);
+
+        outcomeEl.innerHTML = `
+          <div class="p-5 rounded-2xl border bg-[#E8F2FC] border-[#C5DCF5] text-[#0F2A4A] shadow-sm transition-colors duration-300">
+            <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full bg-[#1565C0] text-white mb-2.5">STEP ${visibleUpTo + 1} OF ${treeConfig.filters.length}</span>
+            <h2 class="text-xl font-extrabold leading-snug">${escapeHtml(currentTitle)}</h2>
+            <p class="text-xs mt-1.5 opacity-85 leading-relaxed">${needsSub ? 'Answer the follow-up question to continue to the next step.' : 'Choose an option on the left to continue to the next step.'}</p>
+            <div class="mt-3.5 h-1.5 w-full rounded-full bg-[#C5DCF5] overflow-hidden">
+              <div class="h-full bg-[#1565C0] rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+            </div>
+          </div>
+
+          <div class="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-4">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Eligible Providers</span>
+                ${providers.length ? '<span class="text-[10px] font-medium text-[#1565C0]">Click a doctor for KB card</span>' : ''}
+              </div>
+              ${providersHtml}
+            </div>
+            <div class="pt-3 border-t border-slate-100 space-y-2">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Selected So Far</div>
+              ${selectedSummary.length
+                ? `<ul class="space-y-1.5 text-xs text-slate-700">${selectedSummary.map(item => `
+                    <li class="flex items-start gap-2 leading-relaxed">
+                      <span class="text-emerald-600 font-bold mt-0.5">✓</span>
+                      <span>${escapeHtml(item)}</span>
+                    </li>`).join('')}</ul>`
+                : `<p class="text-xs text-slate-500">No steps selected yet.</p>`}
             </div>
           </div>`;
-      }).join('');
-
-      // Conditional Follow-up Row (appears inline on the same screen when needed)
-      let subRowHtml = '';
-      const activeSubKey = cockpitState.visit === 'complaint'
-        ? 'complaint'
-        : (cockpitState.insurance === 'conditional' || cockpitState.insurance === 'two_yr_cov')
-          ? cockpitState.insurance
-          : null;
-
-      if (activeSubKey && treeConfig.subQuestions?.[activeSubKey]) {
-        const sub = treeConfig.subQuestions[activeSubKey];
-        const activeSubId = cockpitState[activeSubKey];
-        subRowHtml = `
-          <div class="pt-3 border-t border-slate-200/80 space-y-2">
-            <div class="text-xs font-semibold text-[#1565C0]">${escapeHtml(sub.label)}</div>
-            <div class="flex flex-wrap gap-2">
-              ${sub.options.map(opt => {
-                const isSelected = opt.id === activeSubId;
-                const cls = isSelected
-                  ? 'bg-[#1565C0] text-white border-[#1565C0] font-semibold'
-                  : 'bg-[#E8F2FC]/60 hover:bg-[#E8F2FC] text-[#0F2A4A] border-[#C5DCF5] font-medium';
-                return `
-                  <button type="button" onclick="setCockpitChoice('${activeSubKey}', '${opt.id}')"
-                    class="px-3 py-1.5 rounded-xl border text-xs text-left transition ${cls}">
-                    ${escapeHtml(opt.label)}
-                  </button>`;
-              }).join('')}
-            </div>
-          </div>`;
+        return;
       }
 
       const outcome = evaluateVisionCockpit(cockpitState);
       const styles = outcome.status === 'STOP'
-        ? { box: 'bg-rose-50 border-rose-200 text-rose-950', pill: 'bg-rose-100 text-rose-800' }
+        ? { box: 'bg-rose-50 border-rose-200 text-rose-950', pill: 'bg-rose-600 text-white' }
         : outcome.status === 'DIRECT'
-          ? { box: 'bg-amber-50 border-amber-200 text-amber-950', pill: 'bg-amber-100 text-amber-800' }
-          : { box: 'bg-emerald-50 border-emerald-200 text-emerald-950', pill: 'bg-emerald-100 text-emerald-800' };
+          ? { box: 'bg-amber-50 border-amber-200 text-amber-950', pill: 'bg-amber-600 text-white' }
+          : { box: 'bg-emerald-50 border-emerald-200 text-emerald-950', pill: 'bg-emerald-600 text-white' };
 
-      container.innerHTML = `
-        <!-- Top: All Intake Controls in One Compact Card -->
-        <div class="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            ${filtersHtml}
-          </div>
-          ${subRowHtml}
+      const formatRuleItem = (item) => {
+        const idx = item.indexOf(':');
+        if (idx > 0 && idx < 38) {
+          const head = item.slice(0, idx + 1);
+          const rest = item.slice(idx + 1);
+          return `<span class="font-extrabold text-[#0F2A4A]">${escapeHtml(head)}</span>${escapeHtml(rest)}`;
+        }
+        return escapeHtml(item);
+      };
+
+      outcomeEl.innerHTML = `
+        <div class="p-5 rounded-2xl border ${styles.box} shadow-sm transition-colors duration-300">
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full ${styles.pill} mb-2.5">${escapeHtml(outcome.tag)}</span>
+          <h2 class="text-xl font-extrabold leading-snug">${escapeHtml(outcome.title)}</h2>
+          <p class="text-xs mt-1.5 opacity-85 leading-relaxed">${escapeHtml(outcome.summary)}</p>
         </div>
 
-        <!-- Bottom: Live Decision Output -->
-        <div class="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-4">
-          <div class="p-4 rounded-xl border ${styles.box}">
-            <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md ${styles.pill} mb-1.5">${escapeHtml(outcome.tag)}</span>
-            <h2 class="text-lg sm:text-xl font-bold">${escapeHtml(outcome.title)}</h2>
-            <p class="text-xs sm:text-sm mt-0.5 opacity-90">${escapeHtml(outcome.summary)}</p>
+        <div class="rounded-2xl border-2 border-amber-400 bg-amber-50/95 p-4 shadow-sm space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+              </span>
+              <span class="text-xs font-extrabold uppercase tracking-wider text-amber-950">Rules &amp; Billing</span>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500 text-white">Read Before Booking</span>
           </div>
-
-          <ul class="space-y-1.5 text-xs sm:text-sm text-slate-700 bg-slate-50 border border-slate-200/80 rounded-xl p-4">
+          <ul class="space-y-2 text-[13px] font-medium text-slate-900">
             ${outcome.checklist.map(item => `
-              <li class="flex items-start gap-2 leading-relaxed">
-                <span class="text-[#1565C0] font-bold mt-0.5">&#10003;</span>
-                <span>${escapeHtml(item)}</span>
+              <li class="flex items-start gap-2 leading-snug bg-white/80 border border-amber-200/80 rounded-xl px-3 py-2">
+                <span class="text-amber-600 font-extrabold mt-0.5 shrink-0">&bull;</span>
+                <span>${formatRuleItem(item)}</span>
               </li>
             `).join('')}
           </ul>
+        </div>
 
-          <div class="bg-[#E8F2FC] border border-[#C5DCF5] rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div class="text-xs text-[#0F2A4A] font-mono break-words">${escapeHtml(outcome.ecwNote)}</div>
-            <button data-copy="${escapeHtml(outcome.ecwNote)}" onclick="copyText(this.dataset.copy, this)"
-              class="bg-[#0F2A4A] hover:bg-[#173B66] text-white text-xs font-semibold px-4 py-2 rounded-lg transition shrink-0">
-              Copy eCW Note
-            </button>
+        <div class="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Eligible Providers</span>
+              ${providers.length ? '<span class="text-[10px] font-medium text-[#1565C0]">Click a doctor for KB card</span>' : ''}
+            </div>
+            ${providersHtml}
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 space-y-1.5">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Always Remember</div>
+            <ul class="space-y-1 text-xs text-slate-600">
+              <li class="flex items-start gap-2"><span class="text-[#1565C0]">&bull;</span><span>Never double-book without Kevin Berent's approval.</span></li>
+              <li class="flex items-start gap-2"><span class="text-[#1565C0]">&bull;</span><span>Medicaid transportation needs 72h notice. TE to Doaa El Tahir or Kevin.</span></li>
+            </ul>
           </div>
         </div>
       `;
