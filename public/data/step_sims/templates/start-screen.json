@@ -1,0 +1,18 @@
+{
+  "id": "start-screen",
+  "name": "start screen",
+  "updatedAt": "2026-11-26T18:20:16.448Z",
+  "steps": [
+    {
+      "id": "step-1795717202775-0fvp",
+      "imageUrl": "/data/step_sims/images/peds_visit/1795717202761-b2dfc5-start_screen.png",
+      "label": "",
+      "instruction": "",
+      "hint": "",
+      "hotspot": null,
+      "highlights": [],
+      "arrows": [],
+      "texts": []
+    }
+  ]
+}

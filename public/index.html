@@ -463,11 +463,16 @@
       <div id="decisionOutputContainer" class="transition-all duration-300 ease-out opacity-0 translate-y-3"></div>
     </section>
 
-    <!-- SECTION: SINGLE-SCREEN DECISION TREE (VISION) -->
+    <!-- SECTION: SINGLE-SCREEN DECISION TREE -->
     <section id="section-tree" class="content-section hidden max-w-[1440px] mx-auto space-y-4 cockpit-fade-up">
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-2.5">
-          <span class="px-2.5 py-1 rounded-lg bg-[#0F2A4A] text-white text-xs font-bold tracking-wide">Vision</span>
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <div class="inline-flex items-center p-1 rounded-xl bg-white border border-slate-200 shadow-sm">
+            <button type="button" id="treeDeptBtn-vision" onclick="switchTreeDept('vision')"
+              class="px-3 py-1 rounded-lg bg-[#0F2A4A] text-white text-xs font-bold transition">Vision</button>
+            <button type="button" id="treeDeptBtn-pediatrics" onclick="switchTreeDept('pediatrics')"
+              class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 text-xs font-bold transition">Pediatrics</button>
+          </div>
           <h1 class="text-xl font-bold text-slate-900 tracking-tight">Appointment Decision Cockpit</h1>
         </div>
         <button onclick="resetDecisionTree()"
@@ -543,18 +548,36 @@
           <div id="simStageContainer" onclick="handleSimStageClick(event)"
             class="relative inline-block max-w-full rounded-xl overflow-hidden border border-slate-200 bg-slate-900/5 select-none shadow-sm">
             <div id="simZoomLayer"
-              class="relative inline-block origin-top-left transition-transform duration-300 ease-out">
+              class="relative inline-block origin-top-left">
               <img id="simStageImg" src="" alt="Guide step"
                 class="block max-w-full max-h-[68vh] object-contain pointer-events-none" draggable="false" />
               <div id="simHotspotOverlay" onclick="handleSimHotspotClick(event)"
-                class="hidden absolute cursor-pointer transition-all duration-150 rounded-md border-2 border-[#38BDF8] bg-transparent hover:bg-white/10">
+                class="hidden absolute z-10 cursor-pointer transition-all duration-300 rounded-none border-2 border-[#38BDF8] bg-transparent hover:bg-white/10">
                 <span id="simHotspotBadge"
-                  class="absolute -top-6 left-0 px-2 py-0.5 rounded-md bg-[#1565C0] text-white text-[11px] font-bold shadow-sm whitespace-nowrap pointer-events-none origin-bottom-left">Click
-                  here</span>
+                  class="hidden absolute -top-6 left-0 px-2 py-0.5 bg-[#1565C0] text-white text-[11px] font-bold shadow-sm whitespace-nowrap pointer-events-none origin-bottom-left"></span>
               </div>
+              <div id="simPlayHighlights" class="absolute inset-0 z-20 pointer-events-none"></div>
+              <svg id="simPlayArrows" class="absolute inset-0 z-20 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+              <div id="simPlayTexts" class="absolute inset-0 z-20 pointer-events-none"></div>
             </div>
           </div>
           <div id="simFeedbackBar" class="hidden px-3.5 py-2 rounded-xl text-xs font-semibold"></div>
+        </div>
+
+        <!-- Yes / No Question Card (Play Mode) -->
+        <div id="simQuestionCard" class="hidden py-10 px-6 text-center space-y-5 bg-slate-50/70 border border-slate-200 rounded-2xl">
+          <div class="w-11 h-11 rounded-full bg-[#E8F2FC] text-[#1565C0] font-extrabold text-lg flex items-center justify-center mx-auto">?</div>
+          <h3 id="simQuestionText" class="text-lg font-bold text-slate-900 max-w-xl mx-auto"></h3>
+          <div class="flex items-center justify-center gap-3 pt-1">
+            <button type="button" onclick="answerSimQuestion('yes')"
+              class="px-7 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-sm transition active:scale-95">
+              Yes
+            </button>
+            <button type="button" onclick="answerSimQuestion('no')"
+              class="px-7 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold shadow-sm transition active:scale-95">
+              No
+            </button>
+          </div>
         </div>
 
         <!-- Completed State -->
@@ -583,13 +606,25 @@
             <p class="text-xs text-slate-500">Add photos (or paste with Ctrl+V), then click &amp; drag on each photo to
               select the clickable area.</p>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
             <label
               class="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition">
               <span>+ Add Photo(s)</span>
               <input id="simPhotoUploadInput" type="file" accept="image/*" multiple class="hidden"
                 onchange="handleSimPhotoFiles(this.files); this.value='';" />
             </label>
+            <button type="button" onclick="addSimQuestionStep()"
+              class="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-semibold transition">+ Add Yes/No Question</button>
+            <button type="button" onclick="openSimPhotoLibrary()"
+              class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition">Reuse Photo</button>
+            <select id="simNamedStepSelect" onchange="onSelectNamedStep(this.value); this.value='';"
+              class="h-9 max-w-[220px] px-2.5 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-900 text-xs font-semibold">
+              <option value="">Load Named Photo (+ behind)...</option>
+            </select>
+            <button type="button" onclick="openSimTemplatesModal()"
+              class="px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-semibold transition">Insert Template</button>
+            <button type="button" onclick="saveCurrentAsTemplate()"
+              class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold transition">Save as Template</button>
             <button type="button" onclick="saveCurrentSim()" id="simSaveBtn"
               class="px-4 py-2 rounded-xl bg-[#0F2A4A] hover:bg-[#173B66] text-white text-xs font-semibold transition">Save
               Sim</button>
@@ -620,19 +655,91 @@
             <div id="simEditorCanvasWrap" class="hidden space-y-4">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <span id="simEditorStepBadge" class="text-xs font-bold text-slate-700">Editing Step 1</span>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span id="simHotspotCoordsLabel" class="text-[11px] font-mono text-slate-500">Drag on image to select
-                    click area</span>
-                  <button type="button" id="simEditorModeBtn" onclick="toggleEditorToolMode()"
-                    class="px-2.5 py-1 rounded-lg bg-[#0F2A4A] text-white text-xs font-semibold transition">Tool: Draw
-                    Area</button>
+                <div id="simEditorPhotoTools" class="flex items-center gap-1.5 flex-wrap">
+                  <button type="button" id="simToolDrawBtn" onclick="setEditorToolMode('draw')"
+                    class="px-2.5 py-1 rounded-lg bg-[#0F2A4A] text-white text-xs font-semibold transition">Click Area</button>
+                  <button type="button" id="simToolHighlightBtn" onclick="setEditorToolMode('highlight')"
+                    class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition">Highlighter</button>
+                  <button type="button" id="simToolArrowBtn" onclick="setEditorToolMode('arrow')"
+                    class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition">Arrow (2-Click)</button>
+                  <button type="button" id="simToolTextBtn" onclick="setEditorToolMode('text')"
+                    class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition">Text Box</button>
+                  <button type="button" id="simToolSelectBtn" onclick="setEditorToolMode('select')"
+                    class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition">Select / Move</button>
+                  <button type="button" id="simToolPanBtn" onclick="setEditorToolMode('pan')"
+                    class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition">Pan</button>
+                  <select id="simArrowSizeSelect" onchange="onArrowSizeChange(this.value)" title="Arrow size"
+                    class="h-7 px-2 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
+                    <option value="0.4">Arrow: Thin</option>
+                    <option value="0.7" selected>Arrow: Medium</option>
+                    <option value="1.2">Arrow: Thick</option>
+                    <option value="1.8">Arrow: XL</option>
+                  </select>
+                  <input id="simPropArrowColor" type="color" value="#F43F5E" onchange="onArrowColorChange(this.value)" title="Arrow color"
+                    class="w-7 h-7 p-0.5 rounded-lg border border-slate-200 bg-white cursor-pointer" />
                   <button type="button" id="simEditorZoomResetBtn" onclick="resetEditorZoom()"
-                    class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">Zoom:
-                    1.0x</button>
+                    class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">1.0x</button>
+                  <button type="button" id="simUndoBtn" onclick="undoSimEdit()"
+                    class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">Undo (Ctrl+Z)</button>
+                  <button type="button" id="simDeleteSelectedBtn" onclick="deleteSelectedAnnotation()"
+                    class="hidden px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition">Delete Selected</button>
                   <button type="button" onclick="clearEditorHotspot()"
-                    class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition">Clear
-                    Area</button>
+                    class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition">Clear Area</button>
+                  <button type="button" onclick="clearEditorAnnotations()"
+                    class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold transition">Clear Marks</button>
                 </div>
+              </div>
+              <!-- Question Step Editor (shown when step.type === 'question') -->
+              <div id="simEditorQuestionWrap" class="hidden p-5 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-800 mb-1">Question to Ask Agent</label>
+                  <input id="simStepQuestionInput" type="text" placeholder="e.g., Does the child have a chart?"
+                    oninput="updateEditorStepField('question', this.value)"
+                    class="w-full h-10 px-3 rounded-xl border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30" />
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-xs font-semibold text-emerald-800 mb-1">If YES &rarr; Go to:</label>
+                    <select id="simStepYesTargetSelect" onchange="updateEditorStepField('yesTarget', this.value)"
+                      class="w-full h-9 px-3 rounded-xl border border-emerald-300 bg-white text-xs font-medium"></select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-rose-800 mb-1">If NO &rarr; Go to:</label>
+                    <select id="simStepNoTargetSelect" onchange="updateEditorStepField('noTarget', this.value)"
+                      class="w-full h-9 px-3 rounded-xl border border-rose-300 bg-white text-xs font-medium"></select>
+                  </div>
+                </div>
+              </div>
+
+              <div id="simEditorPhotoOnlyWrap" class="space-y-4">
+              <div id="simHotspotCoordsLabel" class="text-[11px] font-mono text-slate-500">Drag on image to select click area</div>
+
+              <!-- Photoshop-style Text Properties Bar -->
+              <div id="simTextPropsBar" class="flex flex-wrap items-center gap-2.5 px-3 py-2 rounded-xl bg-slate-100 border border-slate-200 text-xs">
+                <span class="font-bold text-slate-600 uppercase tracking-wider text-[10px]">Text Style</span>
+                <input id="simPropTextContent" type="text" placeholder="Selected text..." oninput="onTextPropChange('text', this.value)"
+                  class="hidden h-7 px-2.5 rounded-lg border border-slate-300 bg-white text-xs w-44" />
+                <label class="inline-flex items-center gap-1 text-slate-700 font-medium">
+                  <span>Color</span>
+                  <input id="simPropTextColor" type="color" value="#FFFFFF" onchange="onTextPropChange('color', this.value)"
+                    class="w-6 h-6 p-0.5 rounded border border-slate-300 bg-white cursor-pointer" />
+                </label>
+                <label class="inline-flex items-center gap-1 text-slate-700 font-medium">
+                  <span>BG</span>
+                  <input id="simPropTextBg" type="color" value="#0F172A" onchange="onTextPropChange('bgColor', this.value)"
+                    class="w-6 h-6 p-0.5 rounded border border-slate-300 bg-white cursor-pointer" />
+                </label>
+                <label class="inline-flex items-center gap-1 text-slate-700 font-medium cursor-pointer">
+                  <input id="simPropTextNoBg" type="checkbox" onchange="onTextPropChange('noBg', this.checked)" class="rounded" />
+                  <span>No BG</span>
+                </label>
+                <label class="inline-flex items-center gap-1 text-slate-700 font-medium">
+                  <span>Size</span>
+                  <input id="simPropTextSize" type="number" min="1" max="100" value="14" oninput="onTextPropChange('size', this.value)"
+                    class="w-14 h-7 px-2 rounded-lg border border-slate-300 bg-white text-xs font-mono" />
+                </label>
+                <button id="simPropTextBoldBtn" type="button" onclick="toggleTextPropBold()"
+                  class="w-7 h-7 rounded-lg bg-[#0F2A4A] text-white font-extrabold text-xs transition" title="Bold">B</button>
               </div>
 
               <div class="flex justify-center bg-slate-50 border border-slate-200 rounded-xl p-2">
@@ -642,17 +749,32 @@
                     <img id="simEditorImg" src="" alt="Editor step"
                       class="block max-w-full max-h-[55vh] object-contain pointer-events-none" draggable="false" />
                     <div id="simEditorBox"
-                      class="hidden absolute border-2 border-[#38BDF8] bg-transparent pointer-events-none rounded-sm"
+                      class="hidden absolute z-10 border-2 border-[#38BDF8] bg-transparent pointer-events-none rounded-none"
                       style="box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.55);">
                       <span id="simEditorBoxBadge"
-                        class="absolute -top-5 left-0 px-1.5 py-0.5 rounded bg-[#1565C0] text-white text-[10px] font-bold whitespace-nowrap origin-bottom-left">Click
-                        Target</span>
+                        class="hidden absolute -top-5 left-0 px-1.5 py-0.5 bg-[#1565C0] text-white text-[10px] font-bold whitespace-nowrap origin-bottom-left"></span>
                     </div>
+                    <div id="simEditorHighlights" class="absolute inset-0 z-20 pointer-events-none"></div>
+                    <svg id="simEditorArrows" class="absolute inset-0 z-20 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+                    <div id="simEditorTexts" class="absolute inset-0 z-20 pointer-events-none"></div>
                   </div>
                 </div>
               </div>
+              </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Photo Name</label>
+                  <input id="simStepNameInput" type="text" placeholder="e.g., Patient Search"
+                    oninput="updateEditorStepField('name', this.value)"
+                    class="w-full h-9 px-3 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Box Label (optional)</label>
+                  <input id="simStepLabelInput" type="text" placeholder="Leave blank for no label"
+                    oninput="updateEditorStepField('label', this.value)"
+                    class="w-full h-9 px-3 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30" />
+                </div>
                 <div>
                   <label class="block text-xs font-semibold text-slate-700 mb-1">Step Instruction</label>
                   <input id="simStepInstructionInput" type="text" placeholder="e.g., Click on Patient Demographics..."
@@ -660,7 +782,7 @@
                     class="w-full h-9 px-3 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30" />
                 </div>
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">Hint (optional)</label>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Note / Hint (optional)</label>
                   <input id="simStepHintInput" type="text" placeholder="e.g., Top-left menu bar"
                     oninput="updateEditorStepField('hint', this.value)"
                     class="w-full h-9 px-3 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30" />
@@ -671,6 +793,36 @@
         </div>
       </div>
     </section>
+
+    <!-- Photo Library Modal (Reuse Uploaded Photos) -->
+    <div id="simPhotoLibraryModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="w-full max-w-3xl bg-white rounded-2xl border border-slate-200 shadow-2xl p-5 space-y-4 max-h-[85vh] flex flex-col">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Reuse Uploaded Photos</h3>
+            <p class="text-xs text-slate-500">Click any previously uploaded screenshot to add it as a new step.</p>
+          </div>
+          <button type="button" onclick="closeSimPhotoLibrary()"
+            class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700">Close</button>
+        </div>
+        <div id="simPhotoLibraryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 overflow-y-auto p-1"></div>
+      </div>
+    </div>
+
+    <!-- Templates Modal (Load & Insert from Current Position) -->
+    <div id="simTemplatesModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="w-full max-w-2xl bg-white rounded-2xl border border-slate-200 shadow-2xl p-5 space-y-4 max-h-[85vh] flex flex-col">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Reusable Step Templates</h3>
+            <p class="text-xs text-slate-500">Click a template to insert its steps right after the step you are currently editing.</p>
+          </div>
+          <button type="button" onclick="closeSimTemplatesModal()"
+            class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700">Close</button>
+        </div>
+        <div id="simTemplatesList" class="space-y-2 overflow-y-auto p-1"></div>
+      </div>
+    </div>
 
     <!-- SECTION 5: ADMIN PANEL -->
     <section id="section-admin" class="content-section hidden max-w-5xl mx-auto space-y-6">
@@ -1360,16 +1512,48 @@
       ) || null;
     }
 
+    let treeDept = 'vision';
+    const treeConfigCache = {};
+
+    async function switchTreeDept(dept) {
+      if (dept !== 'vision' && dept !== 'pediatrics') return;
+      treeDept = dept;
+      treeConfig = null;
+      cockpitState = { ...DEFAULT_SELECTIONS };
+      selectedCockpitDoctor = null;
+      const vBtn = document.getElementById('treeDeptBtn-vision');
+      const pBtn = document.getElementById('treeDeptBtn-pediatrics');
+      if (vBtn) {
+        vBtn.className = dept === 'vision'
+          ? 'px-3 py-1 rounded-lg bg-[#0F2A4A] text-white text-xs font-bold transition'
+          : 'px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 text-xs font-bold transition';
+      }
+      if (pBtn) {
+        pBtn.className = dept === 'pediatrics'
+          ? 'px-3 py-1 rounded-lg bg-[#0F2A4A] text-white text-xs font-bold transition'
+          : 'px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 text-xs font-bold transition';
+      }
+      const container = document.getElementById('treeCockpitContainer');
+      if (container) container.innerHTML = '';
+      await initDecisionTree();
+    }
+
     async function initDecisionTree() {
       const container = document.getElementById('treeCockpitContainer');
-      if (!treeConfig) {
+      const jsonPath = treeDept === 'pediatrics'
+        ? '/data/pediatrics_decision_tree.json'
+        : '/data/vision_decision_tree.json';
+      if (treeConfigCache[treeDept]) {
+        treeConfig = treeConfigCache[treeDept];
+      } else {
         container.innerHTML = '<div class="text-sm text-slate-500 py-6">Loading decision rules...</div>';
         try {
-          const res = await fetch('/data/vision_decision_tree.json');
+          const res = await fetch(jsonPath);
           if (!res.ok) throw new Error('Failed to load JSON');
           treeConfig = await res.json();
+          treeConfigCache[treeDept] = treeConfig;
         } catch {
-          container.innerHTML = '<div class="text-sm text-rose-600 py-4">Unable to load /data/vision_decision_tree.json.</div>';
+          container.innerHTML = `<div class="text-sm text-rose-600 py-4">Unable to load ${jsonPath}.</div>`;
           return;
         }
       }
@@ -1391,6 +1575,8 @@
     let currentSimTitle = '';
     let currentSimSteps = [];
     let simPlayIndex = 0;
+    let simPlayHistory = [];
+    let lastRenderedPlayIndex = -1;
     let simCompleted = false;
     let simMissCount = 0;
     let simEditMode = false;
@@ -1457,9 +1643,11 @@
     async function openStepHelp(groupId) {
       const group = treeConfig?.filters?.find(g => g.id === groupId);
       const cleanLabel = group ? group.label.replace(/^\d+\.\s*/, '') : 'Step Info';
-      currentSimId = groupId || 'default';
-      currentSimTitle = cleanLabel;
+      currentSimId = treeDept === 'pediatrics' ? `peds_${groupId || 'default'}` : (groupId || 'default');
+      currentSimTitle = `${treeDept === 'pediatrics' ? 'Pediatrics' : 'Vision'}: ${cleanLabel}`;
       simPlayIndex = 0;
+      simPlayHistory = [];
+      lastRenderedPlayIndex = -1;
       simCompleted = false;
       simMissCount = 0;
       simEditMode = false;
@@ -1498,6 +1686,7 @@
         editorView.classList.remove('hidden');
         if (toggleBtn) toggleBtn.textContent = 'Preview Sim';
         renderSimEditor();
+        loadNamedStepsDropdown();
       } else {
         editorView.classList.add('hidden');
         playView.classList.remove('hidden');
@@ -1509,6 +1698,8 @@
     function renderSimPlay() {
       const emptyEl = document.getElementById('simEmptyState');
       const stageWrap = document.getElementById('simStageWrap');
+      const questionCard = document.getElementById('simQuestionCard');
+      const questionText = document.getElementById('simQuestionText');
       const completeEl = document.getElementById('simCompleteState');
       const controlsEl = document.getElementById('simPlayControls');
       const instrEl = document.getElementById('simPlayInstruction');
@@ -1523,6 +1714,7 @@
       if (!currentSimSteps.length) {
         emptyEl.classList.remove('hidden');
         stageWrap.classList.add('hidden');
+        if (questionCard) questionCard.classList.add('hidden');
         completeEl.classList.add('hidden');
         controlsEl.classList.add('hidden');
         if (instrEl) instrEl.textContent = 'To be done';
@@ -1534,6 +1726,7 @@
 
       if (simCompleted) {
         stageWrap.classList.add('hidden');
+        if (questionCard) questionCard.classList.add('hidden');
         completeEl.classList.remove('hidden');
         counterEl.textContent = `Done (${currentSimSteps.length} / ${currentSimSteps.length})`;
         if (instrEl) instrEl.textContent = 'All steps completed.';
@@ -1541,20 +1734,35 @@
       }
 
       completeEl.classList.add('hidden');
-      stageWrap.classList.remove('hidden');
-
       const step = currentSimSteps[simPlayIndex];
       counterEl.textContent = `Step ${simPlayIndex + 1} / ${currentSimSteps.length}`;
-      prevBtn.disabled = simPlayIndex === 0;
-      prevBtn.classList.toggle('opacity-40', simPlayIndex === 0);
+      prevBtn.disabled = simPlayIndex === 0 && simPlayHistory.length === 0;
+      prevBtn.classList.toggle('opacity-40', prevBtn.disabled);
+
+      if (step.type === 'question') {
+        stageWrap.classList.add('hidden');
+        if (questionCard) questionCard.classList.remove('hidden');
+        if (questionText) questionText.textContent = step.question || step.instruction || 'Select Yes or No to continue:';
+        if (instrEl) instrEl.textContent = step.instruction || 'Answer the question below to continue.';
+        lastRenderedPlayIndex = simPlayIndex;
+        return;
+      }
+
+      if (questionCard) questionCard.classList.add('hidden');
+      stageWrap.classList.remove('hidden');
       if (instrEl) {
-        instrEl.textContent = step.instruction || 'Click the target area on the screen to continue.';
+        instrEl.textContent = step.instruction || 'Click the highlighted area to continue.';
       }
 
       const imgEl = document.getElementById('simStageImg');
       imgEl.src = step.imageUrl || '';
 
       const zoomLayer = document.getElementById('simZoomLayer');
+      const isStepChange = lastRenderedPlayIndex !== simPlayIndex;
+      lastRenderedPlayIndex = simPlayIndex;
+      if (zoomLayer) {
+        zoomLayer.style.transition = isStepChange ? 'none' : 'transform 350ms cubic-bezier(0.22, 1, 0.36, 1)';
+      }
       const badgeEl = document.getElementById('simHotspotBadge');
       const spotBtn = document.getElementById('simSpotlightBtn');
       const zoomBtn = document.getElementById('simZoomBtn');
@@ -1580,6 +1788,17 @@
         hotspotEl.style.boxShadow = simSpotlightEnabled ? '0 0 0 9999px rgba(15, 23, 42, 0.65)' : 'none';
         hotspotEl.classList.remove('hidden');
 
+        if (badgeEl) {
+          const customLabel = (step.label || '').trim();
+          if (customLabel) {
+            badgeEl.textContent = customLabel;
+            badgeEl.classList.remove('hidden');
+          } else {
+            badgeEl.textContent = '';
+            badgeEl.classList.add('hidden');
+          }
+        }
+
         if (simZoomEnabled) {
           const cx = step.hotspot.x + step.hotspot.w / 2;
           const cy = step.hotspot.y + step.hotspot.h / 2;
@@ -1591,14 +1810,64 @@
       } else {
         hotspotEl.style.boxShadow = 'none';
         hotspotEl.classList.add('hidden');
+        if (badgeEl) badgeEl.classList.add('hidden');
         playZoomState = { scale: 1, tx: 0, ty: 0 };
       }
+      renderStepAnnotations(
+        document.getElementById('simPlayHighlights'),
+        document.getElementById('simPlayArrows'),
+        document.getElementById('simPlayTexts'),
+        step
+      );
       applyZoomTransform(zoomLayer, badgeEl, playZoomState);
 
       if (step.hint) {
         feedbackEl.className = 'px-3.5 py-2 rounded-xl text-xs font-medium bg-[#E8F2FC] text-[#0F2A4A] border border-[#1565C0]/20';
         feedbackEl.textContent = step.hint;
         feedbackEl.classList.remove('hidden');
+      }
+    }
+
+    function renderStepAnnotations(highlightsEl, arrowsEl, textsEl, step, previewHighlight = null, previewArrow = null, selected = null) {
+      if (highlightsEl) {
+        const list = [...(step?.highlights || [])];
+        if (previewHighlight && previewHighlight.w > 0 && previewHighlight.h > 0) list.push(previewHighlight);
+        highlightsEl.innerHTML = list.map((h, i) => {
+          const isSel = selected && selected.type === 'highlight' && selected.index === i;
+          return `<div class="absolute bg-yellow-300/45 border ${isSel ? 'border-2 border-[#38BDF8] ring-2 ring-[#38BDF8]/50' : 'border-yellow-400/90'}"
+            style="left:${h.x}%;top:${h.y}%;width:${h.w}%;height:${h.h}%;"></div>`;
+        }).join('');
+      }
+      if (arrowsEl) {
+        const list = [...(step?.arrows || [])];
+        if (previewArrow) list.push(previewArrow);
+        const defs = [];
+        const lines = list.map((a, i) => {
+          const isSel = selected && selected.type === 'arrow' && selected.index === i;
+          const sw = Number(a.size) || 0.7;
+          const color = isSel ? '#38BDF8' : (a.color || '#F43F5E');
+          const head = Math.max(1.4, sw * 2.3);
+          const markerId = `simArrowHead_${i}_${isSel ? 's' : 'n'}`;
+          defs.push(`<marker id="${markerId}" markerUnits="userSpaceOnUse" markerWidth="${head}" markerHeight="${head}" refX="${head * 0.78}" refY="${head * 0.5}" orient="auto"><path d="M0,0 L${head},${head * 0.5} L0,${head} Z" fill="${color}"/></marker>`);
+          return `<line x1="${a.x1}" y1="${a.y1}" x2="${a.x2}" y2="${a.y2}"
+            stroke="${color}" stroke-width="${sw}" stroke-linecap="round"
+            marker-end="url(#${markerId})" />`;
+        }).join('');
+        arrowsEl.innerHTML = list.length ? `<defs>${defs.join('')}</defs>${lines}` : '';
+      }
+      if (textsEl) {
+        const list = step?.texts || [];
+        textsEl.innerHTML = list.map((t, i) => {
+          const isSel = selected && selected.type === 'text' && selected.index === i;
+          const color = t.color || '#FFFFFF';
+          const bg = t.bgColor === 'transparent' ? 'transparent' : (t.bgColor || '#0F172A');
+          const fw = (t.bold ?? true) ? '700' : '400';
+          const pad = bg === 'transparent' ? '2px 4px' : '4px 10px';
+          const border = isSel ? '2px solid #38BDF8' : (bg === 'transparent' ? 'none' : '1px solid rgba(255,255,255,0.25)');
+          const shadow = bg === 'transparent' ? '0 1px 3px rgba(0,0,0,0.85)' : '0 2px 6px rgba(0,0,0,0.25)';
+          return `<div class="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap"
+            style="left:${t.x}%;top:${t.y}%;font-size:${t.size || 14}px;color:${color};background:${bg};font-weight:${fw};padding:${pad};border:${border};text-shadow:${bg === 'transparent' ? shadow : 'none'};box-shadow:${bg === 'transparent' ? 'none' : shadow};">${escapeHtml(t.text)}</div>`;
+        }).join('');
       }
     }
 
@@ -1622,7 +1891,7 @@
 
       setTimeout(() => {
         simNextStep();
-      }, 150);
+      }, 280);
     }
 
     function handleSimStageClick(event) {
@@ -1639,8 +1908,29 @@
       setTimeout(() => hotspotEl.classList.remove('animate-pulse'), 900);
     }
 
+    function answerSimQuestion(choice) {
+      if (simCompleted || !currentSimSteps.length) return;
+      const step = currentSimSteps[simPlayIndex];
+      const target = choice === 'yes' ? (step?.yesTarget || 'next') : (step?.noTarget || 'next');
+      simPlayHistory.push(simPlayIndex);
+      if (target === 'end') {
+        simCompleted = true;
+      } else if (target === 'next' || !target) {
+        if (simPlayIndex + 1 < currentSimSteps.length) simPlayIndex += 1;
+        else simCompleted = true;
+      } else {
+        const idx = currentSimSteps.findIndex((s) => s.id === target);
+        if (idx !== -1) simPlayIndex = idx;
+        else if (simPlayIndex + 1 < currentSimSteps.length) simPlayIndex += 1;
+        else simCompleted = true;
+      }
+      simMissCount = 0;
+      renderSimPlay();
+    }
+
     function simNextStep() {
       if (simCompleted || !currentSimSteps.length) return;
+      simPlayHistory.push(simPlayIndex);
       if (simPlayIndex + 1 < currentSimSteps.length) {
         simPlayIndex += 1;
       } else {
@@ -1653,7 +1943,10 @@
     function simPrevStep() {
       if (simCompleted) {
         simCompleted = false;
-        simPlayIndex = Math.max(0, currentSimSteps.length - 1);
+        if (simPlayHistory.length) simPlayIndex = simPlayHistory.pop();
+        else simPlayIndex = Math.max(0, currentSimSteps.length - 1);
+      } else if (simPlayHistory.length) {
+        simPlayIndex = simPlayHistory.pop();
       } else if (simPlayIndex > 0) {
         simPlayIndex -= 1;
       }
@@ -1663,6 +1956,8 @@
 
     function simRestart() {
       simPlayIndex = 0;
+      simPlayHistory = [];
+      lastRenderedPlayIndex = -1;
       simCompleted = false;
       simMissCount = 0;
       renderSimPlay();
@@ -1689,16 +1984,21 @@
 
       listEl.innerHTML = currentSimSteps.map((s, idx) => {
         const active = idx === simEditIndex;
+        const isQ = s.type === 'question';
         const hasHotspot = Boolean(s.hotspot);
+        const thumb = isQ
+          ? `<div class="w-14 h-10 rounded-lg border border-amber-300 bg-amber-100 text-amber-800 font-extrabold text-sm flex items-center justify-center shrink-0">?</div>`
+          : `<img src="${s.imageUrl}" alt="Step ${idx + 1}" class="w-14 h-10 object-cover rounded-lg border border-slate-200 bg-slate-100 shrink-0" />`;
+        const subText = isQ
+          ? `<div class="text-[11px] text-amber-700 font-medium truncate">Yes/No: ${escapeHtml(s.question || 'Unset')}</div>`
+          : `<div class="text-[11px] ${hasHotspot ? 'text-emerald-600' : 'text-amber-600'} font-medium">${hasHotspot ? 'Click area set' : 'No click area'}</div>`;
         return `
           <div onclick="selectEditorStep(${idx})"
             class="flex items-center gap-2.5 p-2 rounded-xl border cursor-pointer transition ${active ? 'border-[#1565C0] bg-[#E8F2FC]/50' : 'border-slate-200 bg-white hover:bg-slate-50'}">
-            <img src="${s.imageUrl}" alt="Step ${idx + 1}" class="w-14 h-10 object-cover rounded-lg border border-slate-200 bg-slate-100 shrink-0" />
+            ${thumb}
             <div class="min-w-0 flex-1">
-              <div class="text-xs font-bold text-slate-800 truncate">Step ${idx + 1}</div>
-              <div class="text-[11px] ${hasHotspot ? 'text-emerald-600' : 'text-amber-600'} font-medium">
-                ${hasHotspot ? 'Click area set' : 'No click area'}
-              </div>
+              <div class="text-xs font-bold text-slate-800 truncate">Step ${idx + 1}${s.name ? ` · ${escapeHtml(s.name)}` : ''}</div>
+              ${subText}
             </div>
             <div class="flex flex-col gap-0.5 shrink-0" onclick="event.stopPropagation()">
               <button type="button" onclick="moveEditorStep(${idx}, -1)" class="px-1.5 py-0.5 text-[10px] rounded bg-slate-100 hover:bg-slate-200 text-slate-600" title="Move up">&uarr;</button>
@@ -1720,20 +2020,65 @@
       canvasWrap.classList.remove('hidden');
       if (simEditIndex >= currentSimSteps.length) simEditIndex = currentSimSteps.length - 1;
       const step = currentSimSteps[simEditIndex];
+      const isQuestion = step.type === 'question';
 
-      document.getElementById('simEditorStepBadge').textContent = `Editing Step ${simEditIndex + 1} of ${currentSimSteps.length}`;
-      document.getElementById('simEditorImg').src = step.imageUrl || '';
+      document.getElementById('simEditorStepBadge').textContent = `Editing Step ${simEditIndex + 1} of ${currentSimSteps.length}${isQuestion ? ' (Yes/No Question)' : ''}`;
+      document.getElementById('simEditorPhotoTools')?.classList.toggle('hidden', isQuestion);
+      document.getElementById('simEditorPhotoOnlyWrap')?.classList.toggle('hidden', isQuestion);
+      document.getElementById('simEditorQuestionWrap')?.classList.toggle('hidden', !isQuestion);
+
+      document.getElementById('simStepNameInput').value = step.name || '';
+      document.getElementById('simStepLabelInput').value = step.label || '';
       document.getElementById('simStepInstructionInput').value = step.instruction || '';
       document.getElementById('simStepHintInput').value = step.hint || '';
+
+      if (isQuestion) {
+        document.getElementById('simStepQuestionInput').value = step.question || '';
+        const targetOptions = [
+          `<option value="next">Next Step (Step ${simEditIndex + 2 <= currentSimSteps.length ? simEditIndex + 2 : 'End'})</option>`,
+          `<option value="end">End Walkthrough</option>`,
+          ...currentSimSteps.map((st, i) => {
+            if (i === simEditIndex) return '';
+            const lbl = `Step ${i + 1}${st.name ? ` · ${st.name}` : (st.type === 'question' ? ' · Question' : '')}`;
+            return `<option value="${escapeHtml(st.id)}">${escapeHtml(lbl)}</option>`;
+          }),
+        ].join('');
+        const yesSel = document.getElementById('simStepYesTargetSelect');
+        const noSel = document.getElementById('simStepNoTargetSelect');
+        if (yesSel) { yesSel.innerHTML = targetOptions; yesSel.value = step.yesTarget || 'next'; }
+        if (noSel) { noSel.innerHTML = targetOptions; noSel.value = step.noTarget || 'next'; }
+        return;
+      }
+
+      document.getElementById('simEditorImg').src = step.imageUrl || '';
       renderEditorHotspotBox(step.hotspot);
+      renderStepAnnotations(
+        document.getElementById('simEditorHighlights'),
+        document.getElementById('simEditorArrows'),
+        document.getElementById('simEditorTexts'),
+        step,
+        null,
+        null,
+        simSelectedAnnotation
+      );
+      const delBtn = document.getElementById('simDeleteSelectedBtn');
+      if (delBtn) delBtn.classList.toggle('hidden', !simSelectedAnnotation);
+      syncPropsBarToSelection();
     }
 
     function renderEditorHotspotBox(hotspot) {
       const box = document.getElementById('simEditorBox');
+      const boxBadge = document.getElementById('simEditorBoxBadge');
       const label = document.getElementById('simHotspotCoordsLabel');
+      const step = currentSimSteps[simEditIndex];
       if (!hotspot || hotspot.w <= 0 || hotspot.h <= 0) {
         box.classList.add('hidden');
-        label.textContent = 'Drag on image to select click area';
+        if (boxBadge) boxBadge.classList.add('hidden');
+        label.textContent = editorToolMode === 'arrow'
+          ? 'Click point 1 (start), then click point 2 (arrow tip)'
+          : editorToolMode === 'highlight'
+            ? 'Drag on image to add a highlight box'
+            : 'Drag on image to select click area';
         return;
       }
       box.style.left = `${hotspot.x}%`;
@@ -1741,6 +2086,16 @@
       box.style.width = `${hotspot.w}%`;
       box.style.height = `${hotspot.h}%`;
       box.classList.remove('hidden');
+      if (boxBadge) {
+        const customLabel = (step?.label || '').trim();
+        if (customLabel) {
+          boxBadge.textContent = customLabel;
+          boxBadge.classList.remove('hidden');
+        } else {
+          boxBadge.textContent = '';
+          boxBadge.classList.add('hidden');
+        }
+      }
       label.textContent = `Area: x=${hotspot.x.toFixed(1)}% y=${hotspot.y.toFixed(1)}% w=${hotspot.w.toFixed(1)}% h=${hotspot.h.toFixed(1)}%`;
     }
 
@@ -1753,12 +2108,229 @@
     function updateEditorStepField(field, value) {
       if (!currentSimSteps[simEditIndex]) return;
       currentSimSteps[simEditIndex][field] = value;
+      if (field === 'label') renderEditorHotspotBox(currentSimSteps[simEditIndex].hotspot);
     }
 
     function clearEditorHotspot() {
       if (!currentSimSteps[simEditIndex]) return;
+      pushSimUndo();
       currentSimSteps[simEditIndex].hotspot = null;
       renderSimEditor();
+    }
+
+    function clearEditorAnnotations() {
+      const step = currentSimSteps[simEditIndex];
+      if (!step) return;
+      pushSimUndo();
+      step.highlights = [];
+      step.arrows = [];
+      step.texts = [];
+      simSelectedAnnotation = null;
+      renderSimEditor();
+    }
+
+    async function openSimPhotoLibrary() {
+      const modal = document.getElementById('simPhotoLibraryModal');
+      const grid = document.getElementById('simPhotoLibraryGrid');
+      if (!modal || !grid) return;
+      modal.classList.remove('hidden');
+      grid.innerHTML = '<div class="col-span-full text-center text-xs text-slate-500 py-8">Loading uploaded photos...</div>';
+      try {
+        const res = await fetch('/api/step-sim/images');
+        const data = res.ok ? await res.json() : { images: [] };
+        const images = data.images || [];
+        if (!images.length) {
+          grid.innerHTML = '<div class="col-span-full text-center text-xs text-slate-400 py-8">No uploaded photos found yet.</div>';
+          return;
+        }
+        grid.innerHTML = images.map((img) => `
+          <button type="button" onclick="reuseSimPhoto('${escapeHtml(img.url)}')"
+            class="group border border-slate-200 hover:border-[#1565C0] rounded-xl overflow-hidden bg-slate-50 text-left transition shadow-sm">
+            <img src="${escapeHtml(img.url)}" alt="${escapeHtml(img.name)}" class="w-full h-28 object-cover group-hover:opacity-90" />
+            <div class="px-2 py-1.5 text-[10px] font-mono text-slate-600 truncate">${escapeHtml(img.simId)} / ${escapeHtml(img.name)}</div>
+          </button>
+        `).join('');
+      } catch {
+        grid.innerHTML = '<div class="col-span-full text-center text-xs text-rose-600 py-8">Failed to load photo library.</div>';
+      }
+    }
+
+    function closeSimPhotoLibrary() {
+      document.getElementById('simPhotoLibraryModal')?.classList.add('hidden');
+    }
+
+    function addSimQuestionStep() {
+      pushSimUndo();
+      const qStep = {
+        id: `step-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        type: 'question',
+        name: '',
+        imageUrl: '',
+        label: '',
+        instruction: '',
+        hint: '',
+        question: '',
+        yesTarget: 'next',
+        noTarget: 'next',
+        hotspot: null,
+        highlights: [],
+        arrows: [],
+        texts: [],
+      };
+      const insertAt = currentSimSteps.length ? simEditIndex + 1 : 0;
+      currentSimSteps.splice(insertAt, 0, qStep);
+      simEditIndex = insertAt;
+      setSimEditorStatus('Added Yes/No question step.');
+      renderSimEditor();
+    }
+
+    function reuseSimPhoto(imageUrl) {
+      pushSimUndo();
+      currentSimSteps.push({
+        id: `step-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        imageUrl,
+        label: '',
+        instruction: '',
+        hint: '',
+        hotspot: null,
+        highlights: [],
+        arrows: [],
+        texts: [],
+      });
+      simEditIndex = currentSimSteps.length - 1;
+      closeSimPhotoLibrary();
+      setSimEditorStatus('Reused photo added as new step.');
+      renderSimEditor();
+    }
+
+    let cachedNamedSteps = [];
+
+    async function loadNamedStepsDropdown() {
+      const sel = document.getElementById('simNamedStepSelect');
+      if (!sel) return;
+      try {
+        const res = await fetch('/api/step-sim/named-steps');
+        const data = res.ok ? await res.json() : { entries: [] };
+        cachedNamedSteps = data.entries || [];
+        sel.innerHTML = '<option value="">Load Named Photo (+ behind)...</option>' +
+          cachedNamedSteps.map((e) => {
+            const suffix = e.followingCount > 0 ? ` (+${e.followingCount} behind)` : '';
+            return `<option value="${escapeHtml(e.key)}">${escapeHtml(e.stepName)}${suffix} — ${escapeHtml(e.sourceTitle)}</option>`;
+          }).join('');
+      } catch {}
+    }
+
+    function onSelectNamedStep(key) {
+      if (!key) return;
+      const entry = cachedNamedSteps.find((e) => e.key === key);
+      if (!entry || !Array.isArray(entry.stepsFromHere) || !entry.stepsFromHere.length) return;
+      pushSimUndo();
+      const cloned = entry.stepsFromHere.map((s) => ({
+        ...JSON.parse(JSON.stringify(s)),
+        id: `step-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      }));
+      const insertAt = currentSimSteps.length ? simEditIndex + 1 : 0;
+      currentSimSteps.splice(insertAt, 0, ...cloned);
+      simEditIndex = insertAt;
+      setSimEditorStatus(`Loaded "${entry.stepName}" + ${cloned.length - 1} photo(s) behind it.`);
+      renderSimEditor();
+    }
+
+    let cachedTemplatesList = [];
+
+    async function openSimTemplatesModal() {
+      const modal = document.getElementById('simTemplatesModal');
+      const list = document.getElementById('simTemplatesList');
+      if (!modal || !list) return;
+      modal.classList.remove('hidden');
+      list.innerHTML = '<div class="text-center text-xs text-slate-500 py-8">Loading templates...</div>';
+      try {
+        const res = await fetch('/api/step-sim/templates');
+        const data = res.ok ? await res.json() : { templates: [] };
+        cachedTemplatesList = data.templates || [];
+        if (!cachedTemplatesList.length) {
+          list.innerHTML = '<div class="text-center text-xs text-slate-400 py-8">No templates saved yet. Build steps and click "Save as Template".</div>';
+          return;
+        }
+        list.innerHTML = cachedTemplatesList.map((t) => `
+          <div class="flex items-center justify-between gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-slate-900 truncate">${escapeHtml(t.name)}</div>
+              <div class="text-[11px] text-slate-500">${(t.steps || []).length} step(s)</div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button type="button" onclick="insertSimTemplate('${escapeHtml(t.id)}')"
+                class="px-3 py-1.5 rounded-lg bg-[#0F2A4A] hover:bg-[#173B66] text-white text-xs font-semibold transition">
+                Insert Here
+              </button>
+              <button type="button" onclick="deleteSimTemplate('${escapeHtml(t.id)}')"
+                class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition">
+                Delete
+              </button>
+            </div>
+          </div>
+        `).join('');
+      } catch {
+        list.innerHTML = '<div class="text-center text-xs text-rose-600 py-8">Failed to load templates.</div>';
+      }
+    }
+
+    function closeSimTemplatesModal() {
+      document.getElementById('simTemplatesModal')?.classList.add('hidden');
+    }
+
+    function insertSimTemplate(templateId) {
+      const tpl = cachedTemplatesList.find((t) => t.id === templateId);
+      if (!tpl || !Array.isArray(tpl.steps) || !tpl.steps.length) return;
+      pushSimUndo();
+      const cloned = tpl.steps.map((s) => ({
+        ...JSON.parse(JSON.stringify(s)),
+        id: `step-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      }));
+      const insertAt = currentSimSteps.length ? simEditIndex + 1 : 0;
+      currentSimSteps.splice(insertAt, 0, ...cloned);
+      simEditIndex = insertAt;
+      closeSimTemplatesModal();
+      setSimEditorStatus(`Inserted "${tpl.name}" (${cloned.length} step(s)) at Step ${insertAt + 1}.`);
+      renderSimEditor();
+    }
+
+    async function saveCurrentAsTemplate() {
+      if (!currentSimSteps.length) {
+        setSimEditorStatus('Add at least one step before saving a template.', true);
+        return;
+      }
+      const name = window.prompt('Template name (e.g. Open Patient Demographics):', currentSimTitle || '');
+      if (!name || !name.trim()) return;
+      try {
+        const res = await fetchWithSimAuth('/api/step-sim/templates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name.trim(), steps: currentSimSteps }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Failed to save template');
+        setSimEditorStatus(`Saved template "${data.name}" (${(data.steps || []).length} step(s)).`);
+      } catch (err) {
+        setSimEditorStatus(err.message || 'Failed to save template', true);
+      }
+    }
+
+    async function deleteSimTemplate(templateId) {
+      try {
+        const res = await fetchWithSimAuth('/api/step-sim/templates', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: templateId }),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || 'Failed to delete template');
+        }
+        openSimTemplatesModal();
+      } catch (err) {
+        setSimEditorStatus(err.message || 'Failed to delete template', true);
+      }
     }
 
     function moveEditorStep(idx, delta) {
@@ -1845,6 +2417,7 @@
         const saved = await res.json();
         currentSimSteps = saved.steps || [];
         setSimEditorStatus('Simulation saved!');
+        loadNamedStepsDropdown();
       } catch (err) {
         setSimEditorStatus(err.message || 'Save failed', true);
       } finally {
@@ -1866,21 +2439,220 @@
       applyEditorZoom();
     }
 
-    function toggleEditorToolMode() {
-      editorToolMode = editorToolMode === 'draw' ? 'pan' : 'draw';
-      const btn = document.getElementById('simEditorModeBtn');
-      const canvas = document.getElementById('simEditorCanvas');
-      if (btn) {
-        btn.textContent = editorToolMode === 'draw' ? 'Tool: Draw Area' : 'Tool: Pan / Move';
-        btn.className = editorToolMode === 'draw'
-          ? 'px-2.5 py-1 rounded-lg bg-[#0F2A4A] text-white text-xs font-semibold transition'
-          : 'px-2.5 py-1 rounded-lg bg-amber-500 text-white text-xs font-semibold transition';
+    let simArrowStart = null;
+    let simArrowSize = 0.7;
+    let simArrowColor = '#F43F5E';
+    let simTextStyle = { color: '#FFFFFF', bgColor: '#0F172A', noBg: false, size: 14, bold: true };
+    let simSelectedAnnotation = null;
+    const simUndoStack = [];
+
+    function syncPropsBarToSelection() {
+      const step = currentSimSteps[simEditIndex];
+      const textContentEl = document.getElementById('simPropTextContent');
+      const textColorEl = document.getElementById('simPropTextColor');
+      const textBgEl = document.getElementById('simPropTextBg');
+      const textNoBgEl = document.getElementById('simPropTextNoBg');
+      const textSizeEl = document.getElementById('simPropTextSize');
+      const textBoldBtn = document.getElementById('simPropTextBoldBtn');
+      const arrowSizeEl = document.getElementById('simArrowSizeSelect');
+      const arrowColorEl = document.getElementById('simPropArrowColor');
+
+      if (simSelectedAnnotation?.type === 'text' && step?.texts?.[simSelectedAnnotation.index]) {
+        const t = step.texts[simSelectedAnnotation.index];
+        if (textContentEl) { textContentEl.value = t.text || ''; textContentEl.classList.remove('hidden'); }
+        if (textColorEl) textColorEl.value = t.color || '#FFFFFF';
+        if (textNoBgEl) textNoBgEl.checked = t.bgColor === 'transparent';
+        if (textBgEl && t.bgColor && t.bgColor !== 'transparent') textBgEl.value = t.bgColor;
+        if (textSizeEl) textSizeEl.value = t.size || 14;
+        if (textBoldBtn) {
+          const isBold = t.bold ?? true;
+          textBoldBtn.className = isBold
+            ? 'w-7 h-7 rounded-lg bg-[#0F2A4A] text-white font-extrabold text-xs transition'
+            : 'w-7 h-7 rounded-lg bg-white border border-slate-300 text-slate-600 font-normal text-xs transition';
+        }
+      } else {
+        if (textContentEl) textContentEl.classList.add('hidden');
+        if (textColorEl) textColorEl.value = simTextStyle.color;
+        if (textNoBgEl) textNoBgEl.checked = simTextStyle.noBg;
+        if (textBgEl) textBgEl.value = simTextStyle.bgColor;
+        if (textSizeEl) textSizeEl.value = simTextStyle.size;
+        if (textBoldBtn) {
+          textBoldBtn.className = simTextStyle.bold
+            ? 'w-7 h-7 rounded-lg bg-[#0F2A4A] text-white font-extrabold text-xs transition'
+            : 'w-7 h-7 rounded-lg bg-white border border-slate-300 text-slate-600 font-normal text-xs transition';
+        }
       }
-      if (canvas) {
-        canvas.classList.toggle('cursor-crosshair', editorToolMode === 'draw');
-        canvas.classList.toggle('cursor-grab', editorToolMode === 'pan');
+
+      if (simSelectedAnnotation?.type === 'arrow' && step?.arrows?.[simSelectedAnnotation.index]) {
+        const a = step.arrows[simSelectedAnnotation.index];
+        if (arrowSizeEl) arrowSizeEl.value = String(a.size || 0.7);
+        if (arrowColorEl) arrowColorEl.value = a.color || '#F43F5E';
       }
     }
+
+    function onTextPropChange(prop, value) {
+      const step = currentSimSteps[simEditIndex];
+      const selText = simSelectedAnnotation?.type === 'text' ? step?.texts?.[simSelectedAnnotation.index] : null;
+      if (prop === 'text' && selText) {
+        selText.text = String(value);
+        renderSimEditor();
+        return;
+      }
+      if (prop === 'color') {
+        simTextStyle.color = value;
+        if (selText) { pushSimUndo(); selText.color = value; renderSimEditor(); }
+      } else if (prop === 'bgColor') {
+        simTextStyle.bgColor = value;
+        simTextStyle.noBg = false;
+        if (selText) { pushSimUndo(); selText.bgColor = value; renderSimEditor(); }
+      } else if (prop === 'noBg') {
+        simTextStyle.noBg = Boolean(value);
+        if (selText) { pushSimUndo(); selText.bgColor = value ? 'transparent' : simTextStyle.bgColor; renderSimEditor(); }
+      } else if (prop === 'size') {
+        const sz = Math.max(1, Math.min(100, Number(value) || 14));
+        simTextStyle.size = sz;
+        if (selText) { selText.size = sz; renderSimEditor(); }
+      }
+    }
+
+    function toggleTextPropBold() {
+      const step = currentSimSteps[simEditIndex];
+      const selText = simSelectedAnnotation?.type === 'text' ? step?.texts?.[simSelectedAnnotation.index] : null;
+      if (selText) {
+        pushSimUndo();
+        selText.bold = !(selText.bold ?? true);
+        renderSimEditor();
+      } else {
+        simTextStyle.bold = !simTextStyle.bold;
+        syncPropsBarToSelection();
+      }
+    }
+
+    function onArrowColorChange(val) {
+      simArrowColor = val || '#F43F5E';
+      const step = currentSimSteps[simEditIndex];
+      if (simSelectedAnnotation?.type === 'arrow' && step?.arrows?.[simSelectedAnnotation.index]) {
+        pushSimUndo();
+        step.arrows[simSelectedAnnotation.index].color = simArrowColor;
+        renderSimEditor();
+      }
+    }
+
+    function pushSimUndo() {
+      simUndoStack.push(JSON.stringify({ steps: currentSimSteps, idx: simEditIndex }));
+      if (simUndoStack.length > 40) simUndoStack.shift();
+    }
+
+    function undoSimEdit() {
+      if (!simEditMode || !simUndoStack.length) return;
+      const snap = JSON.parse(simUndoStack.pop());
+      currentSimSteps = snap.steps || [];
+      simEditIndex = Math.min(snap.idx || 0, Math.max(0, currentSimSteps.length - 1));
+      simSelectedAnnotation = null;
+      simArrowStart = null;
+      renderSimEditor();
+    }
+
+    function onArrowSizeChange(val) {
+      simArrowSize = Number(val) || 0.9;
+      const step = currentSimSteps[simEditIndex];
+      if (simSelectedAnnotation?.type === 'arrow' && step?.arrows?.[simSelectedAnnotation.index]) {
+        pushSimUndo();
+        step.arrows[simSelectedAnnotation.index].size = simArrowSize;
+        renderSimEditor();
+      }
+    }
+
+    function deleteSelectedAnnotation() {
+      const step = currentSimSteps[simEditIndex];
+      if (!step || !simSelectedAnnotation) return;
+      pushSimUndo();
+      if (simSelectedAnnotation.type === 'text' && step.texts) {
+        step.texts.splice(simSelectedAnnotation.index, 1);
+      } else if (simSelectedAnnotation.type === 'arrow' && step.arrows) {
+        step.arrows.splice(simSelectedAnnotation.index, 1);
+      } else if (simSelectedAnnotation.type === 'highlight' && step.highlights) {
+        step.highlights.splice(simSelectedAnnotation.index, 1);
+      }
+      simSelectedAnnotation = null;
+      renderSimEditor();
+    }
+
+    function distPointToSegment(px, py, x1, y1, x2, y2) {
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const lenSq = dx * dx + dy * dy;
+      if (lenSq === 0) return Math.hypot(px - x1, py - y1);
+      const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / lenSq));
+      return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+    }
+
+    function findAnnotationAt(step, pt) {
+      if (!step) return null;
+      const texts = step.texts || [];
+      for (let i = texts.length - 1; i >= 0; i--) {
+        const t = texts[i];
+        if (Math.abs(pt.x - t.x) <= 9 && Math.abs(pt.y - t.y) <= 4.5) {
+          return { type: 'text', index: i };
+        }
+      }
+      const arrows = step.arrows || [];
+      for (let i = arrows.length - 1; i >= 0; i--) {
+        const a = arrows[i];
+        if (distPointToSegment(pt.x, pt.y, a.x1, a.y1, a.x2, a.y2) <= 3.5) {
+          return { type: 'arrow', index: i };
+        }
+      }
+      const highlights = step.highlights || [];
+      for (let i = highlights.length - 1; i >= 0; i--) {
+        const h = highlights[i];
+        if (pt.x >= h.x && pt.x <= h.x + h.w && pt.y >= h.y && pt.y <= h.y + h.h) {
+          return { type: 'highlight', index: i };
+        }
+      }
+      return null;
+    }
+
+    function setEditorToolMode(mode) {
+      editorToolMode = mode;
+      simArrowStart = null;
+      if (mode !== 'select') simSelectedAnnotation = null;
+      const btns = {
+        draw: document.getElementById('simToolDrawBtn'),
+        highlight: document.getElementById('simToolHighlightBtn'),
+        arrow: document.getElementById('simToolArrowBtn'),
+        text: document.getElementById('simToolTextBtn'),
+        select: document.getElementById('simToolSelectBtn'),
+        pan: document.getElementById('simToolPanBtn'),
+      };
+      for (const [k, btn] of Object.entries(btns)) {
+        if (!btn) continue;
+        const active = k === mode;
+        btn.className = active
+          ? 'px-2.5 py-1 rounded-lg bg-[#0F2A4A] text-white text-xs font-semibold transition'
+          : 'px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition';
+      }
+      const canvas = document.getElementById('simEditorCanvas');
+      if (canvas) {
+        canvas.classList.toggle('cursor-crosshair', mode !== 'pan' && mode !== 'select');
+        canvas.classList.toggle('cursor-grab', mode === 'pan');
+        canvas.classList.toggle('cursor-pointer', mode === 'select');
+      }
+      renderSimEditor();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (!simEditMode) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        undoSimEdit();
+      } else if ((e.key === 'Delete' || e.key === 'Backspace') && simSelectedAnnotation) {
+        e.preventDefault();
+        deleteSelectedAnnotation();
+      }
+    });
 
     // Play mode wheel zoom + drag-pan
     (function initSimPlayZoomPan() {
@@ -1951,6 +2723,23 @@
         return { x, y };
       }
 
+      let selectMoveState = null;
+
+      canvas.addEventListener('dblclick', (e) => {
+        if (!simEditMode || !currentSimSteps[simEditIndex]) return;
+        const pt = getPctCoords(e);
+        const hit = findAnnotationAt(currentSimSteps[simEditIndex], pt);
+        if (hit?.type === 'text') {
+          const item = currentSimSteps[simEditIndex].texts[hit.index];
+          const updated = window.prompt('Edit text box:', item.text);
+          if (updated !== null && updated.trim()) {
+            pushSimUndo();
+            item.text = updated.trim().slice(0, 200);
+            renderSimEditor();
+          }
+        }
+      });
+
       canvas.addEventListener('pointerdown', (e) => {
         if (!simEditMode || !currentSimSteps[simEditIndex]) return;
         const wantsPan = editorToolMode === 'pan' || e.button === 1 || e.button === 2 || e.altKey;
@@ -1962,10 +2751,76 @@
         }
         if (e.button !== 0) return;
         e.preventDefault();
+        const pt = getPctCoords(e);
+        const step = currentSimSteps[simEditIndex];
+
+        if (editorToolMode === 'text') {
+          const text = window.prompt('Enter text box content:');
+          if (text && text.trim()) {
+            pushSimUndo();
+            if (!Array.isArray(step.texts)) step.texts = [];
+            step.texts.push({
+              x: Math.round(pt.x * 100) / 100,
+              y: Math.round(pt.y * 100) / 100,
+              text: text.trim().slice(0, 200),
+              size: simTextStyle.size,
+              color: simTextStyle.color,
+              bgColor: simTextStyle.noBg ? 'transparent' : simTextStyle.bgColor,
+              bold: simTextStyle.bold,
+            });
+            simSelectedAnnotation = { type: 'text', index: step.texts.length - 1 };
+            renderSimEditor();
+          }
+          return;
+        }
+
+        if (editorToolMode === 'select') {
+          const hit = findAnnotationAt(step, pt);
+          simSelectedAnnotation = hit;
+          if (hit) {
+            canvas.setPointerCapture(e.pointerId);
+            selectMoveState = {
+              hit,
+              startX: pt.x,
+              startY: pt.y,
+              pushedUndo: false,
+              orig: JSON.parse(JSON.stringify(
+                hit.type === 'text' ? step.texts[hit.index]
+                  : hit.type === 'arrow' ? step.arrows[hit.index]
+                  : step.highlights[hit.index]
+              )),
+            };
+          }
+          renderSimEditor();
+          return;
+        }
+
+        if (editorToolMode === 'arrow') {
+          if (!simArrowStart) {
+            simArrowStart = { x: Math.round(pt.x * 100) / 100, y: Math.round(pt.y * 100) / 100 };
+            document.getElementById('simHotspotCoordsLabel').textContent = 'Now click point 2 (arrow tip)';
+          } else {
+            pushSimUndo();
+            if (!Array.isArray(step.arrows)) step.arrows = [];
+            step.arrows.push({
+              x1: simArrowStart.x,
+              y1: simArrowStart.y,
+              x2: Math.round(pt.x * 100) / 100,
+              y2: Math.round(pt.y * 100) / 100,
+              size: simArrowSize,
+              color: simArrowColor,
+            });
+            simArrowStart = null;
+            renderSimEditor();
+          }
+          return;
+        }
+
         canvas.setPointerCapture(e.pointerId);
-        const start = getPctCoords(e);
-        simDragState = { startX: start.x, startY: start.y };
-        renderEditorHotspotBox({ x: start.x, y: start.y, w: 0.5, h: 0.5 });
+        simDragState = { startX: pt.x, startY: pt.y, mode: editorToolMode };
+        if (editorToolMode === 'draw') {
+          renderEditorHotspotBox({ x: pt.x, y: pt.y, w: 0.5, h: 0.5 });
+        }
       });
 
       canvas.addEventListener('pointermove', (e) => {
@@ -1978,18 +2833,49 @@
           applyEditorZoom();
           return;
         }
-        if (!simDragState) return;
-        const cur = getPctCoords(e);
-        const x = Math.min(simDragState.startX, cur.x);
-        const y = Math.min(simDragState.startY, cur.y);
-        const w = Math.abs(cur.x - simDragState.startX);
-        const h = Math.abs(cur.y - simDragState.startY);
-        renderEditorHotspotBox({ x, y, w, h });
-      });
-
-      function finishDrag(e) {
-        if (editorPanStart) {
-          editorPanStart = null;
+        if (selectMoveState && currentSimSteps[simEditIndex]) {
+          const cur = getPctCoords(e);
+          const dx = cur.x - selectMoveState.startX;
+          const dy = cur.y - selectMoveState.startY;
+          if (!selectMoveState.pushedUndo && (Math.abs(dx) > 0.3 || Math.abs(dy) > 0.3)) {
+            pushSimUndo();
+            selectMoveState.pushedUndo = true;
+          }
+          const step = currentSimSteps[simEditIndex];
+          const { hit, orig } = selectMoveState;
+          if (hit.type === 'text' && step.texts?.[hit.index]) {
+            step.texts[hit.index].x = Math.max(0, Math.min(100, Math.round((orig.x + dx) * 100) / 100));
+            step.texts[hit.index].y = Math.max(0, Math.min(100, Math.round((orig.y + dy) * 100) / 100));
+          } else if (hit.type === 'arrow' && step.arrows?.[hit.index]) {
+            step.arrows[hit.index].x1 = Math.max(0, Math.min(100, Math.round((orig.x1 + dx) * 100) / 100));
+            step.arrows[hit.index].y1 = Math.max(0, Math.min(100, Math.round((orig.y1 + dy) * 100) / 100));
+            step.arrows[hit.index].x2 = Math.max(0, Math.min(100, Math.round((orig.x2 + dx) * 100) / 100));
+            step.arrows[hit.index].y2 = Math.max(0, Math.min(100, Math.round((orig.y2 + dy) * 100) / 100));
+          } else if (hit.type === 'highlight' && step.highlights?.[hit.index]) {
+            step.highlights[hit.index].x = Math.max(0, Math.min(100 - orig.w, Math.round((orig.x + dx) * 100) / 100));
+            step.highlights[hit.index].y = Math.max(0, Math.min(100 - orig.h, Math.round((orig.y + dy) * 100) / 100));
+          }
+          renderStepAnnotations(
+            document.getElementById('simEditorHighlights'),
+            document.getElementById('simEditorArrows'),
+            document.getElementById('simEditorTexts'),
+            step,
+            null,
+            null,
+            simSelectedAnnotation
+          );
+          return;
+        }
+        if (editorToolMode === 'arrow' && simArrowStart && currentSimSteps[simEditIndex]) {
+          const cur = getPctCoords(e);
+          renderStepAnnotations(
+            document.getElementById('simEditorHighlights'),
+            document.getElementById('simEditorArrows'),
+            document.getElementById('simEditorTexts'),
+            currentSimSteps[simEditIndex],
+            null,
+            { x1: simArrowStart.x, y1: simArrowStart.y, x2: cur.x, y2: cur.y, size: simArrowSize, color: simArrowColor }
+          );
           return;
         }
         if (!simDragState) return;
@@ -1998,15 +2884,54 @@
         const y = Math.min(simDragState.startY, cur.y);
         const w = Math.abs(cur.x - simDragState.startX);
         const h = Math.abs(cur.y - simDragState.startY);
+        if (simDragState.mode === 'highlight') {
+          renderStepAnnotations(
+            document.getElementById('simEditorHighlights'),
+            document.getElementById('simEditorArrows'),
+            document.getElementById('simEditorTexts'),
+            currentSimSteps[simEditIndex],
+            { x, y, w, h }
+          );
+        } else {
+          renderEditorHotspotBox({ x, y, w, h });
+        }
+      });
+
+      function finishDrag(e) {
+        if (editorPanStart) {
+          editorPanStart = null;
+          return;
+        }
+        if (selectMoveState) {
+          selectMoveState = null;
+          renderSimEditor();
+          return;
+        }
+        if (!simDragState) return;
+        const cur = getPctCoords(e);
+        const x = Math.min(simDragState.startX, cur.x);
+        const y = Math.min(simDragState.startY, cur.y);
+        const w = Math.abs(cur.x - simDragState.startX);
+        const h = Math.abs(cur.y - simDragState.startY);
+        const mode = simDragState.mode;
         simDragState = null;
 
         if (w >= 1 && h >= 1 && currentSimSteps[simEditIndex]) {
-          currentSimSteps[simEditIndex].hotspot = {
+          pushSimUndo();
+          const rectObj = {
             x: Math.round(x * 100) / 100,
             y: Math.round(y * 100) / 100,
             w: Math.round(w * 100) / 100,
             h: Math.round(h * 100) / 100,
           };
+          if (mode === 'highlight') {
+            if (!Array.isArray(currentSimSteps[simEditIndex].highlights)) {
+              currentSimSteps[simEditIndex].highlights = [];
+            }
+            currentSimSteps[simEditIndex].highlights.push(rectObj);
+          } else {
+            currentSimSteps[simEditIndex].hotspot = rectObj;
+          }
         }
         renderSimEditor();
       }
@@ -2196,6 +3121,267 @@
       };
     }
 
+    function getPediatricsActiveSteps(s) {
+      const v = s.visit;
+      if (!v) return ['visit'];
+      if (v === 'nb_pe') {
+        if (s.nb_child_chart === 'no') {
+          return ['visit', 'nb_child_chart', 'nb_parent_chart', 'insurance', 'location_pcp'];
+        }
+        return ['visit', 'nb_child_chart', 'insurance', 'location_pcp'];
+      }
+      if (v === 'lactation' || v === 'tongue_tie') {
+        return ['visit', 'insurance', 'location_pcp'];
+      }
+      if (v === 'pe' || v === 'same_day' || v === 'ov' || v === 'hos_fu') {
+        return ['visit', 'age_attendance', 'insurance', 'location_pcp'];
+      }
+      if (v === 'pre_op') {
+        return ['visit', 'pe_status', 'age_attendance', 'insurance', 'location_pcp'];
+      }
+      if (v === 'vaccines') {
+        if (s.vaccines === 'flu_rsv') return ['visit', 'age_attendance', 'insurance'];
+        return ['visit', 'pe_status', 'age_attendance', 'insurance', 'location_pcp'];
+      }
+      if (v === 'specialty') {
+        return ['visit', 'pe_status', 'insurance'];
+      }
+      if (v === 'te_form') {
+        if (s.te_form === 'stat_lab' || s.te_form === 'forms') return ['visit'];
+        return ['visit', 'pe_status'];
+      }
+      return ['visit', 'pe_status', 'age_attendance', 'insurance', 'location_pcp'];
+    }
+
+    function getPediatricsProviders(s) {
+      if (!s.visit || s.location_pcp === 'same_day_other_pcp') return [];
+      if (s.visit === 'te_form') return [];
+      if (s.visit === 'vaccines' && s.vaccines === 'flu_rsv') {
+        return [{ init: 'N', name: 'Nurse Schedule (Flu / RSV)', match: 'Flu' }];
+      }
+      if (s.visit === 'nb_pe') {
+        if (s.location_pcp === 'clear_bg') {
+          return [{ init: 'D', name: 'Dr. Dina Faiden (Blooming Grove)', match: 'Dina Faiden' }];
+        }
+        return [
+          { init: 'A', name: 'Dr. Adam Polinger (Wed NB Slots)', match: 'Adam Polinger' },
+          { init: 'E', name: 'Dr. Eliezer Frommer (Thu AM NB Slots)', match: 'Eliezer Frommer' },
+        ];
+      }
+      if (s.visit === 'lactation') {
+        return [
+          { init: 'C', name: 'Dr. Chana Heintz (30m)', match: 'Chana Heintz' },
+          { init: 'T', name: 'Dr. Tamar Dachoh (30m)', match: 'Tamar Dachoh' },
+          { init: 'R', name: 'Robin Aschkenasy, PA (30m)', match: 'Robin Aschkenasy' },
+        ];
+      }
+      if (s.visit === 'specialty') {
+        const specMap = {
+          cardiology: [{ init: 'R', name: 'Dr. Rubin Cooper (1st Thu, FR)', match: 'Rubin S. Cooper' }],
+          pulm_krishnan: [{ init: 'S', name: 'Dr. Sankaran Krishnan (TE Hayley)', match: 'Sankaran Krishnan' }],
+          pulm_welter: [{ init: 'J', name: 'Dr. John Welter (2nd Tue, TE Hayley)', match: 'John Welter' }],
+          allergy: [
+            { init: 'J', name: 'Dr. Jillian Hochfelder', match: 'Jillian Hochfelder' },
+            { init: 'S', name: 'Dr. Subhadra Siegel', match: 'Subhadra Siegel' },
+          ],
+          rheum: [{ init: 'B', name: 'Dr. Beth Gottlieb (1st Tue)', match: 'Beth Gottlieb' }],
+          ent: [
+            { init: 'L', name: 'Dr. Lianne DeSerres (1st Tue)', match: 'Lianne DeSerres' },
+            { init: 'T', name: 'Dr. Tali Lando (3rd Wed)', match: 'Tali Lando' },
+          ],
+        };
+        return specMap[s.specialty] || [];
+      }
+      if (s.location_pcp === 'clear_bg') {
+        return [{ init: 'D', name: 'Dr. Dina Faiden (Blooming Grove)', match: 'Dina Faiden' }];
+      }
+      const pcps = [
+        { init: 'A', name: 'Dr. Adam Polinger (NB Wed)', match: 'Adam Polinger' },
+        { init: 'E', name: 'Dr. Eliezer Frommer (NB Thu AM)', match: 'Eliezer Frommer' },
+        { init: 'L', name: 'Dr. Lazar Khaimov', match: 'Lazar Khaimov' },
+        { init: 'C', name: 'Dr. Chana Heintz (Stitches/Lact)', match: 'Chana Heintz' },
+        { init: 'T', name: 'Dr. Tamar Dachoh (Lact)', match: 'Tamar Dachoh' },
+        { init: 'R', name: 'Robin Aschkenasy, PA (Lact)', match: 'Robin Aschkenasy' },
+        { init: 'L', name: 'Lily Namanworth, CPNP (Spanish)', match: 'Lily Namanworth' },
+        { init: 'L', name: 'Lori Lambert, NP (Max 30/day)', match: 'Lori Lambert' },
+      ];
+      return pcps;
+    }
+
+    function evaluatePediatricsCockpit(s) {
+      // 1. Stat abnormal lab immediate rule
+      if (s.visit === 'te_form' && s.te_form === 'stat_lab') {
+        return {
+          status: 'STOP',
+          tag: 'IMMEDIATE CALL · NO TE',
+          title: 'Call Sherri in the Lab Immediately (Ext. 1800)',
+          summary: 'Stat abnormal labs (e.g., LabCorp Bilirubin) require an immediate phone call—do NOT send a Telephone Encounter.',
+          checklist: [
+            'Call Sherri in the Lab directly at Ext. 1800.',
+            'Do NOT create a TE for stat abnormal lab results.',
+          ],
+          ecwNote: 'Pediatrics Stat Lab: Transferred/called Sherri at Ext. 1800 immediately per protocol (no TE).',
+        };
+      }
+
+      // 2. Same-day PCP restriction
+      if (s.location_pcp === 'same_day_other_pcp') {
+        return {
+          status: 'STOP',
+          tag: 'DO NOT BOOK · SAME-DAY PCP RULE',
+          title: 'Cannot See Two Pediatric PCPs on the Same Day',
+          summary: 'Insurance only reimburses one primary care visit per calendar day.',
+          checklist: [
+            'Do NOT book another Pediatrics primary care visit today.',
+            'Transfer to a Triage Nurse to assess urgency, OR schedule with Acute Care.',
+          ],
+          ecwNote: 'Pediatrics: Patient already seen by PCP today. Declined 2nd PCP per policy; offered Triage Nurse / Acute Care.',
+        };
+      }
+
+      // 3. PE Past Due restrictions (Flu/RSV, Sick, OV, NB PE, Hos FU, Lactation, Tongue Tie exempt)
+      const peRequired =
+        s.visit === 'pre_op' ||
+        s.visit === 'specialty' ||
+        (s.visit === 'vaccines' && s.vaccines === 'routine_vax') ||
+        (s.visit === 'te_form' && ['refill', 'imaging', 'ent_nutr_ref', 'gen_ref', 'controlled_wt'].includes(s.te_form));
+
+      if (s.pe_status === 'past_due' && peRequired) {
+        return {
+          status: 'STOP',
+          tag: 'PE PAST DUE · SCHEDULE PE FIRST',
+          title: 'Physical Exam (PE) Must Be Up-to-Date First',
+          summary: 'If PE is PAST DUE, patient is NOT entitled to referrals, specialty visits, routine vaccines, digital imaging, or routine refills.',
+          checklist: [
+            'Book a Physical Exam (PE / PE+SHOTS) first (or check Managed Care >= 6 mos + birthday exception).',
+            'Note: Flu and RSV vaccines on the nurse schedule are exempt from the PE rule.',
+          ],
+          ecwNote: 'Pediatrics: PE past due in ECW. Advised PE required prior to referral/specialty/routine vaccine/imaging/refill.',
+        };
+      }
+
+      // 4. Insurance exclusions
+      if (s.insurance === 'conditional' && s.conditional === 'no_medicaid') {
+        return {
+          status: 'WARNING',
+          tag: 'NON-ACCEPTED PLAN · $100 SELF-PAY',
+          title: 'Plan Not Accepted Standalone — Offer $100 Self-Pay',
+          summary: 'MVP Commercial/CHP, Anthem (JLJ prefix), and standalone HealthFirst require active Medicaid secondary.',
+          checklist: [
+            'Inform caller upfront of the $100 flat-rate Self-Pay fee before booking.',
+            'In-house tests are included; send-out labs are billed separately by the external lab.',
+          ],
+          ecwNote: 'Pediatrics: Commercial plan without Medicaid secondary. Advised $100 Self-Pay flat rate upfront.',
+        };
+      }
+
+      if (s.insurance === 'uhc' && s.visit === 'specialty' && (s.specialty === 'cardiology' || s.specialty === 'rheum')) {
+        return {
+          status: 'STOP',
+          tag: 'INSURANCE NOT ACCEPTED',
+          title: 'UHC Not Accepted by This Specialist',
+          summary: 'Dr. Rubin Cooper (Cardiology) and Dr. Beth Gottlieb (Rheumatology) do NOT accept United Healthcare (UHC).',
+          checklist: [
+            'Verify alternate eligible insurance or discuss out-of-network / self-pay options.',
+          ],
+          ecwNote: 'Pediatrics Specialty: UHC not accepted by Dr. Cooper / Dr. Gottlieb.',
+        };
+      }
+
+      // 5. Attendance & Consent reminders
+      const attendanceNote =
+        s.visit === 'vaccines'
+          ? 'Parent or Adult Sibling (18+) REQUIRED (no exceptions; 30-min observation for some vaccines).'
+          : s.age_attendance === 'infant'
+            ? 'Parent or Adult Sibling (18+) REQUIRED — 12-year-old sibling NEVER permitted for infants.'
+            : s.age_attendance === 'teen_12plus' && s.visit === 'same_day'
+              ? 'Teen (12+) may attend sick visit alone ONLY with parent verbal consent documented ("Consent- [Parent First Name]").'
+              : 'Parent or Adult Sibling (18+) must accompany child under 12.';
+
+      const locNote =
+        s.location_pcp === 'clear_bkt'
+          ? 'Bakertown (48 Bakertown Rd, Closed Fri–Sun; use BK prefix for labs/nurses).'
+          : s.location_pcp === 'clear_bg'
+            ? 'Blooming Grove (1200 Route 208, Closed Fri–Sun; Dr. Dina Faiden; Spanish NP PE = 30 min).'
+            : 'Forest Rd (49 Forest Rd, Open all days).';
+
+      // 6. TE / Referral / Form routing
+      if (s.visit === 'te_form') {
+        const teMap = {
+          refill: { q: 'PEDS Encounters Queue', note: 'Tag HIGH PRIORITY if completely out of medication.' },
+          imaging: { q: 'PEDS Marisa Kraft', note: 'PE must be up to date.' },
+          ent_nutr_ref: { q: 'Hayley Newton', note: 'ENT & Nutritionist referrals go to Hayley Newton.' },
+          gen_ref: { q: 'Anisa Azeez', note: 'General specialist referrals go to Anisa Azeez.' },
+          controlled_wt: { q: 'Sally Carilli', note: 'Controlled substances scheduled in approved slots only.' },
+          forms: { q: 'Alexa Puccini / Peds TE Inbox', note: '48h turnaround; Early Head Start goes to Peds TE Inbox only (NOT Alexa). Drop off at west side nursing bin.' },
+        };
+        const info = teMap[s.te_form] || { q: 'PEDS Encounters Queue', note: '' };
+        return {
+          status: 'BOOK',
+          tag: 'ROUTE TELEPHONE ENCOUNTER',
+          title: `Route TE to: ${info.q}`,
+          summary: info.note,
+          checklist: [
+            `PE Status: ${s.pe_status === 'utd' ? 'Up-to-Date verified' : 'Past Due (Flu/RSV or non-PE form only)'}.`,
+            locNote,
+          ],
+          ecwNote: `Pediatrics TE: Routed to ${info.q}. ${info.note}`,
+        };
+      }
+
+      if (s.visit === 'tongue_tie') {
+        if (s.tongue_tie === 'over_5wks') {
+          return {
+            status: 'WARNING',
+            tag: 'OVER 5 WEEKS · EVAL & REFER OUT',
+            title: 'Tongue Tie Eval Only — Refer Out (> 5 Weeks)',
+            summary: 'In-house tongue tie procedure is only performed <= 5 weeks from delivery. Provider evaluates and refers out.',
+            checklist: [
+              'Book OV or SAME DAY for evaluation; inform caller procedure will be referred out.',
+              locNote,
+            ],
+            ecwNote: 'Pediatrics Tongue Tie (> 5 wks): Booked evaluation; provider will refer out for procedure.',
+          };
+        }
+      }
+      const visitRules = {
+        pe: { title: 'Book Physical Exam (PE / PE+SHOTS)', summary: 'Pre-bookable routine preventive exam (10-min slot grid; Spanish NP PE w/ Dr. Faiden = 30 min).' },
+        nb_pe: { title: 'Book Newborn Physical (NB PE <= 6 wks)', summary: 'Dr. Polinger: Wednesdays only (10m if <2y); Dr. Frommer: Thu AM only (10m if <1y). Document "NB PE, #Lab ID, delivery hospital".' },
+        same_day: { title: 'Book Same-Day Sick Visit (SAME DAY)', summary: 'Same-Day Only (NOT pre-bookable). Walk-ins accepted here only. List all symptoms in reason.' },
+        ov: { title: 'Book Office Visit / Follow-Up (OV)', summary: 'Pre-bookable by converting a same-day sick slot (suture removal = 20m; WIC = reason HEMO).' },
+        pre_op: { title: 'Book Pre-Op Visit (PRE OP)', summary: 'Pre-bookable by converting a same-day sick slot. Document surgery date, type, surgeon/hospital, and "Physical UTD".' },
+        hos_fu: { title: 'Book Hospital / ER Follow-Up (PED HOS FU)', summary: 'Pre-bookable by converting a same-day sick slot.' },
+        lactation: { title: 'Book Lactation Support (OV 30 min)', summary: 'Pre-bookable 30-min OV only with Dr. Chana Heintz, Dr. Tamar Dachoh, or Robin Aschkenasy.' },
+        tongue_tie: { title: 'Book Tongue Tie Eval (OV or SAME DAY)', summary: 'In-house procedure ONLY if <= 5 weeks from delivery; if > 5 weeks, provider evaluates and refers out.' },
+        vaccines: {
+          title: s.vaccines === 'flu_rsv' ? 'Book Flu / RSV on Nurse Schedule' : 'Book Routine Vaccine Visit',
+          summary: s.vaccines === 'flu_rsv' ? 'Flu & RSV exempt from PE rule; book on nurse schedule.' : 'PE verified up-to-date. Parent or 18+ required.',
+        },
+        specialty: { title: 'Book Pediatric Specialist', summary: 'Active referral & up-to-date PE required. Pulmonology requests route via TE to Hayley Newton.' },
+      };
+      const vr = visitRules[s.visit] || { title: 'Proceed with Pediatrics Booking', summary: 'Verify ECW chart & arrival time.' };
+      const chartChecklist = s.visit === 'nb_pe' && s.nb_child_chart === 'no'
+        ? [
+            s.nb_parent_chart === 'yes'
+              ? 'Add newborn to existing parent/family account (verify exact name spelling, DOB, 2 phone numbers, guarantor, insurance, pharmacy).'
+              : 'Create new family chart (verify exact name spelling, DOB, address, 2 phone numbers, guarantor, insurance, pharmacy).',
+          ]
+        : [];
+      return {
+        status: 'BOOK',
+        tag: 'ELIGIBLE · BOOK APPOINTMENT',
+        title: vr.title,
+        summary: vr.summary,
+        checklist: [
+          ...chartChecklist,
+          attendanceNote,
+          locNote,
+          'Always document arrival time in ECW comment box.',
+        ],
+        ecwNote: `Pediatrics: ${vr.title}. ${attendanceNote} ${locNote}`,
+      };
+    }
+
     function renderDecisionCockpit() {
       const container = document.getElementById('treeCockpitContainer');
       if (!container || !treeConfig) return;
@@ -2254,6 +3440,15 @@
 
       const isStepComplete = (id) => {
         if (!cockpitState[id]) return false;
+        if (treeDept === 'pediatrics') {
+          if (id === 'visit' && ['vaccines', 'specialty', 'te_form', 'tongue_tie'].includes(cockpitState.visit)) {
+            return Boolean(cockpitState[cockpitState.visit]);
+          }
+          if (id === 'insurance' && cockpitState.insurance === 'conditional') {
+            return Boolean(cockpitState.conditional);
+          }
+          return true;
+        }
         if (id === 'insurance' && (cockpitState.insurance === 'two_yr_cov' || cockpitState.insurance === 'conditional')) {
           return Boolean(cockpitState[cockpitState.insurance]);
         }
@@ -2263,45 +3458,72 @@
         return true;
       };
 
-      const hardStopAt = cockpitState.age === 'under3' ? 0 : (cockpitState.noshow === 'blocked' ? 2 : -1);
+      const activeStepIds = treeDept === 'pediatrics'
+        ? getPediatricsActiveSteps(cockpitState)
+        : treeConfig.filters.map(g => g.id);
+      const activeGroups = activeStepIds
+        .map(id => treeConfig.filters.find(g => g.id === id))
+        .filter(Boolean);
+
+      const pedsNeedsPe =
+        cockpitState.visit === 'pre_op' ||
+        cockpitState.visit === 'specialty' ||
+        (cockpitState.visit === 'vaccines' && cockpitState.vaccines === 'routine_vax') ||
+        (cockpitState.visit === 'te_form' && ['refill', 'imaging', 'ent_nutr_ref', 'gen_ref', 'controlled_wt'].includes(cockpitState.te_form));
+
+      let hardStopAt = -1;
+      if (treeDept === 'pediatrics') {
+        if (cockpitState.visit === 'te_form' && cockpitState.te_form === 'stat_lab') {
+          hardStopAt = 0;
+        } else if (cockpitState.pe_status === 'past_due' && pedsNeedsPe) {
+          hardStopAt = activeStepIds.indexOf('pe_status');
+        } else if (cockpitState.location_pcp === 'same_day_other_pcp') {
+          hardStopAt = activeStepIds.indexOf('location_pcp');
+        }
+      } else {
+        hardStopAt = cockpitState.age === 'under3' ? 0 : (cockpitState.noshow === 'blocked' ? 2 : -1);
+      }
+
       let visibleUpTo = 0;
       if (hardStopAt !== -1) {
         visibleUpTo = hardStopAt;
       } else {
-        for (let i = 0; i < treeConfig.filters.length - 1; i++) {
-          if (isStepComplete(treeConfig.filters[i].id)) visibleUpTo = i + 1;
+        for (let i = 0; i < activeGroups.length - 1; i++) {
+          if (isStepComplete(activeGroups[i].id)) visibleUpTo = i + 1;
           else break;
         }
       }
 
-      const allComplete = hardStopAt !== -1 || treeConfig.filters.every(g => isStepComplete(g.id));
-      const completedCount = treeConfig.filters.filter(g => isStepComplete(g.id)).length;
+      const allComplete = hardStopAt !== -1 || activeGroups.every(g => isStepComplete(g.id));
+      const completedCount = activeGroups.filter(g => isStepComplete(g.id)).length;
       const counterEl = document.getElementById('cockpitStepCounter');
       if (counterEl) {
         counterEl.textContent = allComplete
           ? (hardStopAt !== -1 ? 'Stopped — Eligibility Check' : 'All steps complete')
-          : `Step ${visibleUpTo + 1} of ${treeConfig.filters.length}`;
+          : `Step ${visibleUpTo + 1} of ${activeGroups.length}`;
       }
 
       // 1. Reveal/hide step rows, update step badges, and update pill active styles in-place
-      treeConfig.filters.forEach((group, idx) => {
+      treeConfig.filters.forEach((group) => {
+        const activeIdx = activeStepIds.indexOf(group.id);
+        const isRelevant = activeIdx !== -1;
         const stepEl = document.getElementById(`cockpitStep-${group.id}`);
         if (stepEl) {
-          stepEl.classList.toggle('is-open', idx <= visibleUpTo);
+          stepEl.classList.toggle('is-open', isRelevant && activeIdx <= visibleUpTo);
         }
 
         const badgeEl = document.getElementById(`cockpitBadge-${group.id}`);
-        const done = isStepComplete(group.id);
+        const done = isRelevant && isStepComplete(group.id);
         if (badgeEl) {
           if (done) {
             badgeEl.className = 'w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shrink-0 transition-colors duration-200';
             badgeEl.textContent = '✓';
-          } else if (idx === visibleUpTo) {
+          } else if (isRelevant && activeIdx === visibleUpTo) {
             badgeEl.className = 'w-6 h-6 rounded-full bg-[#1565C0] text-white text-xs font-bold flex items-center justify-center shrink-0 transition-colors duration-200';
-            badgeEl.textContent = String(idx + 1);
+            badgeEl.textContent = String(activeIdx + 1);
           } else {
             badgeEl.className = 'w-6 h-6 rounded-full bg-slate-100 text-slate-600 text-xs font-bold flex items-center justify-center shrink-0 transition-colors duration-200';
-            badgeEl.textContent = String(idx + 1);
+            badgeEl.textContent = String(isRelevant ? activeIdx + 1 : '–');
           }
         }
 
@@ -2348,31 +3570,38 @@
         }
       };
 
-      const insSubKey = (cockpitState.insurance === 'conditional' || cockpitState.insurance === 'two_yr_cov')
-        ? cockpitState.insurance
-        : null;
-      const visitSubKey = cockpitState.visit === 'complaint' ? 'complaint' : null;
+      const insSubKey = treeDept === 'pediatrics'
+        ? (cockpitState.insurance === 'conditional' ? 'conditional' : null)
+        : ((cockpitState.insurance === 'conditional' || cockpitState.insurance === 'two_yr_cov')
+          ? cockpitState.insurance
+          : null);
+      const visitSubKey = treeDept === 'pediatrics'
+        ? (['vaccines', 'specialty', 'te_form', 'tongue_tie'].includes(cockpitState.visit) ? cockpitState.visit : null)
+        : (cockpitState.visit === 'complaint' ? 'complaint' : null);
       updateDrawer('insurance', insSubKey);
       updateDrawer('visit', visitSubKey);
 
       // 3. Update right outcome panel in-place
       const outcomeEl = document.getElementById('cockpitOutcomePanel');
-      const providers = !cockpitState.age || cockpitState.age === 'under3' || cockpitState.noshow === 'blocked' || (allComplete && evaluateVisionCockpit(cockpitState).status === 'STOP')
-        ? []
-        : cockpitState.age === '3to5'
-          ? [
-            { init: 'K', name: 'Dr. Klein*', match: 'Klein' },
-            { init: 'A', name: 'Dr. Akilov', match: 'Akilov' },
-            { init: 'G', name: 'Dr. Goldberg', match: 'Goldberg' },
-          ]
-          : [
-            { init: 'K', name: 'Dr. Klein*', match: 'Klein' },
-            { init: 'A', name: 'Dr. Akilov', match: 'Akilov' },
-            { init: 'G', name: 'Dr. Goldberg', match: 'Goldberg' },
-            { init: 'B', name: 'Dr. Berger', match: 'Berger' },
-            { init: 'H', name: 'Dr. Herbik', match: 'Herbik' },
-            { init: 'S', name: 'Dr. Sheth', match: 'Sheth' },
-          ];
+      const evalFn = treeDept === 'pediatrics' ? evaluatePediatricsCockpit : evaluateVisionCockpit;
+      const providers = treeDept === 'pediatrics'
+        ? getPediatricsProviders(cockpitState)
+        : (!cockpitState.age || cockpitState.age === 'under3' || cockpitState.noshow === 'blocked' || (allComplete && evalFn(cockpitState).status === 'STOP')
+          ? []
+          : cockpitState.age === '3to5'
+            ? [
+              { init: 'K', name: 'Dr. Klein*', match: 'Klein' },
+              { init: 'A', name: 'Dr. Akilov', match: 'Akilov' },
+              { init: 'G', name: 'Dr. Goldberg', match: 'Goldberg' },
+            ]
+            : [
+              { init: 'K', name: 'Dr. Klein*', match: 'Klein' },
+              { init: 'A', name: 'Dr. Akilov', match: 'Akilov' },
+              { init: 'G', name: 'Dr. Goldberg', match: 'Goldberg' },
+              { init: 'B', name: 'Dr. Berger', match: 'Berger' },
+              { init: 'H', name: 'Dr. Herbik', match: 'Herbik' },
+              { init: 'S', name: 'Dr. Sheth', match: 'Sheth' },
+            ]);
 
       if (selectedCockpitDoctor && !providers.some(p => p.match === selectedCockpitDoctor)) {
         selectedCockpitDoctor = null;
@@ -2409,11 +3638,11 @@
         : `<p class="text-xs text-slate-500">${!cockpitState.age ? 'Select Patient Age (Step 1) to see eligible providers.' : 'No eligible in-house providers for current selection.'}</p>`;
 
       if (!allComplete) {
-        const currentGroup = treeConfig.filters[visibleUpTo];
+        const currentGroup = activeGroups[visibleUpTo];
         const currentTitle = currentGroup ? currentGroup.label.replace(/^\d+\.\s*/, '') : 'Next Step';
         const needsSub = Boolean(cockpitState[currentGroup?.id]);
-        const pct = Math.round((completedCount / treeConfig.filters.length) * 100);
-        const selectedSummary = treeConfig.filters.slice(0, visibleUpTo + 1).map(g => {
+        const pct = Math.round((completedCount / activeGroups.length) * 100);
+        const selectedSummary = activeGroups.slice(0, visibleUpTo + 1).map(g => {
           const sel = g.options.find(o => o.id === cockpitState[g.id]);
           if (!sel) return null;
           return `${g.label.replace(/^\d+\.\s*/, '')}: ${sel.label}`;
@@ -2421,7 +3650,7 @@
 
         outcomeEl.innerHTML = `
           <div class="p-5 rounded-2xl border bg-[#E8F2FC] border-[#C5DCF5] text-[#0F2A4A] shadow-sm transition-colors duration-300">
-            <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full bg-[#1565C0] text-white mb-2.5">STEP ${visibleUpTo + 1} OF ${treeConfig.filters.length}</span>
+            <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full bg-[#1565C0] text-white mb-2.5">STEP ${visibleUpTo + 1} OF ${activeGroups.length}</span>
             <h2 class="text-xl font-extrabold leading-snug">${escapeHtml(currentTitle)}</h2>
             <p class="text-xs mt-1.5 opacity-85 leading-relaxed">${needsSub ? 'Answer the follow-up question to continue to the next step.' : 'Choose an option on the left to continue to the next step.'}</p>
             <div class="mt-3.5 h-1.5 w-full rounded-full bg-[#C5DCF5] overflow-hidden">
@@ -2451,7 +3680,7 @@
         return;
       }
 
-      const outcome = evaluateVisionCockpit(cockpitState);
+      const outcome = evalFn(cockpitState);
       const styles = outcome.status === 'STOP'
         ? { box: 'bg-rose-50 border-rose-200 text-rose-950', pill: 'bg-rose-600 text-white' }
         : outcome.status === 'DIRECT'

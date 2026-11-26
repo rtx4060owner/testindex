@@ -181,6 +181,7 @@ function getSecurityHeaders(req) {
 }
 
 const STEP_SIMS_DIR = path.join(PUBLIC_DIR, "data", "step_sims");
+const STEP_SIM_TEMPLATES_DIR = path.join(STEP_SIMS_DIR, "templates");
 const STEP_SIM_IMG_EXTS = new Set(["png", "jpg", "jpeg", "webp", "gif", "avif"]);
 
 function sanitizeSimId(raw) {
@@ -213,12 +214,52 @@ function sanitizeSimSteps(steps) {
           h: clampPct(s.hotspot.h),
         }
       : null;
+    const highlights = Array.isArray(s?.highlights)
+      ? s.highlights.slice(0, 20).map((h) => ({
+          x: clampPct(h?.x),
+          y: clampPct(h?.y),
+          w: clampPct(h?.w),
+          h: clampPct(h?.h),
+        })).filter((h) => h.w > 0 && h.h > 0)
+      : [];
+    const arrows = Array.isArray(s?.arrows)
+      ? s.arrows.slice(0, 20).map((a) => ({
+          x1: clampPct(a?.x1),
+          y1: clampPct(a?.y1),
+          x2: clampPct(a?.x2),
+          y2: clampPct(a?.y2),
+          size: Math.max(0.3, Math.min(3, Number(a?.size) || 0.7)),
+          color: typeof a?.color === "string" && /^#[0-9a-fA-F]{6}$/.test(a.color) ? a.color : "#F43F5E",
+        }))
+      : [];
+    const texts = Array.isArray(s?.texts)
+      ? s.texts.slice(0, 20).map((t) => ({
+          x: clampPct(t?.x),
+          y: clampPct(t?.y),
+          text: typeof t?.text === "string" ? t.text.trim().slice(0, 200) : "",
+          size: Math.max(1, Math.min(100, Number(t?.size) || 14)),
+          color: typeof t?.color === "string" && /^#[0-9a-fA-F]{6}$/.test(t.color) ? t.color : "#FFFFFF",
+          bgColor: typeof t?.bgColor === "string" && (/^#[0-9a-fA-F]{6}$/.test(t.bgColor) || t.bgColor === "transparent")
+            ? t.bgColor
+            : "#0F172A",
+          bold: Boolean(t?.bold ?? true),
+        })).filter((t) => t.text.length > 0)
+      : [];
     return {
       id: typeof s?.id === "string" && s.id.trim() ? s.id.trim().slice(0, 64) : `step-${idx + 1}`,
+      type: s?.type === "question" ? "question" : "photo",
+      name: typeof s?.name === "string" ? s.name.trim().slice(0, 80) : "",
       imageUrl: typeof s?.imageUrl === "string" ? s.imageUrl.trim().slice(0, 512) : "",
+      label: typeof s?.label === "string" ? s.label.trim().slice(0, 120) : "",
       instruction: typeof s?.instruction === "string" ? s.instruction.trim().slice(0, 500) : "",
       hint: typeof s?.hint === "string" ? s.hint.trim().slice(0, 300) : "",
+      question: typeof s?.question === "string" ? s.question.trim().slice(0, 300) : "",
+      yesTarget: typeof s?.yesTarget === "string" ? s.yesTarget.trim().slice(0, 64) : "next",
+      noTarget: typeof s?.noTarget === "string" ? s.noTarget.trim().slice(0, 64) : "next",
       hotspot: hotspot && hotspot.w > 0 && hotspot.h > 0 ? hotspot : null,
+      highlights,
+      arrows,
+      texts,
     };
   });
 }
@@ -460,6 +501,105 @@ const server = http.createServer(async (req, res) => {
         body: JSON.stringify({ query, topK, department }),
       });
       return sendJson(res, 200, data, req);
+    }
+
+    if (reqPath === "/api/step-sim/named-steps" && req.method === "GET") {
+      requireUserAuth(req);
+      const entries = [];
+      const scanDir = (dirPath, sourceKind) => {
+        if (!fs.existsSync(dirPath)) return;
+        for (const file of fs.readdirSync(dirPath)) {
+          if (!file.endsWith(".json")) continue;
+          try {
+            const doc = JSON.parse(fs.readFileSync(path.join(dirPath, file), "utf8"));
+            const steps = Array.isArray(doc?.steps) ? doc.steps : [];
+            const sourceTitle = doc?.name || doc?.title || doc?.id || file.replace(/\.json$/, "");
+            steps.forEach((step, idx) => {
+              const stepName = (step?.name || "").trim();
+              if (!stepName) return;
+              entries.push({
+                key: `${sourceKind}:${file}:${idx}`,
+                stepName,
+                sourceTitle,
+                followingCount: steps.length - 1 - idx,
+                stepsFromHere: steps.slice(idx),
+              });
+            });
+          } catch {}
+        }
+      };
+      scanDir(STEP_SIMS_DIR, "sim");
+      scanDir(STEP_SIM_TEMPLATES_DIR, "tpl");
+      return sendJson(res, 200, { entries }, req);
+    }
+
+    if (reqPath === "/api/step-sim/templates" && req.method === "GET") {
+      requireUserAuth(req);
+      const templates = [];
+      if (fs.existsSync(STEP_SIM_TEMPLATES_DIR)) {
+        for (const file of fs.readdirSync(STEP_SIM_TEMPLATES_DIR)) {
+          if (!file.endsWith(".json")) continue;
+          try {
+            const raw = JSON.parse(fs.readFileSync(path.join(STEP_SIM_TEMPLATES_DIR, file), "utf8"));
+            templates.push(raw);
+          } catch {}
+        }
+      }
+      templates.sort((a, b) => String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")));
+      return sendJson(res, 200, { templates }, req);
+    }
+
+    if (reqPath === "/api/step-sim/templates" && req.method === "POST") {
+      requireSimEditAuth(req);
+      const body = await readJsonBody(req, 512 * 1024);
+      const name = typeof body?.name === "string" ? body.name.trim().slice(0, 80) : "";
+      if (!name) throw new HttpError(400, "Template name is required");
+      const id = sanitizeSimId(
+        name.toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 48) || `tpl-${Date.now()}`
+      );
+      const payload = {
+        id,
+        name,
+        updatedAt: new Date().toISOString(),
+        steps: sanitizeSimSteps(body?.steps),
+      };
+      fs.mkdirSync(STEP_SIM_TEMPLATES_DIR, { recursive: true });
+      fs.writeFileSync(path.join(STEP_SIM_TEMPLATES_DIR, `${id}.json`), JSON.stringify(payload, null, 2), "utf8");
+      return sendJson(res, 200, payload, req);
+    }
+
+    if (reqPath === "/api/step-sim/templates" && req.method === "DELETE") {
+      requireSimEditAuth(req);
+      const body = await readJsonBody(req);
+      const id = sanitizeSimId(body?.id || "");
+      const tplPath = path.join(STEP_SIM_TEMPLATES_DIR, `${id}.json`);
+      if (fs.existsSync(tplPath)) fs.unlinkSync(tplPath);
+      return sendJson(res, 200, { status: "deleted", id }, req);
+    }
+
+    if (reqPath === "/api/step-sim/images" && req.method === "GET") {
+      requireUserAuth(req);
+      const imagesRoot = path.join(STEP_SIMS_DIR, "images");
+      const images = [];
+      if (fs.existsSync(imagesRoot)) {
+        for (const simFolder of fs.readdirSync(imagesRoot)) {
+          const folderPath = path.join(imagesRoot, simFolder);
+          if (!fs.statSync(folderPath).isDirectory()) continue;
+          for (const file of fs.readdirSync(folderPath)) {
+            const ext = path.extname(file).slice(1).toLowerCase();
+            if (!STEP_SIM_IMG_EXTS.has(ext)) continue;
+            const stat = fs.statSync(path.join(folderPath, file));
+            images.push({
+              url: `/data/step_sims/images/${simFolder}/${file}`,
+              name: file,
+              simId: simFolder,
+              mtimeMs: stat.mtimeMs,
+            });
+          }
+        }
+      }
+      images.sort((a, b) => b.mtimeMs - a.mtimeMs);
+      return sendJson(res, 200, { images }, req);
     }
 
     if (reqPath === "/api/step-sim" && req.method === "GET") {

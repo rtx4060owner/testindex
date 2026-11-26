@@ -1,0 +1,123 @@
+{
+  "department": "Pediatrics",
+  "title": "Pediatrics Appointment Decision Cockpit",
+  "subtitle": "Start with Visit Type, then verify PE status, age/attendance, insurance, and location.",
+  "filters": [
+    {
+      "id": "visit",
+      "label": "1. Visit Type",
+      "options": [
+        { "id": "pe", "label": "Physical Exam (PE / PE+SHOTS)" },
+        { "id": "nb_pe", "label": "Newborn Physical (NB PE <= 6 wks)" },
+        { "id": "same_day", "label": "Same-Day Sick (SAME DAY)" },
+        { "id": "ov", "label": "Office Visit / Follow-Up (OV)" },
+        { "id": "pre_op", "label": "Pre-Op Visit (PRE OP)" },
+        { "id": "hos_fu", "label": "Hospital / ER Follow-Up (PED HOS FU)" },
+        { "id": "lactation", "label": "Lactation (OV 30m)" },
+        { "id": "tongue_tie", "label": "Tongue Tie Eval (<= 5 wks)" },
+        { "id": "vaccines", "label": "Vaccines / Shots" },
+        { "id": "specialty", "label": "Pediatric Specialist" },
+        { "id": "te_form", "label": "Refill / Referral / Forms / Labs" }
+      ]
+    },
+    {
+      "id": "nb_child_chart",
+      "label": "2. Does the child have a chart?",
+      "options": [
+        { "id": "yes", "label": "Yes" },
+        { "id": "no", "label": "No" }
+      ]
+    },
+    {
+      "id": "nb_parent_chart",
+      "label": "3. Does the parent have a chart?",
+      "options": [
+        { "id": "yes", "label": "Yes — Add to family account" },
+        { "id": "no", "label": "No — Create new family chart" }
+      ]
+    },
+    {
+      "id": "pe_status",
+      "label": "2. Physical Exam (PE) Status",
+      "options": [
+        { "id": "utd", "label": "PE Up-to-Date" },
+        { "id": "past_due", "label": "PE Past Due" }
+      ]
+    },
+    {
+      "id": "age_attendance",
+      "label": "3. Age & Attendance",
+      "options": [
+        { "id": "infant", "label": "Newborn / Infant (< 2 yrs)" },
+        { "id": "child_under12", "label": "Child (2 – 11 yrs)" },
+        { "id": "teen_12plus", "label": "Teen (12 – 21 yrs)" }
+      ]
+    },
+    {
+      "id": "insurance",
+      "label": "4. Insurance Plan",
+      "options": [
+        { "id": "medicaid_managed", "label": "Medicaid / Managed Care" },
+        { "id": "conditional", "label": "MVP / CHP / HealthFirst / Anthem (JLJ)" },
+        { "id": "uhc", "label": "United Healthcare (UHC)" },
+        { "id": "self_pay", "label": "Self-Pay ($100 Flat Rate)" }
+      ]
+    },
+    {
+      "id": "location_pcp",
+      "label": "5. Location",
+      "options": [
+        { "id": "clear_fr", "label": "Forest Rd (FR)" },
+        { "id": "clear_bkt", "label": "Bakertown (BKT)" },
+        { "id": "clear_bg", "label": "Blooming Grove / Spanish" },
+        { "id": "same_day_other_pcp", "label": "Already Saw a PCP Today" }
+      ]
+    }
+  ],
+  "subQuestions": {
+    "vaccines": {
+      "label": "Which vaccine(s) does the patient need?",
+      "options": [
+        { "id": "routine_vax", "label": "Routine Vaccines (PE Required)" },
+        { "id": "flu_rsv", "label": "Flu or RSV Only (Nurse Schedule — PE Exempt)" }
+      ]
+    },
+    "specialty": {
+      "label": "Which Pediatric Specialist is requested?",
+      "options": [
+        { "id": "cardiology", "label": "Cardiology — Dr. Rubin Cooper (1st Thu, FR, 30m)" },
+        { "id": "pulm_krishnan", "label": "Pulmonology — Dr. Krishnan (1 Tue/mo, 40m NP / 30m FU)" },
+        { "id": "pulm_welter", "label": "Pulmonology — Dr. Welter (2nd Tue, 60m NP / 40m FU)" },
+        { "id": "allergy", "label": "Allergy — Dr. Hochfelder / Dr. Siegel (Monthly, 30m)" },
+        { "id": "rheum", "label": "Rheumatology — Dr. Beth Gottlieb (1st Tue, 40m NP / 20m FU)" },
+        { "id": "ent", "label": "ENT — Dr. DeSerres (1st Tue) / Dr. Lando (3rd Wed, 20m)" }
+      ]
+    },
+    "te_form": {
+      "label": "What is the caller requesting?",
+      "options": [
+        { "id": "refill", "label": "Medication Refill" },
+        { "id": "imaging", "label": "Digital Imaging Request" },
+        { "id": "ent_nutr_ref", "label": "ENT or Nutritionist Referral" },
+        { "id": "gen_ref", "label": "General Specialist Referral" },
+        { "id": "controlled_wt", "label": "Controlled Substance / Weight Check" },
+        { "id": "forms", "label": "PE / Medication / WIC / Early Head Start Form" },
+        { "id": "stat_lab", "label": "Stat Abnormal Lab (e.g. LabCorp Bilirubin)" }
+      ]
+    },
+    "conditional": {
+      "label": "Does the patient have active Medicaid as secondary coverage?",
+      "options": [
+        { "id": "has_medicaid", "label": "Yes — Active Medicaid Secondary" },
+        { "id": "no_medicaid", "label": "No Secondary Medicaid" }
+      ]
+    },
+    "tongue_tie": {
+      "label": "How old is the baby from delivery?",
+      "options": [
+        { "id": "under_5wks", "label": "<= 5 Weeks Old (Eligible for in-house procedure)" },
+        { "id": "over_5wks", "label": "> 5 Weeks Old (Eval only — provider refers out)" }
+      ]
+    }
+  }
+}

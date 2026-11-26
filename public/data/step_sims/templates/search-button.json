@@ -1,0 +1,34 @@
+{
+  "id": "search-button",
+  "name": "search button",
+  "updatedAt": "2026-11-26T18:24:20.184Z",
+  "steps": [
+    {
+      "id": "step-1795717403355-v6zr",
+      "name": "",
+      "imageUrl": "/data/step_sims/images/peds_visit/1795717202761-b2dfc5-start_screen.png",
+      "label": "",
+      "instruction": "",
+      "hint": "",
+      "hotspot": {
+        "x": 20.04,
+        "y": 3.65,
+        "w": 2.4,
+        "h": 3.79
+      },
+      "highlights": [],
+      "arrows": [],
+      "texts": [
+        {
+          "x": 23.76,
+          "y": 8.74,
+          "text": "click the search button",
+          "size": 4,
+          "color": "#FFFFFF",
+          "bgColor": "transparent",
+          "bold": true
+        }
+      ]
+    }
+  ]
+}

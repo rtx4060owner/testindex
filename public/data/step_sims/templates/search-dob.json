@@ -1,0 +1,61 @@
+{
+  "id": "search-dob",
+  "name": "search DOB",
+  "updatedAt": "2026-11-26T18:27:28.538Z",
+  "steps": [
+    {
+      "id": "step-1795717403355-v6zr",
+      "name": "",
+      "imageUrl": "/data/step_sims/images/peds_visit/1795717202761-b2dfc5-start_screen.png",
+      "label": "",
+      "instruction": "",
+      "hint": "",
+      "hotspot": {
+        "x": 20.04,
+        "y": 3.65,
+        "w": 2.4,
+        "h": 3.79
+      },
+      "highlights": [],
+      "arrows": [],
+      "texts": [
+        {
+          "x": 24.04,
+          "y": 9.01,
+          "text": "click the search button",
+          "size": 6,
+          "color": "#FFFFFF",
+          "bgColor": "transparent",
+          "bold": true
+        }
+      ]
+    },
+    {
+      "id": "step-1795717548146-jg1n",
+      "name": "",
+      "imageUrl": "/data/step_sims/images/age/1795620816583-685ee0-2.png",
+      "label": "",
+      "instruction": "",
+      "hint": "",
+      "hotspot": {
+        "x": 33.52,
+        "y": 24.42,
+        "w": 12.3,
+        "h": 5.16
+      },
+      "highlights": [],
+      "arrows": [],
+      "texts": [
+        {
+          "x": 37.27,
+          "y": 23.37,
+          "text": "type the child DOB",
+          "size": 6,
+          "color": "#FFFFFF",
+          "bgColor": "transparent",
+          "bold": true
+        }
+      ]
+    }
+  ]
+}
