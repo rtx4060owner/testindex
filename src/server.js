@@ -3,14 +3,6 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
-import { env, pipeline } from "@huggingface/transformers";
-import {
-  INTENT_LABELS,
-  DEFAULT_ROUTING_LABELS,
-  YES_NO_LABELS,
-  classifyIntentRule,
-  checkDeterministicRules,
-} from "./rules.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(__dirname, "..");
@@ -22,16 +14,21 @@ const CF_WORKER_URL = process.env.CF_WORKER_URL || "https://aizer-health-kb.aize
 const WORKER_API_KEY = process.env.WORKER_API_KEY || "";
 const ADMIN_SECRET = process.env.ADMIN_SECRET || "";
 const TRUST_PROXY = process.env.TRUST_PROXY === "true";
+const GOOGLE_CLIENT_ID = (process.env.GOOGLE_CLIENT_ID || "").trim();
+const ALLOWED_EMAILS = new Set(
+  (process.env.ALLOWED_EMAILS || "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
+);
+const SESSION_SECRET = process.env.SESSION_SECRET || ADMIN_SECRET || crypto.randomBytes(32).toString("hex");
+const SESSION_COOKIE_NAME = "aizer_session";
+const SESSION_TTL_SEC = 60 * 60 * 24 * 7; // 7 days
 
 const MAX_BODY_BYTES = 32 * 1024;
 const MAX_QUERY_LEN = 500;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX = 60;
-
-const NLI_MODEL = "Xenova/nli-deberta-v3-small";
-const LOCAL_QA_MODEL = path.join(ROOT_DIR, "models", "deberta-v3-base-squad2-onnx");
-const HAS_LOCAL_QA = fs.existsSync(LOCAL_QA_MODEL);
-const QA_MODEL = HAS_LOCAL_QA ? LOCAL_QA_MODEL : "Xenova/distilbert-base-cased-distilled-squad";
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -53,11 +50,13 @@ const SECURITY_HEADERS = {
   "X-XSS-Protection": "0",
   "Content-Security-Policy": [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://accounts.google.com blob:",
+    "worker-src 'self' blob:",
+    "frame-src 'self' https://accounts.google.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com",
     "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data:",
-    "connect-src 'self'",
+    "img-src 'self' data: https://*.googleusercontent.com",
+    "connect-src 'self' https://huggingface.co https://*.hf.co https://*.huggingface.co https://cdn.jsdelivr.net https://accounts.google.com",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -117,17 +116,6 @@ class HttpError extends Error {
     this.status = status;
   }
 }
-
-env.allowLocalModels = true;
-
-console.log(`Loading INT8 ONNX NLI model (${NLI_MODEL})...`);
-const classifier = await pipeline("zero-shot-classification", NLI_MODEL, { dtype: "q8" });
-
-console.log(`Loading ONNX QA model (${QA_MODEL})...`);
-const qaExtractor = await pipeline("question-answering", QA_MODEL, {
-  dtype: HAS_LOCAL_QA ? "fp32" : "q8",
-  local_files_only: HAS_LOCAL_QA,
-});
 
 async function fetchWorkerJson(endpoint, options = {}) {
   const headers = { ...(options.headers || {}) };
@@ -235,150 +223,77 @@ function sanitizeSimSteps(steps) {
   });
 }
 
-function sendJson(res, status, data, req = null) {
+function parseCookies(req) {
+  const raw = req.headers.cookie || "";
+  const out = {};
+  for (const part of raw.split(";")) {
+    const idx = part.indexOf("=");
+    if (idx > 0) {
+      out[part.slice(0, idx).trim()] = decodeURIComponent(part.slice(idx + 1).trim());
+    }
+  }
+  return out;
+}
+
+function signSessionToken(user) {
+  const payload = {
+    username: user.username || user.email || "",
+    display_name: user.display_name || user.name || user.username || "",
+    role: user.role || "agent",
+    exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SEC,
+  };
+  const b64 = Buffer.from(JSON.stringify(payload), "utf8").toString("base64url");
+  const sig = crypto.createHmac("sha256", SESSION_SECRET).update(b64).digest("base64url");
+  return `${b64}.${sig}`;
+}
+
+function verifySessionToken(req) {
+  const token = parseCookies(req)[SESSION_COOKIE_NAME];
+  if (!token || !token.includes(".")) return null;
+  const [b64, sig] = token.split(".");
+  const expected = crypto.createHmac("sha256", SESSION_SECRET).update(b64).digest("base64url");
+  const a = Buffer.from(sig);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+  try {
+    const data = JSON.parse(Buffer.from(b64, "base64url").toString("utf8"));
+    if (!data?.username || (data.exp && data.exp < Math.floor(Date.now() / 1000))) return null;
+    return {
+      username: data.username,
+      display_name: data.display_name || data.username,
+      role: data.role || "agent",
+    };
+  } catch {
+    return null;
+  }
+}
+
+function requireUserAuth(req) {
+  const user = verifySessionToken(req);
+  if (!user) throw new HttpError(401, "Sign in required");
+  return user;
+}
+
+function buildSessionCookieHeader(value, req, maxAge = SESSION_TTL_SEC) {
+  const isHttps = req?.socket?.encrypted || (TRUST_PROXY && req?.headers?.["x-forwarded-proto"] === "https");
+  const parts = [
+    `${SESSION_COOKIE_NAME}=${encodeURIComponent(value)}`,
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Lax",
+    `Max-Age=${maxAge}`,
+  ];
+  if (isHttps) parts.push("Secure");
+  return parts.join("; ");
+}
+
+function sendJson(res, status, data, req = null, extraHeaders = {}) {
   res.writeHead(status, {
     ...getSecurityHeaders(req),
     "Content-Type": "application/json; charset=utf-8",
+    ...extraHeaders,
   });
   res.end(JSON.stringify(data));
-}
-
-function buildNliHypothesis(query, proposedAnswer) {
-  const cleanedQ = query.trim().replace(/\?+$/, "");
-  const factMatch = cleanedQ.match(/^(?:what|where|when|who)\s+(?:is|are)\s+(.+)$/i);
-  if (factMatch) return `${factMatch[1]} is ${proposedAnswer}`;
-  return `${proposedAnswer} (${cleanedQ})`;
-}
-
-async function verifyAnswerWithNli(query, proposedAnswer, chunks, detReason = null) {
-  const topChunks = chunks.slice(0, 3);
-  const hypothesis = buildNliHypothesis(query, proposedAnswer);
-  const scored = await Promise.all(
-    topChunks.map(async (c) => {
-      const out = await classifier(`${c.entity}. ${c.content}`, [hypothesis], {
-        multi_label: true,
-        hypothesis_template: "{}",
-      });
-      return { chunk: c, score: out.scores?.[0] ?? 0 };
-    }),
-  );
-  scored.sort((a, b) => b.score - a.score);
-  const best = scored[0];
-  const score = Number(best.score.toFixed(4));
-  const supported = score >= 0.45;
-  return {
-    supported,
-    verdict: supported ? "Verified" : "Needs Review",
-    confidence: score,
-    reason: detReason || (supported
-      ? `Based on ${best.chunk.entity}: ${best.chunk.content}`
-      : `Could not confirm automatically against ${best.chunk.entity}. Please check the guideline below.`),
-  };
-}
-
-async function handleDecide(body) {
-  const query = validateQuery(body?.query);
-  const department = typeof body?.department === "string" && body.department.trim()
-    ? body.department.trim().slice(0, 64)
-    : null;
-
-  const searchRes = await fetchWorkerJson("/search", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query, topK: 5, department }),
-  });
-
-  const chunks = searchRes.results || [];
-  if (chunks.length === 0) {
-    return { error: "No matching SOP rules found.", results: [] };
-  }
-
-  let bestChunk = chunks[0];
-
-  const ruleIntent = classifyIntentRule(query);
-  let intentLabel;
-  let intentScore;
-  if (ruleIntent) {
-    intentLabel = ruleIntent.label;
-    intentScore = ruleIntent.score;
-  } else {
-    const intentOut = await classifier(query, INTENT_LABELS, { multi_label: false });
-    intentLabel = intentOut.labels[0];
-    intentScore = intentOut.scores[0];
-  }
-
-  const detCheck = checkDeterministicRules(query, chunks, department);
-  if (detCheck?.override_chunk_id) {
-    const match = chunks.find((c) => c.id === detCheck.override_chunk_id);
-    if (match) bestChunk = match;
-  }
-
-  const groundedInput = `SOP Rule (${bestChunk.entity}): ${bestChunk.content}\nStaff Question: ${query}`;
-  const payload = {
-    query,
-    department,
-    detected_intent: {
-      type: intentLabel,
-      confidence: Number(intentScore.toFixed(4)),
-    },
-    matched_source: bestChunk,
-    results: chunks,
-  };
-
-  if (detCheck || intentLabel.startsWith("Eligibility")) {
-    payload.mode = "yes_no_gate";
-    if (detCheck) {
-      payload.yes_no_gate = {
-        decision: detCheck.decision,
-        confidence: 1.0,
-        method: "Deterministic Rule Engine",
-        explanation: detCheck.reason,
-      };
-    } else {
-      const ynOut = await classifier(groundedInput, YES_NO_LABELS, { multi_label: false });
-      payload.yes_no_gate = {
-        decision: ynOut.labels[0],
-        confidence: Number(ynOut.scores[0].toFixed(4)),
-        method: "ONNX NLI (INT8)",
-        explanation: bestChunk.content,
-      };
-    }
-  } else if (intentLabel.startsWith("Queue Routing")) {
-    payload.mode = "queue_routing";
-    const routeOut = await classifier(groundedInput, DEFAULT_ROUTING_LABELS, { multi_label: false });
-    const topLabel = routeOut.labels[0];
-    const topScore = routeOut.scores[0];
-    payload.routing_classification = {
-      action: topScore >= 0.45 ? topLabel : "Review Matched SOP Policy Below",
-      confidence: Number(topScore.toFixed(4)),
-      low_confidence: topScore < 0.45,
-      explanation: bestChunk.content,
-    };
-  } else {
-    payload.mode = "fact_lookup";
-    const qaOut = await qaExtractor(query, bestChunk.content);
-    payload.direct_fact = {
-      answer: qaOut.answer?.trim() || "See matched rule below",
-      confidence: Number((qaOut.score ?? 0).toFixed(4)),
-      context_note: bestChunk.content,
-    };
-  }
-
-  const proposedAnswer = payload.yes_no_gate
-    ? `${payload.yes_no_gate.decision} (${payload.yes_no_gate.explanation})`
-    : payload.routing_classification
-      ? payload.routing_classification.action
-      : payload.direct_fact.answer;
-
-  payload.answer_verification = await verifyAnswerWithNli(
-    query,
-    proposedAnswer,
-    chunks,
-    detCheck?.reason || null,
-  );
-  payload.detected_intent.confidence = payload.answer_verification.confidence;
-
-  return payload;
 }
 
 const server = http.createServer(async (req, res) => {
@@ -421,11 +336,118 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (reqPath === "/api/auth/me" && req.method === "GET") {
+      const user = verifySessionToken(req);
+      return sendJson(res, 200, {
+        authEnabled: true,
+        authenticated: Boolean(user),
+        user,
+      }, req);
+    }
+
+    if (reqPath === "/api/auth/login" && req.method === "POST") {
+      if (isRateLimited(clientIp)) throw new HttpError(429, "Too many requests");
+      const body = await readJsonBody(req);
+      const username = typeof body?.username === "string" ? body.username.trim().toLowerCase() : "";
+      const password = typeof body?.password === "string" ? body.password : "";
+      if (!username || !password) throw new HttpError(400, "Username and password are required");
+
+      let user = null;
+      if (username === "admin" && ADMIN_SECRET) {
+        const a = Buffer.from(password);
+        const b = Buffer.from(ADMIN_SECRET);
+        if (a.length === b.length && crypto.timingSafeEqual(a, b)) {
+          user = { username: "admin", display_name: "Administrator", role: "admin" };
+        }
+      }
+
+      if (!user) {
+        const headers = { "Content-Type": "application/json" };
+        if (WORKER_API_KEY) headers["X-Worker-Key"] = WORKER_API_KEY;
+        const wRes = await fetch(`${CF_WORKER_URL}/auth/login`, {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ username, password }),
+          signal: AbortSignal.timeout(8_000),
+        });
+        const wData = await wRes.json().catch(() => ({}));
+        if (!wRes.ok || !wData.user) {
+          throw new HttpError(wRes.status === 401 ? 401 : 401, wData.error || "Invalid username or password");
+        }
+        user = wData.user;
+      }
+
+      const token = signSessionToken(user);
+      return sendJson(res, 200, { authenticated: true, user }, req, {
+        "Set-Cookie": buildSessionCookieHeader(token, req, SESSION_TTL_SEC),
+      });
+    }
+
+    if (reqPath === "/api/auth/users" && req.method === "GET") {
+      requireAdmin(req);
+      return sendJson(res, 200, await fetchWorkerJson("/auth/users"), req);
+    }
+
+    if (reqPath === "/api/auth/users" && (req.method === "POST" || req.method === "DELETE")) {
+      requireAdmin(req);
+      const body = await readJsonBody(req);
+      const data = await fetchWorkerJson("/auth/users", {
+        method: req.method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      return sendJson(res, 200, data, req);
+    }
+
+    if (reqPath === "/api/auth/google" && req.method === "POST") {
+      if (!GOOGLE_CLIENT_ID) {
+        throw new HttpError(503, "GOOGLE_CLIENT_ID is not configured");
+      }
+      const body = await readJsonBody(req);
+      const credential = typeof body?.credential === "string" ? body.credential.trim() : "";
+      if (!credential) throw new HttpError(400, "Missing Google credential");
+
+      const verifyRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`, {
+        signal: AbortSignal.timeout(8_000),
+      });
+      if (!verifyRes.ok) throw new HttpError(401, "Invalid Google token");
+      const info = await verifyRes.json();
+
+      if (info.aud !== GOOGLE_CLIENT_ID) {
+        throw new HttpError(401, "Google token audience mismatch");
+      }
+      if (info.email_verified !== "true" || !info.email) {
+        throw new HttpError(401, "Verified Gmail / Google email required");
+      }
+      const email = String(info.email).toLowerCase();
+      if (ALLOWED_EMAILS.size > 0 && !ALLOWED_EMAILS.has(email)) {
+        throw new HttpError(403, `Access denied for ${email}`);
+      }
+
+      const user = {
+        email,
+        name: info.name || email.split("@")[0],
+        picture: info.picture || "",
+      };
+      const token = signSessionToken(user);
+      return sendJson(res, 200, { authenticated: true, user }, req, {
+        "Set-Cookie": buildSessionCookieHeader(token, req, SESSION_TTL_SEC),
+      });
+    }
+
+    if (reqPath === "/api/auth/logout" && req.method === "POST") {
+      return sendJson(res, 200, { ok: true }, req, {
+        "Set-Cookie": buildSessionCookieHeader("", req, 0),
+      });
+    }
+
     if (reqPath === "/kb" && req.method === "GET") {
+      requireUserAuth(req);
       return sendJson(res, 200, await fetchWorkerJson(`/kb${parsedUrl.search}`), req);
     }
 
     if (reqPath === "/search" && req.method === "POST") {
+      requireUserAuth(req);
       if (isRateLimited(clientIp)) throw new HttpError(429, "Too many requests");
       const body = await readJsonBody(req);
       const query = validateQuery(body?.query);
@@ -440,13 +462,8 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, data, req);
     }
 
-    if (reqPath === "/decide" && req.method === "POST") {
-      if (isRateLimited(clientIp)) throw new HttpError(429, "Too many requests");
-      const body = await readJsonBody(req);
-      return sendJson(res, 200, await handleDecide(body), req);
-    }
-
     if (reqPath === "/api/step-sim" && req.method === "GET") {
+      requireUserAuth(req);
       const simId = sanitizeSimId(parsedUrl.searchParams.get("id") || "");
       const simPath = path.join(STEP_SIMS_DIR, `${simId}.json`);
       if (!fs.existsSync(simPath)) {

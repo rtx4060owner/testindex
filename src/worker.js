@@ -23,6 +23,42 @@ function isAuthorized(request, env) {
   return timingSafeEqualStr(request.headers.get("X-Worker-Key") || "", env.WORKER_API_KEY);
 }
 
+function toHex(bytes) {
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function fromHex(hex) {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  }
+  return bytes;
+}
+
+async function hashPassword(password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" }, key, 256);
+  return `pbkdf2:${toHex(salt)}:${toHex(new Uint8Array(bits))}`;
+}
+
+async function verifyPassword(password, stored) {
+  if (typeof stored !== "string" || !stored.startsWith("pbkdf2:")) return false;
+  const parts = stored.split(":");
+  if (parts.length !== 3) return false;
+  const salt = fromHex(parts[1]);
+  const expectedHex = parts[2];
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" }, key, 256);
+  return timingSafeEqualStr(toHex(new Uint8Array(bits)), expectedHex);
+}
+
+async function ensureUsersTable(env) {
+  await env.DB.prepare(
+    "CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, username TEXT UNIQUE NOT NULL, display_name TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'agent', password_hash TEXT NOT NULL, created_at TEXT NOT NULL)"
+  ).run();
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -127,6 +163,81 @@ export default {
       await env.VECTORIZE.deleteByIds([id]);
 
       return json({ status: "deleted", id });
+    }
+
+    // 6. User Auth: Login
+    if (url.pathname === "/auth/login" && request.method === "POST") {
+      if (!isAuthorized(request, env)) return new Response("Unauthorized", { status: 401, headers: baseHeaders });
+      await ensureUsersTable(env);
+      const body = await request.json().catch(() => null);
+      const username = typeof body?.username === "string" ? body.username.trim().toLowerCase() : "";
+      const password = typeof body?.password === "string" ? body.password : "";
+      if (!username || !password) return json({ error: "Username and password are required" }, 400);
+
+      const row = await env.DB.prepare("SELECT * FROM users WHERE username = ?").bind(username).first();
+      if (!row || !(await verifyPassword(password, row.password_hash))) {
+        return json({ error: "Invalid username or password" }, 401);
+      }
+      return json({
+        ok: true,
+        user: {
+          id: row.id,
+          username: row.username,
+          display_name: row.display_name,
+          role: row.role,
+        },
+      });
+    }
+
+    // 7. User Auth: List Users (Admin)
+    if (url.pathname === "/auth/users" && request.method === "GET") {
+      if (!isAuthorized(request, env)) return new Response("Unauthorized", { status: 401, headers: baseHeaders });
+      await ensureUsersTable(env);
+      const { results } = await env.DB.prepare(
+        "SELECT id, username, display_name, role, created_at FROM users ORDER BY created_at DESC"
+      ).all();
+      return json({ users: results || [] });
+    }
+
+    // 8. User Auth: Create/Update User (Admin)
+    if (url.pathname === "/auth/users" && request.method === "POST") {
+      if (!isAuthorized(request, env)) return new Response("Unauthorized", { status: 401, headers: baseHeaders });
+      await ensureUsersTable(env);
+      const body = await request.json().catch(() => null);
+      const username = typeof body?.username === "string" ? body.username.trim().toLowerCase() : "";
+      const displayName = typeof body?.display_name === "string" && body.display_name.trim()
+        ? body.display_name.trim().slice(0, 80)
+        : username;
+      const password = typeof body?.password === "string" ? body.password : "";
+      const role = body?.role === "admin" ? "admin" : "agent";
+
+      if (!username || username.length > 80 || !/^[a-z0-9._@-]+$/.test(username)) {
+        return json({ error: "Valid username (letters, numbers, . _ @ -) is required" }, 400);
+      }
+      if (!password || password.length < 4) {
+        return json({ error: "Password must be at least 4 characters" }, 400);
+      }
+
+      const id = `usr_${crypto.randomUUID().slice(0, 8)}`;
+      const passwordHash = await hashPassword(password);
+      const createdAt = new Date().toISOString();
+
+      await env.DB.prepare(
+        "INSERT INTO users (id, username, display_name, role, password_hash, created_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(username) DO UPDATE SET display_name=excluded.display_name, role=excluded.role, password_hash=excluded.password_hash"
+      ).bind(id, username, displayName, role, passwordHash, createdAt).run();
+
+      return json({ status: "saved", username, display_name: displayName, role });
+    }
+
+    // 9. User Auth: Delete User (Admin)
+    if (url.pathname === "/auth/users" && request.method === "DELETE") {
+      if (!isAuthorized(request, env)) return new Response("Unauthorized", { status: 401, headers: baseHeaders });
+      await ensureUsersTable(env);
+      const body = await request.json().catch(() => null);
+      const username = typeof body?.username === "string" ? body.username.trim().toLowerCase() : "";
+      if (!username) return json({ error: "username is required" }, 400);
+      await env.DB.prepare("DELETE FROM users WHERE username = ?").bind(username).run();
+      return json({ status: "deleted", username });
     }
 
     return new Response("Aizer Health KB Engine Active", { headers: baseHeaders });

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aizer — Hugging Face Ping &amp; Size Check</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen p-6">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-0.5 rounded-full bg-[#E8F2FC] text-[#1565C0] text-xs font-bold">Ping &amp; Check</span>
+          <h1 class="text-xl font-bold text-slate-900">Hugging Face Reachability, Size &amp; Browser Support</h1>
+        </div>
+        <p class="text-xs text-slate-500 mt-1">
+          Pings Hugging Face metadata API (no model weights downloaded) and checks if this browser supports running NLI + QA locally.
+        </p>
+      </div>
+      <a href="/" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700 transition">
+        &larr; Back to App
+      </a>
+    </div>
+
+    <!-- Actions & Summary -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnPing" type="button"
+            class="px-4 py-2 rounded-xl bg-[#0F2A4A] hover:bg-[#173B66] text-white text-xs font-semibold transition">
+            Ping HF &amp; Check Sizes (No Download)
+          </button>
+        </div>
+        <div id="pingStatus" class="text-xs font-semibold text-slate-600">Checking browser support...</div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">NLI Size (q8)</div>
+          <div id="statNliSize" class="text-lg font-extrabold text-slate-900 mt-0.5">—</div>
+          <div id="statNliPing" class="text-[11px] text-slate-500">Xenova/nli-deberta-v3-small</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">QA Size (q8)</div>
+          <div id="statQaSize" class="text-lg font-extrabold text-slate-900 mt-0.5">—</div>
+          <div id="statQaPing" class="text-[11px] text-slate-500">Xenova/distilbert-base-cased-distilled-squad</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-[#E8F2FC]/60 border border-[#1565C0]/20">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-[#1565C0]">Total Download Needed</div>
+          <div id="statTotalSize" class="text-lg font-extrabold text-[#0F2A4A] mt-0.5">—</div>
+          <div id="statTotalLatency" class="text-[11px] text-slate-600">No weights downloaded</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Browser Ready</div>
+          <div id="statSupportBadge" class="text-sm font-bold text-slate-800 mt-1">—</div>
+          <div id="statQuota" class="text-[11px] text-slate-500 mt-0.5">Checking storage...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Browser Capability Matrix -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+      <h2 class="text-sm font-bold text-slate-900">Browser Support Check</h2>
+      <div id="supportGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs"></div>
+    </div>
+
+    <!-- Model File Sizes (Metadata Only) -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-slate-900">Model Files on Hugging Face (Metadata Only)</h2>
+        <span class="text-[11px] text-slate-400">q8 = quantized ONNX files used by client</span>
+      </div>
+      <div id="filesList" class="space-y-2 text-xs text-slate-500">
+        Click "Ping HF &amp; Check Sizes (No Download)" above to inspect exact file sizes and reachability.
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const MODELS = [
+      { id: 'Xenova/nli-deberta-v3-small', role: 'NLI (Zero-Shot)', sizeEl: 'statNliSize', pingEl: 'statNliPing' },
+      { id: 'Xenova/distilbert-base-cased-distilled-squad', role: 'QA (Answer Extract)', sizeEl: 'statQaSize', pingEl: 'statQaPing' },
+    ];
+
+    function formatMB(bytes) {
+      return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    }
+
+    async function checkBrowserSupport() {
+      const hasWasm = typeof WebAssembly === 'object' && typeof WebAssembly.instantiate === 'function';
+      const hasCaches = 'caches' in window;
+      const hasWorkers = typeof Worker !== 'undefined';
+      const hasSharedMem = typeof SharedArrayBuffer !== 'undefined';
+      let webGpuInfo = 'Not supported';
+      let hasWebGpu = false;
+      if (navigator.gpu) {
+        try {
+          const adapter = await navigator.gpu.requestAdapter();
+          if (adapter) {
+            hasWebGpu = true;
+            webGpuInfo = 'Supported (GPU)';
+          } else {
+            webGpuInfo = 'API present, no adapter';
+          }
+        } catch {
+          webGpuInfo = 'Blocked / unavailable';
+        }
+      }
+
+      let quotaText = 'Unknown';
+      let hasEnoughQuota = true;
+      if (navigator.storage?.estimate) {
+        try {
+          const est = await navigator.storage.estimate();
+          const avail = (est.quota || 0) - (est.usage || 0);
+          quotaText = `${(avail / (1024 * 1024 * 1024)).toFixed(1)} GB free`;
+          hasEnoughQuota = avail > 500 * 1024 * 1024;
+        } catch {}
+      }
+      document.getElementById('statQuota').textContent = `Cache quota: ${quotaText}`;
+
+      const checks = [
+        { name: 'WebAssembly (WASM)', ok: hasWasm, detail: hasWasm ? 'Supported (CPU fallback)' : 'Not supported' },
+        { name: 'WebGPU', ok: hasWebGpu, detail: webGpuInfo, optional: true },
+        { name: 'Cache Storage API', ok: hasCaches, detail: hasCaches ? 'Supported (offline/repeat cache)' : 'Unavailable' },
+        { name: 'Web Workers', ok: hasWorkers, detail: hasWorkers ? 'Supported' : 'Not supported' },
+        { name: 'Multi-thread WASM (COOP/COEP)', ok: hasSharedMem, detail: hasSharedMem ? 'Enabled' : 'Single-thread WASM (still works)', optional: true },
+        { name: 'Storage Quota (>=500 MB)', ok: hasEnoughQuota, detail: quotaText },
+      ];
+
+      document.getElementById('supportGrid').innerHTML = checks.map(c => {
+        const badgeClass = c.ok
+          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+          : (c.optional ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200');
+        const label = c.ok ? 'OK' : (c.optional ? 'Optional' : 'Missing');
+        return `
+          <div class="p-3 rounded-xl border ${badgeClass}">
+            <div class="flex items-center justify-between font-bold">
+              <span>${c.name}</span>
+              <span>${label}</span>
+            </div>
+            <div class="text-[11px] opacity-85 mt-0.5">${c.detail}</div>
+          </div>
+        `;
+      }).join('');
+
+      const requiredOk = hasWasm && hasCaches && hasWorkers;
+      const badgeEl = document.getElementById('statSupportBadge');
+      badgeEl.textContent = requiredOk ? (hasWebGpu ? 'Yes (WebGPU + WASM)' : 'Yes (WASM)') : 'Not Supported';
+      badgeEl.className = `text-sm font-bold mt-1 ${requiredOk ? 'text-emerald-700' : 'text-rose-700'}`;
+      document.getElementById('pingStatus').textContent = 'Ready to ping Hugging Face';
+    }
+
+    function selectClientQ8Files(files) {
+      const configAndTokenizer = new Set([
+        'config.json',
+        'tokenizer.json',
+        'tokenizer_config.json',
+        'special_tokens_map.json',
+      ]);
+      const baseFiles = files.filter(f => configAndTokenizer.has(f.path));
+      const onnxFile =
+        files.find(f => f.path === 'onnx/model_quantized.onnx') ||
+        files.find(f => f.path === 'onnx/model_int8.onnx') ||
+        files.find(f => f.path === 'onnx/model.onnx');
+      return onnxFile ? [...baseFiles, onnxFile] : baseFiles;
+    }
+
+    async function pingModel(model) {
+      const t0 = performance.now();
+      const treeRes = await fetch(`https://huggingface.co/api/models/${model.id}/tree/main?recursive=true`);
+      if (!treeRes.ok) throw new Error(`HTTP ${treeRes.status} for ${model.id}`);
+      const tree = await treeRes.json();
+
+      // Quick HEAD ping on config.json to verify CDN resolve path
+      const headRes = await fetch(`https://huggingface.co/${model.id}/resolve/main/config.json`, { method: 'HEAD' });
+      const ms = Math.round(performance.now() - t0);
+
+      const files = Array.isArray(tree) ? tree.filter(item => item.type === 'file') : [];
+      const q8Files = selectClientQ8Files(files);
+      const q8Bytes = q8Files.reduce((sum, f) => sum + (f.size || 0), 0);
+      const fp32Onnx = files.find(f => f.path === 'onnx/model.onnx');
+
+      document.getElementById(model.sizeEl).textContent = formatMB(q8Bytes);
+      document.getElementById(model.pingEl).textContent = `${headRes.ok ? 'Reachable' : 'CORS/CDN issue'} · ${ms} ms`;
+
+      return { model, ms, reachable: headRes.ok, q8Files, q8Bytes, fp32Bytes: fp32Onnx?.size || 0 };
+    }
+
+    document.getElementById('btnPing').addEventListener('click', async () => {
+      const btn = document.getElementById('btnPing');
+      const statusEl = document.getElementById('pingStatus');
+      const filesEl = document.getElementById('filesList');
+      btn.disabled = true;
+      statusEl.textContent = 'Pinging Hugging Face...';
+
+      try {
+        const results = [];
+        for (const m of MODELS) {
+          results.push(await pingModel(m));
+        }
+
+        const totalQ8Bytes = results.reduce((s, r) => s + r.q8Bytes, 0);
+        const avgMs = Math.round(results.reduce((s, r) => s + r.ms, 0) / results.length);
+        document.getElementById('statTotalSize').textContent = formatMB(totalQ8Bytes);
+        document.getElementById('statTotalLatency').textContent = `Ping avg: ${avgMs} ms (0 MB downloaded)`;
+        statusEl.textContent = results.every(r => r.reachable) ? 'Hugging Face reachable' : 'Partial reachability';
+
+        filesEl.innerHTML = results.map(r => `
+          <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="font-bold text-slate-900">${r.model.role}: <span class="font-mono text-[#1565C0]">${r.model.id}</span></div>
+              <div class="text-[11px] font-semibold text-slate-700">
+                q8 total: <span class="text-slate-900 font-bold">${formatMB(r.q8Bytes)}</span>
+                ${r.fp32Bytes ? ` (fp32 full would be ${formatMB(r.fp32Bytes)})` : ''}
+              </div>
+            </div>
+            <div class="space-y-1">
+              ${r.q8Files.map(f => `
+                <div class="flex items-center justify-between text-[11px] font-mono text-slate-600 bg-white px-2.5 py-1 rounded-lg border border-slate-100">
+                  <span>${f.path}</span>
+                  <span class="font-semibold text-slate-800">${formatMB(f.size || 0)}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        statusEl.textContent = `Ping failed: ${err.message}`;
+        filesEl.innerHTML = `<div class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700">Failed to reach Hugging Face: ${err.message}</div>`;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    checkBrowserSupport();
+  </script>
+</body>
+</html>

@@ -21,3 +21,12 @@ CREATE VIRTUAL TABLE kb_fts USING fts5(
   content,
   tokenize = 'porter unicode61'
 );
+
+CREATE TABLE IF NOT EXISTS users (
+  id TEXT PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  display_name TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'agent',
+  password_hash TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
