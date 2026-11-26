@@ -1640,6 +1640,33 @@
       return res;
     }
 
+    async function openOutcomeHelp(simId, label) {
+      currentSimId = simId;
+      currentSimTitle = label;
+      simPlayIndex = 0;
+      simPlayHistory = [];
+      lastRenderedPlayIndex = -1;
+      simCompleted = false;
+      simMissCount = 0;
+      simEditMode = false;
+      simEditIndex = 0;
+
+      const badgeEl = document.getElementById('stepHelpBadge');
+      const titleEl = document.getElementById('stepHelpTitle');
+      if (badgeEl) badgeEl.textContent = label;
+      if (titleEl) titleEl.textContent = `How to: ${label}`;
+      switchSection('step-help');
+
+      try {
+        const res = await fetch(`/api/step-sim?id=${encodeURIComponent(currentSimId)}`);
+        const data = res.ok ? await res.json() : { steps: [] };
+        currentSimSteps = Array.isArray(data.steps) ? data.steps : [];
+      } catch {
+        currentSimSteps = [];
+      }
+      renderSimView();
+    }
+
     async function openStepHelp(groupId) {
       const group = treeConfig?.filters?.find(g => g.id === groupId);
       const cleanLabel = group ? group.label.replace(/^\d+\.\s*/, '') : 'Step Info';
@@ -3697,9 +3724,18 @@
         return escapeHtml(item);
       };
 
+      const outcomeSimId = `${treeDept === 'pediatrics' ? 'peds' : 'vision'}_outcome_${cockpitState.visit || 'general'}`.replace(/[^a-zA-Z0-9_-]/g, '_');
+
       outcomeEl.innerHTML = `
         <div class="p-5 rounded-2xl border ${styles.box} shadow-sm transition-colors duration-300">
-          <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full ${styles.pill} mb-2.5">${escapeHtml(outcome.tag)}</span>
+          <div class="flex items-center justify-between gap-2 mb-2.5">
+            <span class="inline-block text-[11px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full ${styles.pill}">${escapeHtml(outcome.tag)}</span>
+            <button type="button" data-sim-id="${escapeHtml(outcomeSimId)}" data-sim-title="${escapeHtml(outcome.title)}"
+              onclick="openOutcomeHelp(this.dataset.simId, this.dataset.simTitle)" title="How to book / handle this"
+              class="w-6 h-6 rounded-full border border-current/25 bg-white/75 hover:bg-white text-slate-700 hover:text-[#1565C0] text-xs font-bold flex items-center justify-center shrink-0 transition cursor-pointer">
+              ?
+            </button>
+          </div>
           <h2 class="text-xl font-extrabold leading-snug">${escapeHtml(outcome.title)}</h2>
           <p class="text-xs mt-1.5 opacity-85 leading-relaxed">${escapeHtml(outcome.summary)}</p>
         </div>

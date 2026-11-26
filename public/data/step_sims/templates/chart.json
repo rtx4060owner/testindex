@@ -1,0 +1,23 @@
+{
+  "id": "chart",
+  "name": "chart",
+  "updatedAt": "2026-11-26T18:56:59.756Z",
+  "steps": [
+    {
+      "id": "step-1795719411751-jo73",
+      "type": "photo",
+      "name": "",
+      "imageUrl": "/data/step_sims/images/peds_insurance/1795719411739-ebf8a2-chart.png",
+      "label": "",
+      "instruction": "",
+      "hint": "",
+      "question": "",
+      "yesTarget": "next",
+      "noTarget": "next",
+      "hotspot": null,
+      "highlights": [],
+      "arrows": [],
+      "texts": []
+    }
+  ]
+}

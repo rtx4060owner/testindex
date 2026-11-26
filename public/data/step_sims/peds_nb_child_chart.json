@@ -1,15 +1,19 @@
 {
   "id": "peds_nb_child_chart",
   "title": "Pediatrics: Does the child have a chart?",
-  "updatedAt": "2026-11-26T18:28:39.861Z",
+  "updatedAt": "2026-11-26T18:49:40.545Z",
   "steps": [
     {
       "id": "step-1795717403355-v6zr",
+      "type": "photo",
       "name": "",
       "imageUrl": "/data/step_sims/images/peds_visit/1795717202761-b2dfc5-start_screen.png",
       "label": "",
       "instruction": "",
       "hint": "",
+      "question": "",
+      "yesTarget": "next",
+      "noTarget": "next",
       "hotspot": {
         "x": 20.04,
         "y": 3.65,
@@ -32,11 +36,15 @@
     },
     {
       "id": "step-1795717548146-jg1n",
+      "type": "photo",
       "name": "",
       "imageUrl": "/data/step_sims/images/age/1795620816583-685ee0-2.png",
       "label": "",
       "instruction": "",
       "hint": "",
+      "question": "",
+      "yesTarget": "next",
+      "noTarget": "next",
       "hotspot": {
         "x": 33.52,
         "y": 24.42,
@@ -59,11 +67,15 @@
     },
     {
       "id": "step-1795717662131-9gdm",
+      "type": "photo",
       "name": "",
       "imageUrl": "/data/step_sims/images/age/1795620816583-685ee0-2.png",
       "label": "",
       "instruction": "",
       "hint": "",
+      "question": "",
+      "yesTarget": "next",
+      "noTarget": "next",
       "hotspot": {
         "x": 34.52,
         "y": 33.57,
@@ -83,6 +95,22 @@
           "bold": true
         }
       ]
+    },
+    {
+      "id": "step-1795718956593-oq5d",
+      "type": "question",
+      "name": "",
+      "imageUrl": "",
+      "label": "",
+      "instruction": "",
+      "hint": "",
+      "question": "did you find the child chart",
+      "yesTarget": "end",
+      "noTarget": "next",
+      "hotspot": null,
+      "highlights": [],
+      "arrows": [],
+      "texts": []
     }
   ]
 }

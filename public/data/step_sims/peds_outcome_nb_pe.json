@@ -1,0 +1,147 @@
+{
+  "id": "peds_outcome_nb_pe",
+  "title": "Book Newborn Physical (NB PE <= 6 wks)",
+  "updatedAt": "2026-11-26T19:53:34.200Z",
+  "steps": [
+    {
+      "id": "step-1795721208940-p7t3",
+      "type": "photo",
+      "name": "",
+      "imageUrl": "/data/step_sims/images/peds_outcome_nb_pe/1795721208933-9b6173-start2.png",
+      "label": "",
+      "instruction": "",
+      "hint": "",
+      "question": "",
+      "yesTarget": "next",
+      "noTarget": "next",
+      "hotspot": {
+        "x": 39.09,
+        "y": 60.64,
+        "w": 7.42,
+        "h": 9.99
+      },
+      "highlights": [],
+      "arrows": [],
+      "texts": [
+        {
+          "x": 45.92,
+          "y": 58.74,
+          "text": "find available appointments and offer it to the patient",
+          "size": 6,
+          "color": "#FFFFFF",
+          "bgColor": "transparent",
+          "bold": true
+        }
+      ]
+    },
+    {
+      "id": "step-1795721323639-nayl",
+      "type": "photo",
+      "name": "",
+      "imageUrl": "/data/step_sims/images/peds_outcome_nb_pe/1795721323635-d603ef-apinfo.png",
+      "label": "",
+      "instruction": "",
+      "hint": "",
+      "question": "",
+      "yesTarget": "next",
+      "noTarget": "next",
+      "hotspot": {
+        "x": 35.75,
+        "y": 16.11,
+        "w": 1.6,
+        "h": 3.03
+      },
+      "highlights": [],
+      "arrows": [],
+      "texts": [
+        {
+          "x": 34.91,
+          "y": 20.92,
+          "text": "click here",
+          "size": 6,
+          "color": "#FFFFFF",
+          "bgColor": "transparent",
+          "bold": true
+        }
+      ]
+    },
+    {
+      "id": "step-1795721417910-0lhl",
+      "type": "photo",
+      "name": "",
+      "imageUrl": "/data/step_sims/images/peds_outcome_nb_pe/1795721417907-a89810-apinfo1.png",
+      "label": "",
+      "instruction": "",
+      "hint": "",
+      "question": "",
+      "yesTarget": "next",
+      "noTarget": "next",
+      "hotspot": {
+        "x": 26.77,
+        "y": 15.83,
+        "w": 11.11,
+        "h": 8.79
+      },
+      "highlights": [
+        {
+          "x": 26.95,
+          "y": 21.62,
+          "w": 3.19,
+          "h": 2.43
+        }
+      ],
+      "arrows": [
+        {
+          "x1": 34.34,
+          "y1": 22.74,
+          "x2": 30.69,
+          "y2": 22.74,
+          "size": 0.4,
+          "color": "#F43F5E"
+        }
+      ],
+      "texts": [
+        {
+          "x": 31.92,
+          "y": 26.29,
+          "text": "click to load the info",
+          "size": 6,
+          "color": "#FFFFFF",
+          "bgColor": "transparent",
+          "bold": true
+        }
+      ]
+    },
+    {
+      "id": "step-1795721507097-cwym",
+      "type": "photo",
+      "name": "",
+      "imageUrl": "/data/step_sims/images/peds_outcome_nb_pe/1795721417907-a89810-apinfo1.png",
+      "label": "",
+      "instruction": "",
+      "hint": "",
+      "question": "",
+      "yesTarget": "next",
+      "noTarget": "next",
+      "hotspot": {
+        "x": 40.73,
+        "y": 37.37,
+        "w": 24.74,
+        "h": 4.21
+      },
+      "highlights": [],
+      "arrows": [],
+      "texts": [
+        {
+          "x": 55.13,
+          "y": 35.06,
+          "text": "type the reason including \"NB PE, #Lab ID, delivery hospital\"",
+          "size": 6,
+          "color": "#FFFFFF",
+          "bgColor": "transparent",
+          "bold": true
+        }
+      ]
+    }
+  ]
+}
